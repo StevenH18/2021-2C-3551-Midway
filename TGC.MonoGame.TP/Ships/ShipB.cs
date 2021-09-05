@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TGC.MonoGame.TP
+namespace TGC.MonoGame.TP.Ships
 {
-    public class Ship
+    class ShipB
     {
         ContentManager content;
         private Matrix World { get; set; }
@@ -15,17 +15,16 @@ namespace TGC.MonoGame.TP
         public Vector3 Position;
         private Matrix Scale;
         private Matrix Rotation;
-        private FollowCamera FollowCamera;
 
-        public Ship(ContentManager content, FollowCamera FollowCamera)
+        public ShipB(ContentManager content)
         {
-            this.FollowCamera = FollowCamera;
             this.content = content;
-            Scale = Matrix.CreateScale(0.015f);
+            Scale = Matrix.CreateScale(0.15f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
 
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
+
         public void Load(String path)
         {
             Model = content.Load<Model>(path);
@@ -33,17 +32,12 @@ namespace TGC.MonoGame.TP
 
         public void update(GameTime gameTime)
         {
-
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
-            FollowCamera.Update(gameTime, Matrix.Identity);
         }
-        
+
         public void Draw(Matrix view, Matrix proj)
         {
             Model.Draw(World, view, proj);
         }
-
     }
-
-
 }

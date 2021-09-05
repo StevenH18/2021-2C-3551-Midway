@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP;
+using TGC.MonoGame.TP.Ships;
+
 namespace TGC.MonoGame.TP
 {
     /// <summary>
@@ -20,8 +22,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderTextures = "Textures/";
         
         private FollowCamera FollowCamera { get; set; }
-        private FreeCamera freeCamera { get; set; }
-
+        private FreeCamera FreeCamera { get; set; }
         private Camera Camera { get; set; }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace TGC.MonoGame.TP
             // Maneja la configuracion y la administracion del dispositivo grafico.
             Graphics = new GraphicsDeviceManager(this);
             // Descomentar para que el juego sea pantalla completa.
-             Graphics.IsFullScreen = true;
+            Graphics.IsFullScreen = true;
             // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
             // Hace que el mouse sea visible.
@@ -41,7 +42,8 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
 
-        private Ship[] ships;
+        private ShipA[] shipsA;
+        private ShipB[] shipsB;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -62,22 +64,33 @@ namespace TGC.MonoGame.TP
             // Creo una camara para seguir a nuestro auto
 
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
-            freeCamera = new FreeCamera(GraphicsDevice, this.Window);
+            FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
 
             Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
 
-            ships = new Ship[200]; 
-            for(int i = 0; i < 200; i++)
+            shipsA = new ShipA[100];
+            shipsB = new ShipB[100];
+            for (int i = 0; i < 200; i++)
             {
                 var variacion = 25;
                 var rand = new Random();
 
-                ships[i] = new Ship(Content, FollowCamera);
-                ships[i].Position.Z = ((i % 16) * 150) + rand.Next(-variacion, variacion);
-                ships[i].Position.X = ((int)Math.Floor(i / 16f) * 400) + rand.Next(-variacion, variacion);
+                if(i < 100)
+                {
+                    shipsA[i] = new ShipA(Content);
+                    shipsA[i].Position.Z = ((i % 20) * 150) + rand.Next(-variacion, variacion);
+                    shipsA[i].Position.X = ((int)Math.Floor(i / 20f) * 400) + rand.Next(-variacion, variacion);
+                }
+                else
+                {
+                    shipsB[i - 100] = new ShipB(Content);
+                    shipsB[i - 100].Position.Z = ((i % 20) * 150) + rand.Next(-variacion, variacion);
+                    shipsB[i - 100].Position.X = ((int)Math.Floor(i / 20f) * 400) + rand.Next(-variacion, variacion);
+                }
+
             }
 
-            
+
             base.Initialize();
         }
 
@@ -90,11 +103,11 @@ namespace TGC.MonoGame.TP
         {
             for (int i = 0; i < 100; i++)
             {
-                ships[i].Load(ContentFolder3D + "/Ships/ShipA/Ship");
+                shipsA[i].Load(ContentFolder3D + "/Ships/ShipA/Ship");
             }
-            for (int i = 100; i < 200; i++)
+            for (int i = 0; i < 100; i++)
             {
-                ships[i].Load(ContentFolder3D + "/Ships/ShipB/ShipB");
+                shipsB[i].Load(ContentFolder3D + "/Ships/ShipB/ShipB");
             }
 
             base.LoadContent();
@@ -116,12 +129,16 @@ namespace TGC.MonoGame.TP
 
             // Basado en el tiempo que paso se va generando una rotacion.
             
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 100; i++)
             {
-                ships[i].update(gameTime);
+                shipsA[i].update(gameTime);
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                shipsB[i].update(gameTime);
             }
             Camera.Update(gameTime);
-            freeCamera.Update(gameTime);
+            FreeCamera.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -134,11 +151,16 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.LightSkyBlue);
 
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 100; i++)
             {
-                ships[i].Draw(freeCamera.View,freeCamera.Projection);
+                shipsA[i].Draw(FreeCamera.View,FreeCamera.Projection);
             }
-            
+
+            for (int i = 0; i < 100; i++)
+            {
+                shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection);
+            }
+
             base.Draw(gameTime);
         }
 

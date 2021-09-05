@@ -15,12 +15,14 @@ namespace TGC.MonoGame.TP
         private MouseState mState = default(MouseState);
         private KeyboardState kbState = default(KeyboardState);
 
-        public float MovementUnitsPerSecond { get; set; } = 80f;
-        public float RotationRadiansPerSecond { get; set; } = 60f;
+        public float MovementUnitsPerSecond { get; set; }
+        public float DefaultMovementUnitsPerSecond { get; set; } = 20f;
+        public float MovementMultiplier { get; set; } = 10f;
+        public float RotationRadiansPerSecond { get; set; } = 30f;
 
         public float fieldOfViewDegrees = 80f;
         public float nearClipPlane = .05f;
-        public float farClipPlane = 2000f;
+        public float farClipPlane = 4000f;
 
         private float yMouseAngle = 0f;
         private float xMouseAngle = 0f;
@@ -39,7 +41,7 @@ namespace TGC.MonoGame.TP
         /// the horizon is not corrected for in this one so use the z and c keys to roll 
         /// hold the right mouse to look with it.
         /// </summary>
-        public const int CAM_UI_OPTION_EDIT_LAYOUT = 1;
+        public const int CAM_UI_OPTION_EDIT_LAYOUT = 0;
         /// <summary>
         /// Determines how the camera behaves fixed 0  free 1
         /// </summary>
@@ -49,13 +51,13 @@ namespace TGC.MonoGame.TP
         /// However be aware that this means if the forward vector or were you are looking is directly up or down you will gimble lock.
         /// Typically this is not allowed in many fps or rather it is faked so you can never truely look directly up or down.
         /// </summary>
-        public const int CAM_TYPE_OPTION_FIXED = 0;
+        public const int CAM_TYPE_OPTION_FIXED = 1;
         /// <summary>
         /// A free camera has its up vector unlocked good for a space sim, air fighter game or editing. 
         /// It won't gimble lock. Provided the up is found from the cross of the right forward it can't gimble lock.
         /// The draw back is the horizon stabilization needs to be handled for some types of games.
         /// </summary>
-        public const int CAM_TYPE_OPTION_FREE = 1;
+        public const int CAM_TYPE_OPTION_FREE = 0;
 
 
         /// <summary>
@@ -300,6 +302,15 @@ namespace TGC.MonoGame.TP
             {
                 MoveRight(gameTime);
             }
+            // movement multiplier
+            if(kstate.IsKeyDown(Keys.LeftShift) == true)
+            {
+                MovementUnitsPerSecond = DefaultMovementUnitsPerSecond * MovementMultiplier;
+            }
+            else
+            {
+                MovementUnitsPerSecond = DefaultMovementUnitsPerSecond;
+            }
 
             // rotate 
             if (kstate.IsKeyDown(Keys.Left) == true)
@@ -334,7 +345,6 @@ namespace TGC.MonoGame.TP
                 if (cameraTypeOption == CAM_TYPE_OPTION_FREE)
                     MoveDown(gameTime);
             }
-
 
             if (state.LeftButton == ButtonState.Pressed)
             {
