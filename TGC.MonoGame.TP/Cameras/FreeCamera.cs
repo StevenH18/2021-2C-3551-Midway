@@ -31,6 +31,8 @@ namespace TGC.MonoGame.TP
         private int fpsKeyboardLayout = 1;
         private int cameraTypeOption = 1;
 
+        private float FarPlaneDistance = 1000f;
+
         /// <summary>
         /// operates pretty much like a fps camera.
         /// </summary>
@@ -312,6 +314,9 @@ namespace TGC.MonoGame.TP
                 MovementUnitsPerSecond = DefaultMovementUnitsPerSecond;
             }
 
+           
+          
+
             // rotate 
             if (kstate.IsKeyDown(Keys.Left) == true)
             {
@@ -330,7 +335,7 @@ namespace TGC.MonoGame.TP
             {
                 RotateDown(gameTime);
             }
-
+            
             if (kstate.IsKeyDown(Keys.Q) == true)
             {
                 if (cameraTypeOption == CAM_TYPE_OPTION_FIXED)
@@ -344,6 +349,17 @@ namespace TGC.MonoGame.TP
                     MoveDownInNonLocalSystemCoordinates(gameTime);
                 if (cameraTypeOption == CAM_TYPE_OPTION_FREE)
                     MoveDown(gameTime);
+            }
+
+            if (Inputs.isJustPressed(Keys.Add))
+            {
+                FarPlaneDistance += 1000;
+                projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)((3.14159265358f) / 180f), graphicsDevice.Viewport.AspectRatio, 0.5f, FarPlaneDistance);
+            }
+            if (Inputs.isJustPressed(Keys.Subtract))
+            {
+                FarPlaneDistance = Math.Max(FarPlaneDistance - 1000, 100);
+                projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)((3.14159265358f) / 180f), graphicsDevice.Viewport.AspectRatio, 0.5f, FarPlaneDistance);
             }
 
             if (state.LeftButton == ButtonState.Pressed)
