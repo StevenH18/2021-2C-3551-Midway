@@ -59,7 +59,7 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
             Graphics.ApplyChanges();
-            // Creo una camaar para seguir a nuestro auto
+            // Creo una camara para seguir a nuestro auto
 
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
             freeCamera = new FreeCamera(GraphicsDevice, this.Window);
@@ -88,9 +88,13 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 100; i++)
             {
-                ships[i].Load(ContentFolder3D + "/Ships/ShipA/Ship"); 
+                ships[i].Load(ContentFolder3D + "/Ships/ShipA/Ship");
+            }
+            for (int i = 100; i < 200; i++)
+            {
+                ships[i].Load(ContentFolder3D + "/Ships/ShipB/ShipB");
             }
 
             base.LoadContent();
