@@ -136,7 +136,7 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < 200; i++)
             {
-                ships[i].Draw(Camera.View,Camera.Projection);
+                ships[i].Draw(freeCamera.View,freeCamera.Projection);
             }
             
             base.Draw(gameTime);
