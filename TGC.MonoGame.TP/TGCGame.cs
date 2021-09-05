@@ -67,11 +67,14 @@ namespace TGC.MonoGame.TP
             Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
 
             ships = new Ship[200]; 
-           for(int i = 0; i < 200; i++)
+            for(int i = 0; i < 200; i++)
             {
+                var variacion = 25;
+                var rand = new Random();
+
                 ships[i] = new Ship(Content, FollowCamera);
-                ships[i].Position.Z = i * 150;
-               
+                ships[i].Position.Z = ((i % 16) * 150) + rand.Next(-variacion, variacion);
+                ships[i].Position.X = ((int)Math.Floor(i / 16f) * 400) + rand.Next(-variacion, variacion);
             }
 
             
