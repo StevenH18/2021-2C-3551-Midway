@@ -17,7 +17,7 @@ namespace TGC.MonoGame.TP
 
         public float MovementUnitsPerSecond { get; set; }
         public float DefaultMovementUnitsPerSecond { get; set; } = 20f;
-        public float MovementMultiplier { get; set; } = 10f;
+        public float MovementMultiplier { get; set; } = 20f;
         public float RotationRadiansPerSecond { get; set; } = 30f;
 
         public float fieldOfViewDegrees = 80f;
