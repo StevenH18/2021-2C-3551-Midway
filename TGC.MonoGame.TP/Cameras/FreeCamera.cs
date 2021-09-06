@@ -31,8 +31,6 @@ namespace TGC.MonoGame.TP
         private int fpsKeyboardLayout = 1;
         private int cameraTypeOption = 1;
 
-        private float FarPlaneDistance = 1000f;
-
         /// <summary>
         /// operates pretty much like a fps camera.
         /// </summary>
@@ -70,7 +68,7 @@ namespace TGC.MonoGame.TP
             graphicsDevice = gfxDevice;
             gameWindow = window;
             ReCreateWorldAndView();
-            ReCreateThePerspectiveProjectionMatrix(gfxDevice, fieldOfViewDegrees);
+            ReCreateThePerspectiveProjectionMatrix();
         }
 
         /// <summary>
@@ -251,14 +249,17 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// Changes the perspective matrix to a new near far and field of view.
         /// </summary>
-        public void ReCreateThePerspectiveProjectionMatrix(GraphicsDevice gd, float fovInDegrees)
+        public void ReCreateThePerspectiveProjectionMatrix()
         {
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fovInDegrees * (float)((3.14159265358f) / 180f), gd.Viewport.Width / gd.Viewport.Height, .05f, 1000f);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)(Math.PI / 180f), graphicsDevice.Viewport.AspectRatio, nearClipPlane, farClipPlane);
         }
         /// <summary>
         /// Changes the perspective matrix to a new near far and field of view.
         /// The projection matrix is typically only set up once at the start of the app.
         /// </summary>
+        /// 
+        // Esto no lo estamos usando por ahora
+        /*
         public void ReCreateThePerspectiveProjectionMatrix(float fieldOfViewInDegrees, float nearPlane, float farPlane)
         {
             // create the projection matrix.
@@ -268,6 +269,7 @@ namespace TGC.MonoGame.TP
             float aspectRatio = graphicsDevice.Viewport.Width / (float)graphicsDevice.Viewport.Height;
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(this.fieldOfViewDegrees, aspectRatio, nearClipPlane, farClipPlane);
         }
+        */
 
         /// <summary>
         /// update the camera.
@@ -353,13 +355,13 @@ namespace TGC.MonoGame.TP
 
             if (Inputs.isJustPressed(Keys.Add))
             {
-                FarPlaneDistance += 1000;
-                projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)((3.14159265358f) / 180f), graphicsDevice.Viewport.AspectRatio, 0.5f, FarPlaneDistance);
+                farClipPlane += 1000;
+                ReCreateThePerspectiveProjectionMatrix();
             }
             if (Inputs.isJustPressed(Keys.Subtract))
             {
-                FarPlaneDistance = Math.Max(FarPlaneDistance - 1000, 100);
-                projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)((3.14159265358f) / 180f), graphicsDevice.Viewport.AspectRatio, 0.5f, FarPlaneDistance);
+                farClipPlane = Math.Max(farClipPlane - 1000, 100);
+                ReCreateThePerspectiveProjectionMatrix();
             }
 
             if (state.LeftButton == ButtonState.Pressed)

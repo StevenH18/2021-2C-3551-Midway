@@ -72,20 +72,20 @@ namespace TGC.MonoGame.TP
             shipsB = new ShipB[100];
             for (int i = 0; i < 200; i++)
             {
-                var variacion = 25;
+                var variacion = 100;
                 var rand = new Random();
 
                 if(i < 100)
                 {
                     shipsA[i] = new ShipA(Content);
-                    shipsA[i].Position.Z = ((i % 20) * 150) + rand.Next(-variacion, variacion);
-                    shipsA[i].Position.X = ((int)Math.Floor(i / 20f) * 400) + rand.Next(-variacion, variacion);
+                    shipsA[i].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
+                    shipsA[i].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
                 }
                 else
                 {
                     shipsB[i - 100] = new ShipB(Content);
-                    shipsB[i - 100].Position.Z = ((i % 20) * 150) + rand.Next(-variacion, variacion);
-                    shipsB[i - 100].Position.X = ((int)Math.Floor(i / 20f) * 400) + rand.Next(-variacion, variacion);
+                    shipsB[i - 100].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
+                    shipsB[i - 100].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
                 }
 
             }
