@@ -248,7 +248,7 @@ namespace TGC.MonoGame.TP
         /// </summary>
         public void ReCreateThePerspectiveProjectionMatrix()
         {
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(fieldOfViewDegrees * (float)(Math.PI / 180f), graphicsDevice.Viewport.AspectRatio, nearClipPlane, farClipPlane);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(fieldOfViewDegrees), graphicsDevice.Viewport.AspectRatio, nearClipPlane, farClipPlane);
         }
         /// <summary>
         /// Changes the perspective matrix to a new near far and field of view.
