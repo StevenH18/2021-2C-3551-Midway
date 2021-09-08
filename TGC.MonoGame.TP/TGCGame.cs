@@ -37,10 +37,12 @@ namespace TGC.MonoGame.TP
             // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
             // Hace que el mouse sea visible.
-            IsMouseVisible = false;
+            IsMouseVisible = true;
         }
 
         private GraphicsDeviceManager Graphics { get; }
+
+        private int naves = 400;
 
         private ShipA[] shipsA;
         private ShipB[] shipsB;
@@ -52,10 +54,6 @@ namespace TGC.MonoGame.TP
         protected override void Initialize()
         {
             // La logica de inicializacion que no depende del contenido se recomienda poner en este metodo.
-            var rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
-            GraphicsDevice.RasterizerState = rasterizerState;
-            GraphicsDevice.BlendState = BlendState.Opaque;
 
             // Configuro el tamaño de la pantalla
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
@@ -68,14 +66,14 @@ namespace TGC.MonoGame.TP
 
             Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
 
-            shipsA = new ShipA[400];
-            shipsB = new ShipB[400];
-            for (int i = 0; i < 800; i++)
+            shipsA = new ShipA[naves];
+            shipsB = new ShipB[naves];
+            for (int i = 0; i < naves*2; i++)
             {
                 var variacion = 100;
                 var rand = new Random();
 
-                if(i < 400)
+                if(i < naves)
                 {
                     shipsA[i] = new ShipA(Content);
                     shipsA[i].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
@@ -83,9 +81,9 @@ namespace TGC.MonoGame.TP
                 }
                 else
                 {
-                    shipsB[i - 400] = new ShipB(Content);
-                    shipsB[i - 400].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
-                    shipsB[i - 400].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
+                    shipsB[i - naves] = new ShipB(Content);
+                    shipsB[i - naves].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
+                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
                 }
 
             }
@@ -101,13 +99,13 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < naves; i++)
             {
-                shipsA[i].Load(ContentFolder3D + "/Ships/ShipA/Ship");
+                shipsA[i].Load();
             }
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < naves; i++)
             {
-                shipsB[i].Load(ContentFolder3D + "/Ships/ShipB/ShipB");
+                shipsB[i].Load();
             }
 
             base.LoadContent();
@@ -129,13 +127,13 @@ namespace TGC.MonoGame.TP
 
             // Basado en el tiempo que paso se va generando una rotacion.
             
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < naves; i++)
             {
-                shipsA[i].update(gameTime);
+                shipsA[i].Update(gameTime);
             }
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < naves; i++)
             {
-                shipsB[i].update(gameTime);
+                shipsB[i].Update(gameTime);
             }
             Camera.Update(gameTime);
             FreeCamera.Update(gameTime);
@@ -149,16 +147,16 @@ namespace TGC.MonoGame.TP
         protected override void Draw(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
-            GraphicsDevice.Clear(Color.LightSkyBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            for (int i = 0; i < 400; i++)
+            for (int i = 0; i < naves; i++)
             {
-                shipsA[i].Draw(FreeCamera.View,FreeCamera.Projection);
+                shipsA[i].Draw(FreeCamera.View,FreeCamera.Projection,Color.White);
             }
-
-            for (int i = 0; i < 400; i++)
+             
+            for (int i = 0; i < naves; i++)
             {
-                shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection);
+                shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection, Color.Blue);
             }
 
             base.Draw(gameTime);

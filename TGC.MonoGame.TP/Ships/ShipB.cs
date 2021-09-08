@@ -7,37 +7,21 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TGC.MonoGame.TP.Ships
 {
-    class ShipB
+    public class ShipB : Ship
     {
-        ContentManager content;
-        private Matrix World { get; set; }
-        private Model Model { get; set; }
-        public Vector3 Position;
-        private Matrix Scale;
-        private Matrix Rotation;
 
-        public ShipB(ContentManager content)
+        public ShipB(ContentManager content) : base(content)
         {
-            this.content = content;
             Scale = Matrix.CreateScale(0.15f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(((float)Math.PI) / 2) * Matrix.CreateRotationZ(0);
-
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public void Load(String path)
+        public new void Load()
         {
-            Model = content.Load<Model>(path);
+            Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Ships/ShipB/ShipB");
+            base.Load();
         }
 
-        public void update(GameTime gameTime)
-        {
-            World = Scale * Rotation * Matrix.CreateTranslation(Position);
-        }
-
-        public void Draw(Matrix view, Matrix proj)
-        {
-            Model.Draw(World, view, proj);
-        }
     }
 }

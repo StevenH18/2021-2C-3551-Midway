@@ -4,40 +4,26 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
 {
-    public class ShipA
+    public class ShipA : Ship
     {
-        ContentManager content;
-        private Matrix World { get; set; }
-        private Model Model { get; set; }
-        public Vector3 Position;
-        private Matrix Scale;
-        private Matrix Rotation;
-
-        public ShipA(ContentManager content)
+        public ShipA(ContentManager content) : base(content)
         {
-            this.content = content;
             Scale = Matrix.CreateScale(0.015f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public void Load(String path)
+        public new void Load()
         {
-            Model = content.Load<Model>(path);
+            Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Ships/ShipA/Ship");
+            base.Load();
+
         }
 
-        public void update(GameTime gameTime)
-        {
-            World = Scale * Rotation * Matrix.CreateTranslation(Position);
-        }
-        
-        public void Draw(Matrix view, Matrix proj)
-        {
-            Model.Draw(World, view, proj);
-        }
 
     }
 
