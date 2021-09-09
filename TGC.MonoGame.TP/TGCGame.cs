@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TGC.MonoGame.TP;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
@@ -46,6 +45,7 @@ namespace TGC.MonoGame.TP
 
         private ShipA[] shipsA;
         private ShipB[] shipsB;
+        private Ocean Ocean;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -68,6 +68,8 @@ namespace TGC.MonoGame.TP
 
             shipsA = new ShipA[naves];
             shipsB = new ShipB[naves];
+            Ocean = new Ocean(GraphicsDevice, Content);
+
             for (int i = 0; i < naves*2; i++)
             {
                 var variacion = 100;
@@ -107,6 +109,7 @@ namespace TGC.MonoGame.TP
             {
                 shipsB[i].Load();
             }
+            Ocean.Load();
 
             base.LoadContent();
         }
@@ -135,7 +138,8 @@ namespace TGC.MonoGame.TP
             {
                 shipsB[i].Update(gameTime);
             }
-            if(Keyboard.GetState().IsKeyDown(Keys.Enter)){
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter)){
                 FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
             }
             Camera.Update(gameTime);
@@ -161,6 +165,8 @@ namespace TGC.MonoGame.TP
             {
                 shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection, Color.Blue);
             }
+
+            Ocean.Draw(FreeCamera.View, FreeCamera.Projection);
 
             base.Draw(gameTime);
         }
