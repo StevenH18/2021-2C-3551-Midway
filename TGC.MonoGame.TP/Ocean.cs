@@ -10,7 +10,7 @@ namespace TGC.MonoGame.TP
         protected ContentManager Content;
         protected Effect Effect;
         protected VertexBuffer Buffer;
-        protected VertexPositionColor[] Verts;
+        protected VertexPosition[] Verts;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.Graphics = graphics;
@@ -18,22 +18,25 @@ namespace TGC.MonoGame.TP
         }
         public void Load()
         {
-            Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BasicShader");
+            Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
 
-            Verts = new VertexPositionColor[3]
+            Verts = new VertexPosition[6]
             {
-                new VertexPositionColor(Vector3.Up, Color.Red),
-                new VertexPositionColor(Vector3.Down, Color.Green),
-                new VertexPositionColor(Vector3.Left, Color.Blue)
+                new VertexPosition(new Vector3(0f, 0f, 0f)),
+                new VertexPosition(new Vector3(1f, 0f, 0f)),
+                new VertexPosition(new Vector3(0f, 0f, 1f)),
+                new VertexPosition(new Vector3(1f, 0f, 1f)),
+                new VertexPosition(new Vector3(0f, 0f, 1f)),
+                new VertexPosition(new Vector3(1f, 0f, 0f))
             };
 
-            Buffer = new VertexBuffer(Graphics, VertexPositionColor.VertexDeclaration, 3, BufferUsage.WriteOnly);
+            Buffer = new VertexBuffer(Graphics, VertexPosition.VertexDeclaration, 6, BufferUsage.WriteOnly);
 
             Buffer.SetData(Verts);
         }
         public void Draw(Matrix view, Matrix proj)
         {
-            Effect.Parameters["World"].SetValue(Matrix.Identity);
+            Effect.Parameters["World"].SetValue(Matrix.CreateScale(20f));
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
 
@@ -41,7 +44,7 @@ namespace TGC.MonoGame.TP
             {
                 pass.Apply();
 
-                Graphics.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, Verts, 0, 1);
+                Graphics.DrawUserPrimitives<VertexPosition>(PrimitiveType.TriangleList, Verts, 0, 2);
             }
         }
     }
