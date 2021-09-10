@@ -41,7 +41,7 @@ namespace TGC.MonoGame.TP.Ships
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public void Draw(Matrix view, Matrix proj,Color color)
+        public void Draw(Matrix view, Matrix proj, Color color)
         {
 
             Effect.Parameters["View"].SetValue(view);

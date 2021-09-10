@@ -166,7 +166,7 @@ namespace TGC.MonoGame.TP
                 shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection, Color.Blue);
             }
 
-            Ocean.Draw(FreeCamera.View, FreeCamera.Projection);
+            Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
 
             base.Draw(gameTime);
         }

@@ -33,10 +33,12 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
+    input.Position = float4(input.Position.x, cos(input.Position.x + Time), input.Position.zw);
+	
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
     // World space to View space
-    float4 viewPosition = mul(worldPosition, View);	
+    float4 viewPosition = mul(worldPosition, View);		
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
 
@@ -45,7 +47,9 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    return float4(0.19, 0.54, 0.69, 1.0);
+    float4 diffuse_color = float4(0.19, 0.54, 0.69, 1.0);
+    return diffuse_color;
+
 }
 
 technique BasicColorDrawing
