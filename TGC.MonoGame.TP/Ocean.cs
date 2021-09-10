@@ -12,8 +12,9 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
+        // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
         private int GridWidth = 512;
-        private int GridHeigt = 256;
+        private int GridHeight = 256;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.Graphics = graphics;
@@ -21,7 +22,7 @@ namespace TGC.MonoGame.TP
         }
         public void Load()
         {
-            // Load Vertices
+            // Creo vertices en base al GridWidth y GridHeight
             VertexPosition[] vertices = CalculateVertices();
 
             VertexBuffer = new VertexBuffer(Graphics, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
@@ -47,22 +48,23 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
+            // Le paso el tiempo para simular las olas
             Effect.Parameters["Time"].SetValue(deltaTime);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                var triangles = GridWidth * GridHeigt * 2;
+                var triangles = GridWidth * GridHeight * 2;
                 Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
         private VertexPosition[] CalculateVertices()
         {
-            var vertices = new VertexPosition[GridWidth * GridHeigt];
+            var vertices = new VertexPosition[GridWidth * GridHeight];
 
             int vertIndex = 0;
-            for (int y = 0; y < GridHeigt; ++y)
+            for (int y = 0; y < GridHeight; ++y)
             {
                 for (int x = 0; x < GridWidth; ++x)
                 {
@@ -75,10 +77,10 @@ namespace TGC.MonoGame.TP
         }
         private ushort[] CalculateIndices()
         {
-            var indices = new ushort[(GridHeigt - 1) * (GridWidth - 1) * 6];
+            var indices = new ushort[(GridHeight - 1) * (GridWidth - 1) * 6];
 
             int indicesIndex = 0;
-            for (int y = 0; y < GridHeigt - 1; ++y)
+            for (int y = 0; y < GridHeight - 1; ++y)
             {
                 for (int x = 0; x < GridWidth - 1; ++x)
                 {

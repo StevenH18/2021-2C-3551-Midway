@@ -33,6 +33,9 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
+	
+	// Hago algunas olas 
+	// TODO hacer que las olas sean parametrizadas (supongo que la simulacion tiene que ser igual del lado de los barcos para saber su velocidad)
     input.Position = float4(input.Position.x, sin(input.Position.x / 10 + Time) * 5, input.Position.zw);
 	
     // Model space to World space
