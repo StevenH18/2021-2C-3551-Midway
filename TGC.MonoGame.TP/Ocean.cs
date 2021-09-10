@@ -18,6 +18,10 @@ namespace TGC.MonoGame.TP
         // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
         private int GridWidth = 256;
         private int GridHeight = 256;
+        // Parametrizacion de las olas
+        private float Amplitude = 20f;
+        private float Speed = 1f;
+        private float WaveLength = 10f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -56,7 +60,11 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
             // Le paso el tiempo para simular las olas
-            Effect.Parameters["Time"].SetValue(deltaTime);
+            Effect.Parameters["Time"]?.SetValue(deltaTime);
+            // Parametros de las olas
+            Effect.Parameters["Amplitude"]?.SetValue(Amplitude);
+            Effect.Parameters["Speed"]?.SetValue(Speed);
+            Effect.Parameters["WaveLength"]?.SetValue(WaveLength);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
