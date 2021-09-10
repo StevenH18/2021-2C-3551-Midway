@@ -33,7 +33,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
-    input.Position = float4(input.Position.x, cos(input.Position.x + Time), input.Position.zw);
+    input.Position = float4(input.Position.x, sin(input.Position.x / 10 + Time) * 5, input.Position.zw);
 	
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);

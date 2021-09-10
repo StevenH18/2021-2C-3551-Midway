@@ -12,8 +12,8 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
-        private int GridWidth = 64;
-        private int GridHeigt = 64;
+        private int GridWidth = 512;
+        private int GridHeigt = 256;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.Graphics = graphics;
