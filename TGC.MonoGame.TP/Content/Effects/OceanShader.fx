@@ -36,7 +36,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	
 	// Hago algunas olas 
 	// TODO hacer que las olas sean parametrizadas (supongo que la simulacion tiene que ser igual del lado de los barcos para saber su velocidad)
-    input.Position = float4(input.Position.x, sin(input.Position.x / 10 + Time) * 5, input.Position.zw);
+    input.Position = float4(input.Position.x, sin(input.Position.x / 1 + Time) * 2, input.Position.zw);
+
 	
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
@@ -51,8 +52,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 diffuse_color = float4(0.19, 0.54, 0.69, 1.0);
+	
     return diffuse_color;
-
 }
 
 technique BasicColorDrawing

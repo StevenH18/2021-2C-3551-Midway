@@ -12,8 +12,11 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
+        // Aca se puede cambiar el tamaño de la mesh
+        private int Width = 20000;
+        private int Height = 20000;
         // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
-        private int GridWidth = 512;
+        private int GridWidth = 256;
         private int GridHeight = 256;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
@@ -64,11 +67,11 @@ namespace TGC.MonoGame.TP
             var vertices = new VertexPosition[GridWidth * GridHeight];
 
             int vertIndex = 0;
-            for (int y = 0; y < GridHeight; ++y)
+            for (float y = 0; y < GridHeight; ++y)
             {
-                for (int x = 0; x < GridWidth; ++x)
+                for (float x = 0; x < GridWidth; ++x)
                 {
-                    var position = new Vector3(x, 0, y);
+                    var position = new Vector3(x / GridWidth * Width, 0, y / GridHeight * Height);
                     vertices[vertIndex++] = new VertexPosition(position);
                 }
             }
