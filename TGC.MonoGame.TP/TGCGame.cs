@@ -41,7 +41,7 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
 
-        private int naves = 400;
+        private int naves = 100;
 
         private ShipA[] shipsA;
         private ShipB[] shipsB;

@@ -7,35 +7,39 @@ namespace TGC.MonoGame.TP
 {
     public class Ocean
     {
-        protected GraphicsDevice Graphics;
+        protected GraphicsDevice GraphicsDevice;
         protected ContentManager Content;
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         // Aca se puede cambiar el tamaño de la mesh
-        private int Width = 20000;
-        private int Height = 20000;
+        private int Width = 5000;
+        private int Height = 5000;
         // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
         private int GridWidth = 256;
         private int GridHeight = 256;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
-            this.Graphics = graphics;
+            this.GraphicsDevice = graphics;
             this.Content = content;
         }
         public void Load()
         {
+            var rasterizer = new RasterizerState();
+            rasterizer.FillMode = FillMode.WireFrame;
+            GraphicsDevice.RasterizerState = rasterizer;
+
             // Creo vertices en base al GridWidth y GridHeight
             VertexPosition[] vertices = CalculateVertices();
 
-            VertexBuffer = new VertexBuffer(Graphics, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
+            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
 
             VertexBuffer.SetData(vertices);
 
             // Load Indices
             ushort[] indices = CalculateIndices();
 
-            IndexBuffer = new IndexBuffer(Graphics, IndexElementSize.SixteenBits, indices.Length, BufferUsage.None);
+            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, indices.Length, BufferUsage.None);
 
             IndexBuffer.SetData(indices);
 
@@ -45,8 +49,8 @@ namespace TGC.MonoGame.TP
         public void Draw(Matrix view, Matrix proj, GameTime gameTime)
         {
             var deltaTime = (float)gameTime.TotalGameTime.TotalSeconds;
-            Graphics.Indices = IndexBuffer;
-            Graphics.SetVertexBuffer(VertexBuffer);
+            GraphicsDevice.Indices = IndexBuffer;
+            GraphicsDevice.SetVertexBuffer(VertexBuffer);
 
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);
@@ -59,7 +63,7 @@ namespace TGC.MonoGame.TP
                 pass.Apply();
 
                 var triangles = GridWidth * GridHeight * 2;
-                Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
+                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
         private VertexPosition[] CalculateVertices()

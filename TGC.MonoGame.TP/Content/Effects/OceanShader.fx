@@ -27,6 +27,7 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
+    float3 MyPosition : TEXCOORD1;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -36,8 +37,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	
 	// Hago algunas olas 
 	// TODO hacer que las olas sean parametrizadas (supongo que la simulacion tiene que ser igual del lado de los barcos para saber su velocidad)
-    input.Position = float4(input.Position.x, sin(input.Position.x / 1 + Time) * 2, input.Position.zw);
-
+    input.Position = float4(input.Position.x, sin(input.Position.x / 100 + Time) * 10 + sin(input.Position.z / 50 + Time * 2) * 2, input.Position.zw);
 	
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
@@ -45,15 +45,22 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);		
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
+	
+	// Guardo en otra variable la posicion en el mundo para que sea accesible en el Pixel Shader
+    output.MyPosition = worldPosition;
 
     return output;
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 diffuse_color = float4(0.19, 0.54, 0.69, 1.0);
+    float height = max(input.MyPosition.y / 10, 0.7);
 	
-    return diffuse_color;
+    float red = 0.18 * height;
+    float green = 0.5 * height;
+    float blue = 0.69 * height;
+	
+    return float4(red, green, blue, 1.0);
 }
 
 technique BasicColorDrawing
