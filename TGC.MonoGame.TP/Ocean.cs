@@ -13,15 +13,15 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         // Aca se puede cambiar el tamaño de la mesh
-        private int Width = 5000;
-        private int Height = 5000;
+        private int Width = 3000;
+        private int Height = 3000;
         // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
-        private int GridWidth = 256;
-        private int GridHeight = 256;
+        private int GridWidth = 128;
+        private int GridHeight = 128;
         // Parametrizacion de las olas
-        private float Amplitude = 20f;
-        private float Speed = 1f;
-        private float WaveLength = 10f;
+        public float Amplitude = 20f;
+        public float Speed = 100f;
+        public float WaveLength = 500f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -73,6 +73,15 @@ namespace TGC.MonoGame.TP
                 var triangles = GridWidth * GridHeight * 2;
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
+        }
+        // Retorna una altura dada una posicion
+        // Esta funcion debe mantenerse igual a la del shader para poder saber la altura de
+        // una ola en un punto determinado
+        public float CalculateWaveHeightFromPosition(Vector3 position, GameTime gameTime)
+        {
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+            float k = 2.0f * (float)Math.PI / WaveLength;
+            return Amplitude * (float)Math.Sin(k * (position.X - time * Speed));
         }
         private VertexPosition[] CalculateVertices()
         {

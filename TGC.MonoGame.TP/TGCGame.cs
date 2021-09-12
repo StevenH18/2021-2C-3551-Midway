@@ -41,7 +41,7 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
 
-        private int naves = 100;
+        private int naves = 20;
 
         private ShipA[] shipsA;
         private ShipB[] shipsB;
@@ -72,20 +72,21 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < naves*2; i++)
             {
+                var repeticion = 10;
                 var variacion = 100;
                 var rand = new Random();
 
                 if(i < naves)
                 {
                     shipsA[i] = new ShipA(Content);
-                    shipsA[i].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
-                    shipsA[i].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
+                    shipsA[i].Position.Z = ((i % repeticion) * 300) + rand.Next(-variacion, variacion);
+                    shipsA[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * 500) + rand.Next(-variacion * 2, variacion * 2);
                 }
                 else
                 {
                     shipsB[i - naves] = new ShipB(Content);
-                    shipsB[i - naves].Position.Z = ((i % 20) * 300) + rand.Next(-variacion, variacion);
-                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / 20f) * 500) + rand.Next(-variacion * 2, variacion * 2);
+                    shipsB[i - naves].Position.Z = ((i % repeticion) * 300) + rand.Next(-variacion, variacion);
+                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / (float)repeticion) * 500) + rand.Next(-variacion * 2, variacion * 2);
                 }
 
             }
@@ -132,12 +133,15 @@ namespace TGC.MonoGame.TP
             
             for (int i = 0; i < naves; i++)
             {
+                shipsA[i].Position.Y = Ocean.CalculateWaveHeightFromPosition(shipsA[i].Position, gameTime);
                 shipsA[i].Update(gameTime);
             }
             for (int i = 0; i < naves; i++)
             {
+                shipsB[i].Position.Y = Ocean.CalculateWaveHeightFromPosition(shipsB[i].Position, gameTime);
                 shipsB[i].Update(gameTime);
             }
+            
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)){
                 FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
