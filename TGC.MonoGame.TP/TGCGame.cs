@@ -47,6 +47,7 @@ namespace TGC.MonoGame.TP
         private ShipB[] shipsB;
         private Ocean Ocean;
 
+        // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
         private Vector3[] positions;
 
         private float rotation = 0f;
@@ -144,7 +145,10 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < naves; i++)
             {
-                (Vector3, Vector3) result = Ocean.WaveNormalFromPosition(positions[i], gameTime);
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i].X += (float)gameTime.ElapsedGameTime.TotalSeconds * 250f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i].X -= (float)gameTime.ElapsedGameTime.TotalSeconds * 250f;
+
+                (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
                 Vector3 normal = result.Item1;
                 Vector3 position = result.Item2;
 

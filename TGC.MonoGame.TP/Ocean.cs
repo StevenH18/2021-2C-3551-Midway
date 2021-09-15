@@ -17,11 +17,14 @@ namespace TGC.MonoGame.TP
         private int Height = 3000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
         private int Density = 64;
-        // Parametrizacion de las olas
-        public Vector2 Direction = new Vector2(1f, 1f);
+        // Direccion del oleaje
+        public Vector2 Direction = new Vector2(1f, 0f);
+        // Gravedad de las olas (afecta la velocidad)
         public float Gravity = 9.8f;
-        public float Steepness = 0.6f;
-        public float WaveLength = 1200f;
+        // Inclinacion de las olas (Debe estar entre 0.0f y 1.0f)
+        public float Steepness = 0.2f;
+        // Separacion entre olas
+        public float WaveLength = 1000f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -78,13 +81,17 @@ namespace TGC.MonoGame.TP
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
-        // Esta funcion debe mantenerse igual a la del shader para poder saber la altura de
-        // una ola en un punto determinado
-        // Devuelve la normal y la posicion en la ola
-        public (Vector3, Vector3) WaveNormalFromPosition(Vector3 position, GameTime gameTime)
+        /// <summary>
+        /// Dada una posicion de un objeto
+        /// Devuelve primero la normal y luego la posicion en la ola
+        /// 
+        /// Esta funcion debe mantenerse igual a la del shader
+        /// </summary>
+        public (Vector3, Vector3) WaveNormalPosition(Vector3 position, GameTime gameTime)
         {
             float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
+            // Codigo casi igual al shader
             Vector3 p = position;
             float k = 2.0f * MathF.PI / WaveLength;
             Vector2 d = Vector2.Normalize(Direction);
@@ -95,6 +102,7 @@ namespace TGC.MonoGame.TP
             p.Y = a * MathF.Sin(f);
             p.Z += d.Y * a * MathF.Cos(f);
 
+            // Se calcula derivando p
             Vector3 tangent = new Vector3(
                 1 - d.X * d.X * (Steepness * MathF.Sin(f)),
                 d.X * (Steepness * MathF.Cos(f)),
@@ -107,9 +115,13 @@ namespace TGC.MonoGame.TP
             );
 
             Vector3 normal = Vector3.Normalize(Vector3.Cross(binormal, tangent));
+            position = p;
 
-            return (Vector3.Normalize(normal), p);
+            return (normal, position);
         }
+        /// <summary>
+        /// Crea una grilla de vertices que representa un plano para enviar al VertexBuffer
+        /// </summary>
         private VertexPosition[] CalculateVertices()
         {
             var vertices = new VertexPosition[Density * Density];
@@ -126,6 +138,9 @@ namespace TGC.MonoGame.TP
 
             return vertices;
         }
+        /// <summary>
+        /// Crea los indices de los quads (2 triangulos) para enviarlos al IndexBuffer
+        /// </summary>
         private ushort[] CalculateIndices()
         {
             var indices = new ushort[(Density - 1) * (Density - 1) * 6];

@@ -37,30 +37,37 @@ struct VertexShaderOutput
     float3 MyPosition : TEXCOORD1;
 };
 
-// Prestado de https://catlikecoding.com/unity/tutorials/flow/waves/
+// Tipo de olas: Gerstner Waves o tambien conocido como Trochoidal Waves
+// Implementacion basada en https://catlikecoding.com/unity/tutorials/flow/waves/
 float3 CalculateWaves(float4 vertexData)
 {
     float3 p = vertexData.xyz;                      // Posicion
-    float k = 2.0 * PI / WaveLength;                // WaveLength que no este en radianes
+    float k = 2.0 * PI / WaveLength;                // Pasar el WaveLength a radianes
     float2 d = normalize(Direction);                // Normalizar la direccion 
     float c = sqrt(Gravity / k);                    // Calcular la velocidad de las olas dada una gravedad
-    float f = k * (dot(d, p.xz) - Time * c);        // Funcion que va en el coseno y seno
-    float a = Steepness / k;
+    float f = k * (dot(d, p.xz) - Time * c);        // Funcion del tiempo
+    float a = Steepness / k;                        // Mientras Steepnes este entre 0 y 1 no se romperan las olas
+    
+    // Transformamos las coordenadas de vertices a la olas    
     p.x += d.x * a * cos(f);
     p.y = a * sin(f);
     p.z += d.y * a * cos(f);
     
+    /*
+    // Calculamos la normal para poder usarla en un futuro con iluminacion
+    
     float3 tangent = float3(
-				1 - d.x * d.x * (Steepness * sin(f)),
-				d.x * (Steepness * cos(f)),
-				-d.x * d.y * (Steepness * sin(f))
-			);
+		1 - d.x * d.x * (Steepness * sin(f)),
+		d.x * (Steepness * cos(f)),
+		-d.x * d.y * (Steepness * sin(f))
+	);
     float3 binormal = float3(
-				-d.x * d.y * (Steepness * sin(f)),
-				d.y * (Steepness * cos(f)),
-				1 - d.y * d.y * (Steepness * sin(f))
-			);
+		-d.x * d.y * (Steepness * sin(f)),
+		d.y * (Steepness * cos(f)),
+		1 - d.y * d.y * (Steepness * sin(f))
+	);
     float3 normal = normalize(cross(binormal, tangent));
+    */
     
     return p;
 }
@@ -70,8 +77,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
 	
-	// Hago algunas olas 
-	// TODO hacer que las olas sean parametrizadas (supongo que la simulacion tiene que ser igual del lado de los barcos para saber su velocidad)
+	// Deforma los vertices a travez del tiempo para crear el efecto de olas
     input.Position.xyz = CalculateWaves(input.Position);
 	
     // Model space to World space
