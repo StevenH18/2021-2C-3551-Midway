@@ -50,6 +50,8 @@ namespace TGC.MonoGame.TP
         // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
         private Vector3[] positions;
 
+        private float waveAngle = - MathF.PI * 0.5f;
+
         private float rotation = 0f;
 
         /// <summary>
@@ -80,7 +82,7 @@ namespace TGC.MonoGame.TP
             {
                 var repeticion = 5;
                 var variacion = 400;
-                var offset = 500;
+                var offset = 1000;
                 var separation = 500;
                 var rand = new Random();
 
@@ -138,15 +140,31 @@ namespace TGC.MonoGame.TP
                 //Salgo del juego.
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= (float)gameTime.ElapsedGameTime.TotalSeconds * 2f;
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += (float)gameTime.ElapsedGameTime.TotalSeconds * 2f;
+            var time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Basado en el tiempo que paso se va generando una rotacion.
+            // Temporal para probar el movimiento de los barcos
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= time * 2f;
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += time * 2f;
+
+            // I J para controlar la inclinacion de las olas
+            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.Steepness <= 1f) Ocean.Steepness += time;
+            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.Steepness >= 0f) Ocean.Steepness -= time;
+
+            // O K para controlar la longitud de las olas
+            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveLength += time * 100f;
+            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveLength -= time * 100f;
+
+            // P L para controlar la direccion de las olas
+            if (Keyboard.GetState().IsKeyDown(Keys.P)) waveAngle += time;
+            if (Keyboard.GetState().IsKeyDown(Keys.L)) waveAngle -= time;
+
+            Ocean.Direction = new Vector2(MathF.Sin(waveAngle), MathF.Cos(waveAngle));
 
             for (int i = 0; i < naves; i++)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i].X += (float)gameTime.ElapsedGameTime.TotalSeconds * 250f;
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i].X -= (float)gameTime.ElapsedGameTime.TotalSeconds * 250f;
+                // Temporal para rotar los barcos
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i].X += time * 100f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i].X -= time * 100f;
 
                 (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
                 Vector3 normal = result.Item1;
