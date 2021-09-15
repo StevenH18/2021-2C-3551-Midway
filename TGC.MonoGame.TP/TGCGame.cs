@@ -41,11 +41,15 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
 
-        private int naves = 20;
+        private int naves = 10;
 
         private ShipA[] shipsA;
         private ShipB[] shipsB;
         private Ocean Ocean;
+
+        private Vector3[] positions;
+
+        private float rotation = 0f;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -68,25 +72,29 @@ namespace TGC.MonoGame.TP
 
             shipsA = new ShipA[naves];
             shipsB = new ShipB[naves];
+            positions = new Vector3[naves];
             Ocean = new Ocean(GraphicsDevice, Content);
 
             for (int i = 0; i < naves*2; i++)
             {
-                var repeticion = 10;
-                var variacion = 100;
+                var repeticion = 5;
+                var variacion = 400;
+                var offset = 500;
+                var separation = 500;
                 var rand = new Random();
 
                 if(i < naves)
                 {
                     shipsA[i] = new ShipA(Content);
-                    shipsA[i].Position.Z = ((i % repeticion) * 300) + rand.Next(-variacion, variacion);
-                    shipsA[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * 500) + rand.Next(-variacion * 2, variacion * 2);
+                    shipsA[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
+                    shipsA[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
+                    positions[i] = shipsA[i].Position;
                 }
                 else
                 {
                     shipsB[i - naves] = new ShipB(Content);
-                    shipsB[i - naves].Position.Z = ((i % repeticion) * 300) + rand.Next(-variacion, variacion);
-                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / (float)repeticion) * 500) + rand.Next(-variacion * 2, variacion * 2);
+                    shipsB[i - naves].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
+                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
                 }
 
             }
@@ -129,16 +137,25 @@ namespace TGC.MonoGame.TP
                 //Salgo del juego.
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= (float)gameTime.ElapsedGameTime.TotalSeconds * 2f;
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += (float)gameTime.ElapsedGameTime.TotalSeconds * 2f;
+
             // Basado en el tiempo que paso se va generando una rotacion.
-            
+
             for (int i = 0; i < naves; i++)
             {
-                shipsA[i].Position.Y = Ocean.CalculateWaveHeightFromPosition(shipsA[i].Position, gameTime);
+                (Vector3, Vector3) result = Ocean.WaveNormalFromPosition(positions[i], gameTime);
+                Vector3 normal = result.Item1;
+                Vector3 position = result.Item2;
+
+                // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
+                shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
+
+                shipsA[i].Position = position;
                 shipsA[i].Update(gameTime);
             }
             for (int i = 0; i < naves; i++)
             {
-                shipsB[i].Position.Y = Ocean.CalculateWaveHeightFromPosition(shipsB[i].Position, gameTime);
                 shipsB[i].Update(gameTime);
             }
             

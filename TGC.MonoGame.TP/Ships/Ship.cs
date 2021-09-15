@@ -14,8 +14,7 @@ namespace TGC.MonoGame.TP.Ships
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
         protected Matrix Scale;
-        protected Matrix Rotation;
-
+        public Matrix Rotation;
         public Vector3 Position;
 
 
