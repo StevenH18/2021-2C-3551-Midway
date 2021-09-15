@@ -13,15 +13,15 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         // Aca se puede cambiar el tamaño de la mesh
-        private int Width = 3000;
-        private int Height = 3000;
-        // Aca se puede cambiar cuantos vertices tiene la mesh (2x2 seria un quad)
-        private int GridWidth = 128;
-        private int GridHeight = 128;
+        private int Width = 2000;
+        private int Height = 2000;
+        // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
+        private int Density = 64;
         // Parametrizacion de las olas
-        public float Amplitude = 20f;
-        public float Speed = 100f;
-        public float WaveLength = 500f;
+        public Vector2 Direction = new Vector2(1f, 1f);
+        public float Gravity = 9.8f;
+        public float Steepness = 0.4f;
+        public float WaveLength = 1200f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -29,9 +29,12 @@ namespace TGC.MonoGame.TP
         }
         public void Load()
         {
+            // Se hace esto para que la densidad represente la cantidad de quads
+            Density++;
+
             var rasterizer = new RasterizerState();
             rasterizer.FillMode = FillMode.WireFrame;
-            GraphicsDevice.RasterizerState = rasterizer;
+            //GraphicsDevice.RasterizerState = rasterizer;
 
             // Creo vertices en base al GridWidth y GridHeight
             VertexPosition[] vertices = CalculateVertices();
@@ -62,15 +65,16 @@ namespace TGC.MonoGame.TP
             // Le paso el tiempo para simular las olas
             Effect.Parameters["Time"]?.SetValue(deltaTime);
             // Parametros de las olas
-            Effect.Parameters["Amplitude"]?.SetValue(Amplitude);
-            Effect.Parameters["Speed"]?.SetValue(Speed);
+            Effect.Parameters["Direction"]?.SetValue(Direction);
+            Effect.Parameters["Gravity"]?.SetValue(Gravity);
+            Effect.Parameters["Steepness"]?.SetValue(Steepness);
             Effect.Parameters["WaveLength"]?.SetValue(WaveLength);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                var triangles = GridWidth * GridHeight * 2;
+                var triangles = Density * Density * 2;
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
@@ -79,20 +83,18 @@ namespace TGC.MonoGame.TP
         // una ola en un punto determinado
         public float CalculateWaveHeightFromPosition(Vector3 position, GameTime gameTime)
         {
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
-            float k = 2.0f * (float)Math.PI / WaveLength;
-            return Amplitude * (float)Math.Sin(k * (position.X - time * Speed));
+            return 1;
         }
         private VertexPosition[] CalculateVertices()
         {
-            var vertices = new VertexPosition[GridWidth * GridHeight];
+            var vertices = new VertexPosition[Density * Density];
 
             int vertIndex = 0;
-            for (float y = 0; y < GridHeight; ++y)
+            for (float y = 0; y < Density; ++y)
             {
-                for (float x = 0; x < GridWidth; ++x)
+                for (float x = 0; x < Density; ++x)
                 {
-                    var position = new Vector3(x / GridWidth * Width, 0, y / GridHeight * Height);
+                    var position = new Vector3(x / Density * Width, 0, y / Density * Height);
                     vertices[vertIndex++] = new VertexPosition(position);
                 }
             }
@@ -101,20 +103,20 @@ namespace TGC.MonoGame.TP
         }
         private ushort[] CalculateIndices()
         {
-            var indices = new ushort[(GridHeight - 1) * (GridWidth - 1) * 6];
+            var indices = new ushort[(Density - 1) * (Density - 1) * 6];
 
             int indicesIndex = 0;
-            for (int y = 0; y < GridHeight - 1; ++y)
+            for (int y = 0; y < Density - 1; ++y)
             {
-                for (int x = 0; x < GridWidth - 1; ++x)
+                for (int x = 0; x < Density - 1; ++x)
                 {
-                    int start = y * GridWidth + x;
+                    int start = y * Density + x;
                     indices[indicesIndex++] = (ushort)start;
                     indices[indicesIndex++] = (ushort)(start + 1);
-                    indices[indicesIndex++] = (ushort)(start + GridWidth);
+                    indices[indicesIndex++] = (ushort)(start + Density);
                     indices[indicesIndex++] = (ushort)(start + 1);
-                    indices[indicesIndex++] = (ushort)(start + 1 + GridWidth);
-                    indices[indicesIndex++] = (ushort)(start + GridWidth);
+                    indices[indicesIndex++] = (ushort)(start + 1 + Density);
+                    indices[indicesIndex++] = (ushort)(start + Density);
                 }
             }
 
