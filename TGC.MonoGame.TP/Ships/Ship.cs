@@ -14,10 +14,8 @@ namespace TGC.MonoGame.TP.Ships
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
         protected Matrix Scale;
-        protected Matrix Rotation;
-
+        public Matrix Rotation;
         public Vector3 Position;
-
 
         public Ship(ContentManager content)
         {
@@ -41,7 +39,7 @@ namespace TGC.MonoGame.TP.Ships
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public void Draw(Matrix view, Matrix proj,Color color)
+        public void Draw(Matrix view, Matrix proj, Color color)
         {
 
             Effect.Parameters["View"].SetValue(view);

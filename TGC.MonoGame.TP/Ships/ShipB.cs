@@ -13,7 +13,7 @@ namespace TGC.MonoGame.TP.Ships
         public ShipB(ContentManager content) : base(content)
         {
             Scale = Matrix.CreateScale(0.15f);
-            Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(((float)Math.PI) / 2) * Matrix.CreateRotationZ(0);
+            Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
