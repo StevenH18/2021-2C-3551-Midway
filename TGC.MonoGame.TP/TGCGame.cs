@@ -171,7 +171,7 @@ namespace TGC.MonoGame.TP
                 Vector3 position = result.Item2;
 
                 // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
-                //shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
+                shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
 
                 positions[i].Y = position.Y;
                 shipsA[i].Position = position;
