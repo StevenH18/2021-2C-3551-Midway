@@ -20,11 +20,11 @@ namespace TGC.MonoGame.TP
         // Direccion del oleaje
         public Vector2 Direction = new Vector2(6f, 0f);
         // Gravedad de las olas (afecta la velocidad)
-        public float Gravity = 9.8f;
+        public float Gravity = 98f;
         // Inclinacion de las olas (Debe estar entre 0.0f y 1.0f)
         public float Steepness = 0.2f;
         // Separacion entre olas
-        public float WaveLength = 10000f;
+        public float WaveLength = 2000f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -37,7 +37,7 @@ namespace TGC.MonoGame.TP
 
             var rasterizer = new RasterizerState();
             rasterizer.FillMode = FillMode.WireFrame;
-            //GraphicsDevice.RasterizerState = rasterizer;
+            GraphicsDevice.RasterizerState = rasterizer;
 
             // Creo vertices en base al GridWidth y GridHeight
             VertexPosition[] vertices = CalculateVertices();

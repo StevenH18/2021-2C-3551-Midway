@@ -163,16 +163,17 @@ namespace TGC.MonoGame.TP
             for (int i = 0; i < naves; i++)
             {
                 // Temporal para rotar los barcos
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i].X += time * 100f;
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i].X -= time * 100f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
 
                 (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
                 Vector3 normal = result.Item1;
                 Vector3 position = result.Item2;
 
                 // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
-                shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
+                //shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
 
+                positions[i].Y = position.Y;
                 shipsA[i].Position = position;
                 shipsA[i].Update(gameTime);
             }

@@ -17,7 +17,6 @@ namespace TGC.MonoGame.TP.Ships
         public Matrix Rotation;
         public Vector3 Position;
 
-
         public Ship(ContentManager content)
         {
             this.Content = content;
