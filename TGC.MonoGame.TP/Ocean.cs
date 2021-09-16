@@ -20,9 +20,9 @@ namespace TGC.MonoGame.TP
         // Direccion del oleaje
         public Vector2 Direction = new Vector2(6f, 0f);
         // Gravedad de las olas (afecta la velocidad)
-        public float Gravity = 98f;
+        public float Gravity = 9.8f;
         // Inclinacion de las olas (Debe estar entre 0.0f y 1.0f)
-        public float Steepness = 0.2f;
+        public float Steepness = 0.1f;
         // Separacion entre olas
         public float WaveLength = 2000f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
@@ -47,9 +47,9 @@ namespace TGC.MonoGame.TP
             VertexBuffer.SetData(vertices);
 
             // Load Indices
-            ushort[] indices = CalculateIndices();
+            uint[] indices = CalculateIndices();
 
-            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, indices.Length, BufferUsage.None);
+            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
 
             IndexBuffer.SetData(indices);
 
@@ -141,9 +141,9 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// Crea los indices de los quads (2 triangulos) para enviarlos al IndexBuffer
         /// </summary>
-        private ushort[] CalculateIndices()
+        private uint[] CalculateIndices()
         {
-            var indices = new ushort[(Density - 1) * (Density - 1) * 6];
+            var indices = new uint[(Density - 1) * (Density - 1) * 6];
 
             int indicesIndex = 0;
             for (int y = 0; y < Density - 1; ++y)
@@ -151,12 +151,12 @@ namespace TGC.MonoGame.TP
                 for (int x = 0; x < Density - 1; ++x)
                 {
                     int start = y * Density + x;
-                    indices[indicesIndex++] = (ushort)start;
-                    indices[indicesIndex++] = (ushort)(start + 1);
-                    indices[indicesIndex++] = (ushort)(start + Density);
-                    indices[indicesIndex++] = (ushort)(start + 1);
-                    indices[indicesIndex++] = (ushort)(start + 1 + Density);
-                    indices[indicesIndex++] = (ushort)(start + Density);
+                    indices[indicesIndex++] = (uint)start;
+                    indices[indicesIndex++] = (uint)(start + 1);
+                    indices[indicesIndex++] = (uint)(start + Density);
+                    indices[indicesIndex++] = (uint)(start + 1);
+                    indices[indicesIndex++] = (uint)(start + 1 + Density);
+                    indices[indicesIndex++] = (uint)(start + Density);
                 }
             }
 
