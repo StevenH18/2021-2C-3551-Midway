@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.Samples.Samples.Shaders.SkyBox;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
@@ -46,6 +47,7 @@ namespace TGC.MonoGame.TP
         private ShipA[] shipsA;
         private ShipB[] shipsB;
         private Ocean Ocean;
+        private SkyBox SkyBox;
 
         // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
         private Vector3[] positions;
@@ -66,8 +68,14 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             Graphics.ApplyChanges();
-            // Creo una camara para seguir a nuestro auto
 
+            // Configuro el CullMode para que se pueda ver la skybox
+            var rasterizer = new RasterizerState();
+            // rasterizer.FillMode = FillMode.WireFrame;
+            rasterizer.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rasterizer;
+
+            // Creo una camara para seguir a nuestro auto
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
 
@@ -113,6 +121,12 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
+            var skyBox = Content.Load<Model>(ContentFolder3D + "SkyBox/cube");
+            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/skybox");
+            var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
+
+            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000f);
+
             for (int i = 0; i < naves; i++)
             {
                 shipsA[i].Load();
@@ -211,6 +225,7 @@ namespace TGC.MonoGame.TP
             }
 
             Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
+            SkyBox.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position);
 
             base.Draw(gameTime);
         }

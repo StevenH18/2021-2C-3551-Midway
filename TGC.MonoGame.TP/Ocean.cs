@@ -16,13 +16,13 @@ namespace TGC.MonoGame.TP
         private int Width = 10000;
         private int Height = 10000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
-        private int Density = 128;
+        private int Density = 256;
         // Direccion del oleaje
         public Vector2 Direction = new Vector2(6f, 0f);
         // Gravedad de las olas (afecta la velocidad)
         public float Gravity = 9.8f;
         // Inclinacion de las olas (Debe estar entre 0.0f y 1.0f)
-        public float Steepness = 0.1f;
+        public float Steepness = 0.05f;
         // Separacion entre olas
         public float WaveLength = 2000f;
         public Ocean(GraphicsDevice graphics, ContentManager content)
@@ -34,10 +34,6 @@ namespace TGC.MonoGame.TP
         {
             // Se hace esto para que la densidad represente la cantidad de quads
             Density++;
-
-            var rasterizer = new RasterizerState();
-            rasterizer.FillMode = FillMode.WireFrame;
-            GraphicsDevice.RasterizerState = rasterizer;
 
             // Creo vertices en base al GridWidth y GridHeight
             VertexPosition[] vertices = CalculateVertices();
