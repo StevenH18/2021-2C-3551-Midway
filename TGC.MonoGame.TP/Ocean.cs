@@ -23,9 +23,9 @@ namespace TGC.MonoGame.TP
         // Para organizar mejor multiples olas enviamos todos los parametros de una
         // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
         // asi es mas facil enviarlo al shader
-        public Vector4 WaveA = new Vector4(1f, 0.6f, 0.9f, 6000f);
-        public Vector4 WaveB = new Vector4(1f, 0.3f, 0.2f, 3000f);
-        public Vector4 WaveC = new Vector4(1f, 0f, 0.2f, 1000f);
+        public Vector4 WaveA = new Vector4(1f, 0.3f, 0.3f, 6000f);
+        public Vector4 WaveB = new Vector4(1f, -0.2f, 0.5f, 3000f);
+        public Vector4 WaveC = new Vector4(1f, 0f, 0.1f, 1000f);
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
@@ -109,14 +109,14 @@ namespace TGC.MonoGame.TP
             // Calculamos la normal para poder usarla en un futuro con iluminacion
 
             tangent += new Vector3(
-                1 - d.X * d.X * (steepness * MathF.Sin(f)),
+                - d.X * d.X * (steepness * MathF.Sin(f)),
                 d.X * (steepness * MathF.Cos(f)),
                 -d.X * d.Y * (steepness * MathF.Sin(f))
             );
             binormal += new Vector3(
                 -d.X * d.Y * (steepness * MathF.Sin(f)),
                 d.Y * (steepness * MathF.Cos(f)),
-                1 - d.Y * d.Y * (steepness * MathF.Sin(f))
+                - d.Y * d.Y * (steepness * MathF.Sin(f))
             );
 
             return new Vector3(
@@ -128,8 +128,8 @@ namespace TGC.MonoGame.TP
         public (Vector3, Vector3) WaveNormalPosition(Vector3 position, GameTime gameTime)
         {
             // Se calcula derivando p
-            Vector3 tangent = Vector3.Zero;
-            Vector3 binormal = Vector3.Zero;
+            Vector3 tangent = new Vector3(1, 0, 0);
+            Vector3 binormal = new Vector3(0, 0, 1);
 
             position += CalculateWave(WaveA, position, ref tangent, ref binormal, gameTime);
             position += CalculateWave(WaveB, position, ref tangent, ref binormal, gameTime);

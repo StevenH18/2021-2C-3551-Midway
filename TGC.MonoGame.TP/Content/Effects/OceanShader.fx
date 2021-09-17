@@ -57,14 +57,14 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     // Calculamos la normal para poder usarla en un futuro con iluminacion
     
     tangent += float3(
-		1 - d.x * d.x * (steepness * sin(f)),
+		-d.x * d.x * (steepness * sin(f)),
 		d.x * (steepness * cos(f)),
 		-d.x * d.y * (steepness * sin(f))
 	);
     binormal += float3(
 		-d.x * d.y * (steepness * sin(f)),
 		d.y * (steepness * cos(f)),
-		1 - d.y * d.y * (steepness * sin(f))
+		-d.y * d.y * (steepness * sin(f))
 	);
     
     return float3(
@@ -102,7 +102,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	
 	// Guardo en otra variable la posicion en el mundo para que sea accesible en el Pixel Shader
     output.MyPosition = worldPosition;
-    output.Normal = normal;
+    output.Normal = cross(binormal, tangent); //mul(float4(normal, 1), World);
 
     return output;
 }
