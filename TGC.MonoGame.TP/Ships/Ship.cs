@@ -25,9 +25,9 @@ namespace TGC.MonoGame.TP.Ships
         private Color color;
 
         //
-        private float aceleration = 0.05f;
+        private float aceleration = 0.02f;
         private float speed = 0;
-        private const float speedGiro = 0.1f;
+        private const float turningSpeed = 0.07f;
         private const float Maxspeed = 5;
 
         public Ship(ContentManager content, Ocean ocean,Color color)
@@ -62,13 +62,13 @@ namespace TGC.MonoGame.TP.Ships
             if (control.avanzar == 0)
             {
                 var retroceso = -1 * Math.Sign(speed);
-                speed += retroceso * aceleration * 0.5f;
+                speed += retroceso * aceleration ;
                 if (speed / retroceso > 0)
                     speed = 0;
             }
 
 
-            rotation += time * control.virar * speedGiro * speed;
+            rotation += time * control.virar * turningSpeed * speed;
            
             originalPos += Vector3.Transform(Vector3.Forward, Rotation) * speed;
 
