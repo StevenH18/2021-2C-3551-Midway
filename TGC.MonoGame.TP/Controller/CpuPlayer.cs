@@ -6,7 +6,7 @@ namespace TGC.MonoGame.TP.Controller
 {
     class CpuPlayer : Controller
     {
-        public override Control GetControlls()
+        public override Controll GetControlls()
         {
             throw new NotImplementedException();
         }

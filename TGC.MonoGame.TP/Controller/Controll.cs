@@ -4,11 +4,11 @@ using System.Text;
 
 namespace TGC.MonoGame.TP.Controller
 {
-    public class Control
+    public class Controll
     {
         public int avanzar;
         public int virar;
-        public Control()
+        public Controll()
         {
             avanzar = 0;
             virar = 0;
