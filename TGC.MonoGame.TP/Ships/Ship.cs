@@ -56,7 +56,7 @@ namespace TGC.MonoGame.TP.Ships
         }
         public void Update(GameTime gameTime,Controll control)
         {
-
+            var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
             speed = Math.Max(Math.Min(speed + aceleration * control.avanzar, Maxspeed),0);
             
             if (control.avanzar == 0)
@@ -68,12 +68,14 @@ namespace TGC.MonoGame.TP.Ships
             }
 
 
-            rotation += (float)gameTime.ElapsedGameTime.TotalSeconds * control.virar * speedGiro * speed;
+            rotation += time * control.virar * speedGiro * speed;
            
             originalPos += Vector3.Transform(Vector3.Forward, Rotation) * speed;
 
-            flotar(gameTime);   
+            flotar(gameTime);
+
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
+            
         }
        
         private void flotar(GameTime gameTime)
@@ -87,7 +89,7 @@ namespace TGC.MonoGame.TP.Ships
             Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
 
             originalPos.Y = position.Y;
-            Position = originalPos;
+            Position = position;
         }
 
         public void Draw(Matrix view, Matrix proj)

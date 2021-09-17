@@ -13,19 +13,19 @@ namespace TGC.MonoGame.TP.Controller
 
             KeyboardState kstate = Keyboard.GetState();
 
-            if (kstate.IsKeyDown(Keys.NumPad8))
+            if (kstate.IsKeyDown(Keys.W))
             {
                 control.avanzar = 1;
             }
-            if (kstate.IsKeyDown(Keys.NumPad5))
+            if (kstate.IsKeyDown(Keys.S))
             {
                 control.avanzar = -1;
             }
-            if (kstate.IsKeyDown(Keys.NumPad6))
+            if (kstate.IsKeyDown(Keys.D))
             {
                 control.virar = -1;
             }
-            if (kstate.IsKeyDown(Keys.NumPad4))
+            if (kstate.IsKeyDown(Keys.A))
             {
                 control.virar = 1;
             }
