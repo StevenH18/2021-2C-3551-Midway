@@ -13,10 +13,10 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         // Aca se puede cambiar el tamaño de la mesh
-        private int Width = 10000;
-        private int Height = 10000;
+        public int Width = 10000;
+        public int Height = 10000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
-        private int Density = 256;
+        public int Density = 256;
         // Direccion del oleaje
         public Vector2 Direction = new Vector2(6f, 0f);
         // Gravedad de las olas (afecta la velocidad)
@@ -35,19 +35,7 @@ namespace TGC.MonoGame.TP
             // Se hace esto para que la densidad represente la cantidad de quads
             Density++;
 
-            // Creo vertices en base al GridWidth y GridHeight
-            VertexPosition[] vertices = CalculateVertices();
-
-            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
-
-            VertexBuffer.SetData(vertices);
-
-            // Load Indices
-            uint[] indices = CalculateIndices();
-
-            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
-
-            IndexBuffer.SetData(indices);
+            GenerateMesh();
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
@@ -115,6 +103,24 @@ namespace TGC.MonoGame.TP
 
             return (normal, position);
         }
+
+        public void GenerateMesh()
+        {
+            // Creo vertices en base al GridWidth y GridHeight
+            VertexPosition[] vertices = CalculateVertices();
+
+            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
+
+            VertexBuffer.SetData(vertices);
+
+            // Load Indices
+            uint[] indices = CalculateIndices();
+
+            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
+
+            IndexBuffer.SetData(indices);
+        }
+
         /// <summary>
         /// Crea una grilla de vertices que representa un plano para enviar al VertexBuffer
         /// </summary>
