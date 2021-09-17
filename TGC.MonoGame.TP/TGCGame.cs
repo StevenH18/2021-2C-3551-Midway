@@ -160,6 +160,7 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= time * 2f;
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += time * 2f;
 
+            /*
             // I J para controlar la inclinacion de las olas
             if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.Steepness <= 1f) Ocean.Steepness += time;
             if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.Steepness >= 0f) Ocean.Steepness -= time;
@@ -173,6 +174,8 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.L)) waveAngle -= time;
 
             Ocean.Direction = new Vector2(MathF.Sin(waveAngle), MathF.Cos(waveAngle));
+            */
+
 
             for (int i = 0; i < naves; i++)
             {
@@ -187,7 +190,7 @@ namespace TGC.MonoGame.TP
                 // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
                 shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
 
-                positions[i].Y = position.Y;
+                positions[i].Y = 0f;
                 shipsA[i].Position = position;
                 shipsA[i].Update(gameTime);
             }

@@ -16,6 +16,7 @@ namespace TGC.MonoGame.TP
         public int Width = 10000;
         public int Height = 10000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
+<<<<<<< Updated upstream
         public int Density = 256;
         // Direccion del oleaje
         public Vector2 Direction = new Vector2(6f, 0f);
@@ -25,6 +26,19 @@ namespace TGC.MonoGame.TP
         public float Steepness = 0.05f;
         // Separacion entre olas
         public float WaveLength = 2000f;
+=======
+        private int Density = 128;
+        // Gravedad de las olas (afecta la velocidad)
+        public float Gravity = 9.8f;
+
+        // Para organizar mejor multiples olas enviamos todos los parametros de una
+        // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
+        // asi es mas facil enviarlo al shader
+        public Vector4 WaveA = new Vector4(1f, 0.6f, 0.9f, 6000f);
+        public Vector4 WaveB = new Vector4(1f, 0.3f, 0.2f, 3000f);
+        public Vector4 WaveC = new Vector4(1f, 0f, 0.2f, 1000f);
+
+>>>>>>> Stashed changes
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -35,7 +49,28 @@ namespace TGC.MonoGame.TP
             // Se hace esto para que la densidad represente la cantidad de quads
             Density++;
 
+<<<<<<< Updated upstream
             GenerateMesh();
+=======
+            var rasterizer = new RasterizerState();
+            rasterizer.FillMode = FillMode.WireFrame;
+            rasterizer.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rasterizer;
+
+            // Creo vertices en base al GridWidth y GridHeight
+            VertexPosition[] vertices = CalculateVertices();
+
+            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
+
+            VertexBuffer.SetData(vertices);
+
+            // Load Indices
+            uint[] indices = CalculateIndices();
+
+            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
+
+            IndexBuffer.SetData(indices);
+>>>>>>> Stashed changes
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
@@ -52,10 +87,10 @@ namespace TGC.MonoGame.TP
             // Le paso el tiempo para simular las olas
             Effect.Parameters["Time"]?.SetValue(time);
             // Parametros de las olas
-            Effect.Parameters["Direction"]?.SetValue(Direction);
             Effect.Parameters["Gravity"]?.SetValue(Gravity);
-            Effect.Parameters["Steepness"]?.SetValue(Steepness);
-            Effect.Parameters["WaveLength"]?.SetValue(WaveLength);
+            Effect.Parameters["WaveA"]?.SetValue(WaveA);
+            Effect.Parameters["WaveB"]?.SetValue(WaveB);
+            Effect.Parameters["WaveC"]?.SetValue(WaveC);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
@@ -71,35 +106,51 @@ namespace TGC.MonoGame.TP
         /// 
         /// Esta funcion debe mantenerse igual a la del shader
         /// </summary>
-        public (Vector3, Vector3) WaveNormalPosition(Vector3 position, GameTime gameTime)
+        Vector3 CalculateWave(Vector4 wave, Vector3 vertex, ref Vector3 tangent, ref Vector3 binormal, GameTime gameTime)
         {
             float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            // Codigo casi igual al shader
-            Vector3 p = position;
-            float k = 2.0f * MathF.PI / WaveLength;
-            Vector2 d = Vector2.Normalize(Direction);
+            Vector2 direction = new Vector2(wave.X, wave.Y);
+            float steepness = wave.Z;
+            float wavelength = wave.W;
+
+            Vector3 p = vertex;
+            float k = 2.0f * MathF.PI / wavelength;
+            Vector2 d = Vector2.Normalize(direction);
             float c = MathF.Sqrt(Gravity / k);
             float f = k * (Vector2.Dot(d, new Vector2(p.X, p.Z)) - time * c);
-            float a = Steepness / k;
-            p.X += d.X * a * MathF.Cos(f);
-            p.Y = a * MathF.Sin(f);
-            p.Z += d.Y * a * MathF.Cos(f);
+            float a = steepness / k;
 
+            // Calculamos la normal para poder usarla en un futuro con iluminacion
+
+            tangent += new Vector3(
+                1 - d.X * d.X * (steepness * MathF.Sin(f)),
+                d.X * (steepness * MathF.Cos(f)),
+                -d.X * d.Y * (steepness * MathF.Sin(f))
+            );
+            binormal += new Vector3(
+                -d.X * d.Y * (steepness * MathF.Sin(f)),
+                d.Y * (steepness * MathF.Cos(f)),
+                1 - d.Y * d.Y * (steepness * MathF.Sin(f))
+            );
+
+            return new Vector3(
+                d.X * a * MathF.Cos(f),
+                a * MathF.Sin(f),
+                d.Y * a * MathF.Cos(f)
+            );
+        }
+        public (Vector3, Vector3) WaveNormalPosition(Vector3 position, GameTime gameTime)
+        {
             // Se calcula derivando p
-            Vector3 tangent = new Vector3(
-                1 - d.X * d.X * (Steepness * MathF.Sin(f)),
-                d.X * (Steepness * MathF.Cos(f)),
-                -d.X * d.Y * (Steepness * MathF.Sin(f))
-            );
-            Vector3 binormal = new Vector3(
-                -d.X * d.Y * (Steepness * MathF.Sin(f)),
-                d.Y * (Steepness * MathF.Cos(f)),
-                1 - d.Y * d.Y * (Steepness * MathF.Sin(f))
-            );
+            Vector3 tangent = Vector3.Zero;
+            Vector3 binormal = Vector3.Zero;
+
+            position += CalculateWave(WaveA, position, ref tangent, ref binormal, gameTime);
+            position += CalculateWave(WaveB, position, ref tangent, ref binormal, gameTime);
+            position += CalculateWave(WaveC, position, ref tangent, ref binormal, gameTime);
 
             Vector3 normal = Vector3.Normalize(Vector3.Cross(binormal, tangent));
-            position = p;
 
             return (normal, position);
         }

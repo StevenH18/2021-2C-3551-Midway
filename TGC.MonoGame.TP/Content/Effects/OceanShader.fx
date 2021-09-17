@@ -19,10 +19,11 @@ float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
-float2 Direction;
 float Gravity;
-float Steepness;
-float WaveLength;
+
+float4 WaveA;
+float4 WaveB;
+float4 WaveC;
 
 float Time = 0;
 
@@ -34,42 +35,43 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-    float3 MyPosition : TEXCOORD1;
+    float3 MyPosition : TEXCOORD0;
+    float3 Normal : TEXCOORD1;
 };
 
 // Tipo de olas: Gerstner Waves o tambien conocido como Trochoidal Waves
 // Implementacion basada en https://catlikecoding.com/unity/tutorials/flow/waves/
-float3 CalculateWaves(float4 vertexData)
+float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout float3 binormal)
 {
-    float3 p = vertexData.xyz;                      // Posicion
-    float k = 2.0 * PI / WaveLength;                // Pasar el WaveLength a radianes
-    float2 d = normalize(Direction);                // Normalizar la direccion 
+    float2 direction = wave.xy;
+    float steepness = wave.z;
+    float wavelength = wave.w;
+    
+    float3 p = vertex;                              // Posicion del vertice
+    float k = 2.0 * PI / wavelength;                // Pasar el WaveLength a radianes
+    float2 d = normalize(direction);                // Normalizar la direccion 
     float c = sqrt(Gravity / k);                    // Calcular la velocidad de las olas dada una gravedad
     float f = k * (dot(d, p.xz) - Time * c);        // Funcion del tiempo
-    float a = Steepness / k;                        // Mientras Steepnes este entre 0 y 1 no se romperan las olas
+    float a = steepness / k;                        // Mientras Steepnes este entre 0 y 1 no se romperan las olas
     
-    // Transformamos las coordenadas de vertices a la olas    
-    p.x += d.x * a * cos(f);
-    p.y = a * sin(f);
-    p.z += d.y * a * cos(f);
-    
-    /*
     // Calculamos la normal para poder usarla en un futuro con iluminacion
     
-    float3 tangent = float3(
-		1 - d.x * d.x * (Steepness * sin(f)),
-		d.x * (Steepness * cos(f)),
-		-d.x * d.y * (Steepness * sin(f))
+    tangent += float3(
+		1 - d.x * d.x * (steepness * sin(f)),
+		d.x * (steepness * cos(f)),
+		-d.x * d.y * (steepness * sin(f))
 	);
-    float3 binormal = float3(
-		-d.x * d.y * (Steepness * sin(f)),
-		d.y * (Steepness * cos(f)),
-		1 - d.y * d.y * (Steepness * sin(f))
+    binormal += float3(
+		-d.x * d.y * (steepness * sin(f)),
+		d.y * (steepness * cos(f)),
+		1 - d.y * d.y * (steepness * sin(f))
 	);
-    float3 normal = normalize(cross(binormal, tangent));
-    */
     
-    return p;
+    return float3(
+        d.x * a * cos(f),
+        a * sin(f),
+        d.y * a * cos(f)
+    );
 }
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -77,8 +79,19 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
 	
-	// Deforma los vertices a travez del tiempo para crear el efecto de olas
-    input.Position.xyz = CalculateWaves(input.Position);
+	// V2 posibilidad de usar muchas olas
+    // Primero obtengo la posicion del vertice y creo una tangente
+    // y binormal para luego sumarles las tangentes y binormales de la funcion
+    float3 vertex = input.Position.xyz;
+    float3 tangent = float3(1, 0, 0);
+    float3 binormal = float3(0, 0, 1);
+    // Aca es donde puedo agregar mas olas
+    vertex += CalculateWave(WaveA, vertex, tangent, binormal);
+    vertex += CalculateWave(WaveB, vertex, tangent, binormal);
+    vertex += CalculateWave(WaveC, vertex, tangent, binormal);
+    // Calculo la normal y guardo la posicion del vertice transformada
+    float3 normal = normalize(cross(binormal, tangent));
+    input.Position.xyz = vertex;
 	
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
@@ -89,6 +102,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	
 	// Guardo en otra variable la posicion en el mundo para que sea accesible en el Pixel Shader
     output.MyPosition = worldPosition;
+    output.Normal = normal;
 
     return output;
 }
@@ -97,13 +111,15 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 position = float4(input.MyPosition, 1.0);
     
-    float height = max(min(CalculateWaves(position).y / 200, 0.5), 0);
+    float height = max(min(position.y / 200, 0.5), 0);
 	
     float red = 0.18 + height;
     float green = 0.5 + height;
     float blue = 0.69 + height;
+    
+    float4 color = float4(input.Normal * 0.5 + 0.5, 1);
 	
-    return float4(red, green, blue, 1.0);
+    return color; //float4(red, green, blue, 1.0);
 }
 
 technique BasicColorDrawing
