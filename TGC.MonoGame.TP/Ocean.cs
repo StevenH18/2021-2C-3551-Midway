@@ -16,17 +16,6 @@ namespace TGC.MonoGame.TP
         public int Width = 10000;
         public int Height = 10000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
-<<<<<<< Updated upstream
-        public int Density = 256;
-        // Direccion del oleaje
-        public Vector2 Direction = new Vector2(6f, 0f);
-        // Gravedad de las olas (afecta la velocidad)
-        public float Gravity = 9.8f;
-        // Inclinacion de las olas (Debe estar entre 0.0f y 1.0f)
-        public float Steepness = 0.05f;
-        // Separacion entre olas
-        public float WaveLength = 2000f;
-=======
         private int Density = 128;
         // Gravedad de las olas (afecta la velocidad)
         public float Gravity = 9.8f;
@@ -38,7 +27,6 @@ namespace TGC.MonoGame.TP
         public Vector4 WaveB = new Vector4(1f, 0.3f, 0.2f, 3000f);
         public Vector4 WaveC = new Vector4(1f, 0f, 0.2f, 1000f);
 
->>>>>>> Stashed changes
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
@@ -49,9 +37,7 @@ namespace TGC.MonoGame.TP
             // Se hace esto para que la densidad represente la cantidad de quads
             Density++;
 
-<<<<<<< Updated upstream
             GenerateMesh();
-=======
             var rasterizer = new RasterizerState();
             rasterizer.FillMode = FillMode.WireFrame;
             rasterizer.CullMode = CullMode.None;
@@ -70,7 +56,6 @@ namespace TGC.MonoGame.TP
             IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
 
             IndexBuffer.SetData(indices);
->>>>>>> Stashed changes
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
