@@ -25,7 +25,7 @@ namespace TGC.MonoGame.TP
         // asi es mas facil enviarlo al shader
         public Vector4 WaveA = new Vector4(1f, 1f, 0.1f, 6000f);
         public Vector4 WaveB = new Vector4(1f, 0.6f, 0.1f, 3100f);
-        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.2f, 1800f);
+        public Vector4 WaveC = new Vector4(-1f, 1.3f, 0.2f, 1800f);
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {

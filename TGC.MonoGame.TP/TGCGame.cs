@@ -48,6 +48,7 @@ namespace TGC.MonoGame.TP
         private ShipB[] shipsB;
         private Ocean Ocean;
         private SkyBox SkyBox;
+        private RainSystem RainSystem;
 
         // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
         private Vector3[] positions;
@@ -85,6 +86,7 @@ namespace TGC.MonoGame.TP
             shipsB = new ShipB[naves];
             positions = new Vector3[naves];
             Ocean = new Ocean(GraphicsDevice, Content);
+            RainSystem = new RainSystem(GraphicsDevice, Content);
 
             for (int i = 0; i < naves*2; i++)
             {
@@ -136,6 +138,7 @@ namespace TGC.MonoGame.TP
                 shipsB[i].Load();
             }
             Ocean.Load();
+            RainSystem.Load();
 
             base.LoadContent();
         }
@@ -180,8 +183,8 @@ namespace TGC.MonoGame.TP
             for (int i = 0; i < naves; i++)
             {
                 // Temporal para rotar los barcos
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 1000f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 1000f;
 
                 (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
                 Vector3 normal = result.Item1;
@@ -228,6 +231,7 @@ namespace TGC.MonoGame.TP
             }
 
             Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
+            RainSystem.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position, gameTime);
             SkyBox.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position);
 
             base.Draw(gameTime);
