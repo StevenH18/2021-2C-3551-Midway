@@ -171,7 +171,7 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)){
                 FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
             }
-            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World);
+            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
             Camera.Update(gameTime);
             FreeCamera.Update(gameTime);
             base.Update(gameTime);

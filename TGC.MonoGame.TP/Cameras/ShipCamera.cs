@@ -16,9 +16,9 @@ namespace TGC.MonoGame.TP.Cameras
     {
         private const float AxisDistanceToTarget = 400f;
 
-        private const float AngleFollowSpeed = 0.015f;
+        private const float AngleFollowSpeed = 0.030f;
 
-        private const float AngleThreshold = 0.85f;
+        private const float AngleThreshold = 0f;
 
         public Matrix Projection { get; private set; }
 
@@ -49,7 +49,8 @@ namespace TGC.MonoGame.TP.Cameras
         /// </summary>
         /// <param name="gameTime">The Game Time to calculate framerate-independent movement</param>
         /// <param name="followedWorld">The World matrix to follow</param>
-        public void Update(GameTime gameTime, Matrix Rotation,Matrix followedWorld)
+       
+        public void Update(GameTime gameTime, Matrix Rotation,Matrix followedWorld,float speed) //agregue speed para poder hacer un efecto de que la camara se mueve mas lento mientras el barco arranca
         {
             // Obtengo el tiempo
             var elapsedTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
@@ -64,7 +65,7 @@ namespace TGC.MonoGame.TP.Cameras
             // Si el producto escalar entre el vector Derecha anterior
             // y el actual es mas grande que un limite,
             // muevo el Interpolator (desde 0 a 1) mas cerca de 1
-            if (Vector3.Dot(followedRigth, PastBackVector) > AngleThreshold)
+            if (speed !=  0)
             {
                 // Incremento el Interpolator
                 BackVectorInterpolator += elapsedTime * AngleFollowSpeed;
@@ -81,7 +82,7 @@ namespace TGC.MonoGame.TP.Cameras
             else
                 // Si el angulo no pasa de cierto limite, lo pongo de nuevo en cero
                 BackVectorInterpolator = 0f;
-
+        
             // Guardo el vector Derecha para usar en la siguiente iteracion
             PastBackVector = followedRigth;
 
