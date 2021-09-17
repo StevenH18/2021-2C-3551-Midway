@@ -54,8 +54,6 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     float f = k * (dot(d, p.xz) - Time * c);        // Funcion del tiempo
     float a = steepness / k;                        // Mientras Steepnes este entre 0 y 1 no se romperan las olas
     
-    // Calculamos la normal para poder usarla en un futuro con iluminacion
-    
     tangent += float3(
 		-d.x * d.x * (steepness * sin(f)),
 		d.x * (steepness * cos(f)),
@@ -102,22 +100,35 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	
 	// Guardo en otra variable la posicion en el mundo para que sea accesible en el Pixel Shader
     output.MyPosition = worldPosition;
-    output.Normal = cross(binormal, tangent); //mul(float4(normal, 1), World);
+    output.Normal = normal; //mul(float4(normal, 1), World);
 
     return output;
+}
+
+float MaxHeight(float4 wave)
+{
+    float steepness = WaveA.z;
+    float wavelength = WaveA.w;
+    
+    float k = 2.0 * PI / wavelength;
+    
+    return steepness / k;
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 position = float4(input.MyPosition, 1.0);
-    
-    float height = max(min(position.y / 200, 0.5), 0);
 	
-    float red = 0.18 + height;
-    float green = 0.5 + height;
-    float blue = 0.69 + height;
+    float4 color1 = float4(0, 0.3, 0.8, 1);
+    float4 color2 = float4(0, 0.7, 0.9, 1);
     
-    float4 color = float4(input.Normal * 0.5 + 0.5, 1);
+    float maxHeight = 0;
+    
+    maxHeight += MaxHeight(WaveA);
+    maxHeight += MaxHeight(WaveB);
+    maxHeight += MaxHeight(WaveC);
+    
+    float4 color = lerp(color1, color2, (position.y + maxHeight / 2) / maxHeight);
 	
     return color; //float4(red, green, blue, 1.0);
 }

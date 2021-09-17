@@ -71,7 +71,7 @@ namespace TGC.MonoGame.TP
 
             // Configuro el CullMode para que se pueda ver la skybox
             var rasterizer = new RasterizerState();
-            // rasterizer.FillMode = FillMode.WireFrame;
+            rasterizer.FillMode = FillMode.WireFrame;
             rasterizer.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizer;
 

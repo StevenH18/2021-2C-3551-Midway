@@ -13,19 +13,19 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         // Aca se puede cambiar el tamaño de la mesh
-        public int Width = 10000;
-        public int Height = 10000;
+        public int Width = 20000;
+        public int Height = 20000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
-        private int Density = 128;
+        private int Density = 256;
         // Gravedad de las olas (afecta la velocidad)
-        public float Gravity = 9.8f;
+        public float Gravity = 100f;
 
         // Para organizar mejor multiples olas enviamos todos los parametros de una
         // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
         // asi es mas facil enviarlo al shader
-        public Vector4 WaveA = new Vector4(1f, 0.3f, 0.3f, 6000f);
-        public Vector4 WaveB = new Vector4(1f, -0.2f, 0.5f, 3000f);
-        public Vector4 WaveC = new Vector4(1f, 0f, 0.1f, 1000f);
+        public Vector4 WaveA = new Vector4(1f, 1f, 0.1f, 6000f);
+        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.1f, 3100f);
+        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.2f, 1800f);
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
@@ -38,24 +38,6 @@ namespace TGC.MonoGame.TP
             Density++;
 
             GenerateMesh();
-            var rasterizer = new RasterizerState();
-            rasterizer.FillMode = FillMode.WireFrame;
-            rasterizer.CullMode = CullMode.None;
-            GraphicsDevice.RasterizerState = rasterizer;
-
-            // Creo vertices en base al GridWidth y GridHeight
-            VertexPosition[] vertices = CalculateVertices();
-
-            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
-
-            VertexBuffer.SetData(vertices);
-
-            // Load Indices
-            uint[] indices = CalculateIndices();
-
-            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
-
-            IndexBuffer.SetData(indices);
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
