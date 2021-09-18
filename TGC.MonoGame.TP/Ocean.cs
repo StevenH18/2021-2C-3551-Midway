@@ -23,14 +23,24 @@ namespace TGC.MonoGame.TP
         // Para organizar mejor multiples olas enviamos todos los parametros de una
         // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
         // asi es mas facil enviarlo al shader
-        public Vector4 WaveA = new Vector4(1f, 1f, 0.1f, 6000f);
-        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.1f, 3100f);
-        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.2f, 1800f);
+        public Vector4 WaveA = new Vector4(1f, 1f, 0.05f, 6000f);
+        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.05f, 3100f);
+        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.05f, 1800f);
+
+        public Vector4[] Islands;
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
             this.GraphicsDevice = graphics;
             this.Content = content;
+
+
+            this.Islands = new Vector4[20];
+            for(var i = 0; i < 20; i++)
+            {
+                this.Islands[i] = new Vector4(0f, 0f, 0f, 0f);
+            }
+            Islands[0] = new Vector4(5000f, 0f, 5000f, 1000f);
         }
         public void Load()
         {
@@ -58,6 +68,8 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["WaveA"]?.SetValue(WaveA);
             Effect.Parameters["WaveB"]?.SetValue(WaveB);
             Effect.Parameters["WaveC"]?.SetValue(WaveC);
+            // Islas?
+            Effect.Parameters["Islands"]?.SetValue(Islands);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {

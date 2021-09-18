@@ -25,6 +25,11 @@ float4 WaveA;
 float4 WaveB;
 float4 WaveC;
 
+int IslandsAmmount = 20;
+
+
+float4 Islands[20];
+
 float Time = 0;
 
 struct VertexShaderInput
@@ -39,6 +44,19 @@ struct VertexShaderOutput
     float3 Normal : TEXCOORD1;
 };
 
+float ClosenessToIsland(float3 position)
+{
+    float previousDistance = 1;
+    
+    //previousDistance = Islands[0][0];
+    
+    for (int i = 0; i < IslandsAmmount; i++)
+    {
+        //previousDistance = min(previousDistance, clamp((distance(position, Islands[i][0]) - Islands[i].w) / min((log(Islands[i].w) * 200), 1), 0, 1));
+    }
+    return previousDistance;
+}
+
 // Tipo de olas: Gerstner Waves o tambien conocido como Trochoidal Waves
 // Implementacion basada en https://catlikecoding.com/unity/tutorials/flow/waves/
 float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout float3 binormal)
@@ -46,6 +64,8 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     float2 direction = wave.xy;
     float steepness = wave.z;
     float wavelength = wave.w;
+    
+    steepness = lerp(0, steepness, ClosenessToIsland(vertex));
     
     float3 p = vertex;                              // Posicion del vertice
     float k = 2.0 * PI / wavelength;                // Pasar el WaveLength a radianes
@@ -64,6 +84,7 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
 		d.y * (steepness * cos(f)),
 		-d.y * d.y * (steepness * sin(f))
 	);
+    
     
     return float3(
         d.x * a * cos(f),
@@ -90,7 +111,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     // Calculo la normal y guardo la posicion del vertice transformada
     float3 normal = normalize(cross(binormal, tangent));
     input.Position.xyz = vertex;
-	
+    
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
     // World space to View space
@@ -127,6 +148,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     maxHeight += MaxHeight(WaveA);
     maxHeight += MaxHeight(WaveB);
     maxHeight += MaxHeight(WaveC);
+    
+    color1 = lerp(float4(0.5, 0.9, 0.5, 1), color1, ClosenessToIsland(position.xyz));
     
     float4 color = lerp(color1, color2, (position.y + maxHeight / 2) / maxHeight);
 	
