@@ -25,10 +25,7 @@ float4 WaveA;
 float4 WaveB;
 float4 WaveC;
 
-int IslandsAmmount = 20;
-
-
-float4 Islands[20];
+float4 IslandA;
 
 float Time = 0;
 
@@ -48,12 +45,8 @@ float ClosenessToIsland(float3 position)
 {
     float previousDistance = 1;
     
-    //previousDistance = Islands[0][0];
-    
-    for (int i = 0; i < IslandsAmmount; i++)
-    {
-        //previousDistance = min(previousDistance, clamp((distance(position, Islands[i][0]) - Islands[i].w) / min((log(Islands[i].w) * 200), 1), 0, 1));
-    }
+    previousDistance = min(previousDistance, clamp((distance(position, IslandA.xyz) - IslandA.w) / (log(max(IslandA.w, 1)) * 200), 0, 1));
+
     return previousDistance;
 }
 
