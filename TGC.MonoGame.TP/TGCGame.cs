@@ -74,7 +74,7 @@ namespace TGC.MonoGame.TP
 
             // Configuro el CullMode para que se pueda ver la skybox
             var rasterizer = new RasterizerState();
-            //rasterizer.FillMode = FillMode.WireFrame;
+            rasterizer.FillMode = FillMode.WireFrame;
             rasterizer.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizer;
 
@@ -133,7 +133,7 @@ namespace TGC.MonoGame.TP
             var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/ClearSky");
             var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
 
-            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000f);
+            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 50000f);
 
             for (int i = 0; i < naves; i++)
             {

@@ -30,6 +30,8 @@ namespace TGC.MonoGame.TP.Cameras
 
         private Vector3 PastBackVector { get; set; } = Vector3.Backward;
 
+        public Vector3 Position { get; set; }
+
         /// <summary>
         /// Crea una FollowCamera que sigue a una matriz de mundo
         /// </summary>
@@ -113,7 +115,7 @@ namespace TGC.MonoGame.TP.Cameras
             // Calculo la matriz de Vista de la camara usando la Posicion, La Posicion a donde esta mirando,
             // y su vector Arriba
 
-
+            Position = offsetedPosition;
             View = Matrix.CreateLookAt(offsetedPosition, followedPosition, cameraCorrectUp);
         }
     }

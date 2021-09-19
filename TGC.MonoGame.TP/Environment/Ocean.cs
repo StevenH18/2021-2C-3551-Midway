@@ -14,8 +14,8 @@ namespace TGC.MonoGame.TP
         protected IndexBuffer IndexBuffer;
 
         // Aca se puede cambiar el tamaño de la mesh
-        public int Width = 20000;
-        public int Height = 20000;
+        public int Width = 50000;
+        public int Height = 50000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
         private int Density = 256;
         // Gravedad de las olas (afecta la velocidad)
@@ -28,7 +28,7 @@ namespace TGC.MonoGame.TP
         public Vector4 WaveB = new Vector4(1f, 0.6f, 0.05f, 3100f);
         public Vector4 WaveC = new Vector4(1f, 1.3f, 0.05f, 1800f);
 
-        public Vector4 IslandA = new Vector4(5000f, 0f, 5000f, 1000f);
+        public Vector4 IslandA = new Vector4(5000f, 0f, 5000f, 2000f);
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {

@@ -88,7 +88,7 @@ namespace TGC.MonoGame.TP.Ships
             // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
             Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
 
-            originalPos.Y = position.Y;
+            originalPos.Y = 0f;
             Position = position;
         }
 
