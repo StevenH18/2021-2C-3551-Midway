@@ -48,6 +48,7 @@ namespace TGC.MonoGame.TP
         private ShipB[] shipsB;
         private Ocean Ocean;
         private SkyBox SkyBox;
+        private Islands Islands;
 
         // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
         private Vector3[] positions;
@@ -71,7 +72,7 @@ namespace TGC.MonoGame.TP
 
             // Configuro el CullMode para que se pueda ver la skybox
             var rasterizer = new RasterizerState();
-            rasterizer.FillMode = FillMode.WireFrame;
+            //rasterizer.FillMode = FillMode.WireFrame;
             rasterizer.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizer;
 
@@ -85,6 +86,7 @@ namespace TGC.MonoGame.TP
             shipsB = new ShipB[naves];
             positions = new Vector3[naves];
             Ocean = new Ocean(GraphicsDevice, Content);
+            Islands = new Islands(Content);
 
             for (int i = 0; i < naves*2; i++)
             {
@@ -122,7 +124,7 @@ namespace TGC.MonoGame.TP
         protected override void LoadContent()
         {
             var skyBox = Content.Load<Model>(ContentFolder3D + "SkyBox/cube");
-            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/skybox");
+            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/ClearSky");
             var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
 
             SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000f);
@@ -136,6 +138,7 @@ namespace TGC.MonoGame.TP
                 shipsB[i].Load();
             }
             Ocean.Load();
+            Islands.Load();
 
             base.LoadContent();
         }
@@ -176,12 +179,13 @@ namespace TGC.MonoGame.TP
             Ocean.Direction = new Vector2(MathF.Sin(waveAngle), MathF.Cos(waveAngle));
             */
 
+            Islands.Update(gameTime);
 
             for (int i = 0; i < naves; i++)
             {
                 // Temporal para rotar los barcos
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 500f;
+                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 500f;
 
                 (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
                 Vector3 normal = result.Item1;
@@ -229,6 +233,7 @@ namespace TGC.MonoGame.TP
 
             Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
             SkyBox.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position);
+            Islands.Draw(FreeCamera.View, FreeCamera.Projection);
 
             base.Draw(gameTime);
         }
