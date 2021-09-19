@@ -133,8 +133,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 position = float4(input.MyPosition, 1.0);
 	
-    float4 color1 = float4(0, 0.3, 0.8, 1);
-    float4 color2 = float4(0, 0.7, 0.9, 1);
+    float4 color1 = float4(0.267, 0.491, 0.652, 1);
+    float4 color2 = float4(0.365, 0.665, 0.758, 1);
     
     float maxHeight = 0;
     
@@ -142,7 +142,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     maxHeight += MaxHeight(WaveB);
     maxHeight += MaxHeight(WaveC);
     
-    color1 = lerp(float4(0.5, 0.9, 0.5, 1), color1, ClosenessToIsland(position.xyz));
+    color1 = lerp(float4(0.167, 0.409, 0.219, 1), color1, ClosenessToIsland(position.xyz));
     
     float4 color = lerp(color1, color2, (position.y + maxHeight / 2) / maxHeight);
 	

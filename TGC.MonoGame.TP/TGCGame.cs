@@ -163,21 +163,19 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= time * 2f;
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += time * 2f;
 
-            /*
             // I J para controlar la inclinacion de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.Steepness <= 1f) Ocean.Steepness += time;
-            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.Steepness >= 0f) Ocean.Steepness -= time;
+            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.WaveA.Z <= 1f) Ocean.WaveA.Z += time;
+            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.WaveA.Z >= 0f) Ocean.WaveA.Z -= time;
 
             // O K para controlar la longitud de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveLength += time * 100f;
-            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveLength -= time * 100f;
+            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveA.W += time * 100f;
+            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveA.W -= time * 100f;
 
             // P L para controlar la direccion de las olas
             if (Keyboard.GetState().IsKeyDown(Keys.P)) waveAngle += time;
             if (Keyboard.GetState().IsKeyDown(Keys.L)) waveAngle -= time;
 
-            Ocean.Direction = new Vector2(MathF.Sin(waveAngle), MathF.Cos(waveAngle));
-            */
+            Ocean.WaveA = new Vector4(MathF.Sin(waveAngle), MathF.Cos(waveAngle), Ocean.WaveA.Z, Ocean.WaveA.W);
 
             Islands.Update(gameTime);
 

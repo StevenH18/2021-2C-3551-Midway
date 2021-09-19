@@ -45,7 +45,7 @@ namespace TGC.MonoGame.TP
         {
             Effect.Parameters["View"]?.SetValue(view);
             Effect.Parameters["Projection"]?.SetValue(proj);
-            Effect.Parameters["DiffuseColor"]?.SetValue(new Vector3(0.5f, 1.0f, 0.5f));
+            Effect.Parameters["DiffuseColor"]?.SetValue(new Vector3(0.167f, 0.409f, 0.219f));
 
             foreach (var mesh in Model.Meshes)
             {
