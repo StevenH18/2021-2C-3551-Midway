@@ -16,13 +16,13 @@ namespace TGC.MonoGame.TP
         private KeyboardState kbState = default(KeyboardState);
 
         public float MovementUnitsPerSecond { get; set; }
-        public float DefaultMovementUnitsPerSecond { get; set; } = 20f;
-        public float MovementMultiplier { get; set; } = 20f;
+        public float DefaultMovementUnitsPerSecond { get; set; } = 600f;
+        public float MovementMultiplier { get; set; } = 8f;
         public float RotationRadiansPerSecond { get; set; } = 30f;
 
         public float fieldOfViewDegrees = 80f;
         public float nearClipPlane = .05f;
-        public float farClipPlane = 4000f;
+        public float farClipPlane = 9000f;
         private bool mouseLookIsUsed = true;
 
         private int fpsKeyboardLayout = 1;
