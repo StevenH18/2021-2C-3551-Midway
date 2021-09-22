@@ -19,6 +19,7 @@ namespace TGC.MonoGame.TP
         public float TimeOffset = 0;
 
         private Vector3 Position = Vector3.Zero;
+        private Matrix Billboard = Matrix.Identity;
 
         public RainParticle(GraphicsDevice graphics, ContentManager content, float width, float height, Vector3 offset, float timeOffset)
         {
@@ -37,16 +38,26 @@ namespace TGC.MonoGame.TP
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "RainShader");
         }
-        public void Draw(Matrix view, Matrix proj, Vector3 cameraPosition, float gridSize, float particleSeparation, float heightStart, float heightEnd, float speed, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, float particleSeparation, float heightStart, float heightEnd, float speed, GameTime gameTime)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffer(VertexBuffer);
 
+            Vector3 cameraPosition = cameraWorld.Translation;
+
+            // Hacer que las particulas formen un cubo donde la camara esta en el centro
+            Position.X = Offset.X + MathF.Floor((cameraPosition.X - Offset.X + particleSeparation / 2) / particleSeparation) * particleSeparation;
+            Position.Z = Offset.Z + MathF.Floor((cameraPosition.Z - Offset.Z + particleSeparation / 2) / particleSeparation) * particleSeparation;
+
+            Billboard = Matrix.CreateConstrainedBillboard(Position, cameraPosition, Vector3.Up, cameraWorld.Forward, Vector3.Forward);
+
+            /*
             Position.X = MathF.Floor((cameraPosition.X - particleSeparation / 2 + gridSize / 2) / gridSize) * gridSize;
             Position.Z = MathF.Floor((cameraPosition.Z - particleSeparation / 2 + gridSize / 2) / gridSize) * gridSize;
+            */
 
-            Effect.Parameters["World"]?.SetValue(Matrix.CreateTranslation(Position));
+            Effect.Parameters["World"]?.SetValue(Billboard);
             Effect.Parameters["View"]?.SetValue(view);
             Effect.Parameters["Projection"]?.SetValue(proj);
             Effect.Parameters["Time"]?.SetValue(time + TimeOffset);
@@ -96,7 +107,7 @@ namespace TGC.MonoGame.TP
                 
                 for (float x = 0; x < 2; ++x)
                 {
-                    var position = new Vector3(x / 2 * Width * rotated, y / 2 * Height, x / 2 * Width * (rotated + 1 % 2)) + Offset;
+                    var position = new Vector3(x / 2 * Width, y / 2 * Height, 0f);
                     vertices[vertIndex++] = new VertexPosition(position);
                 }
             }

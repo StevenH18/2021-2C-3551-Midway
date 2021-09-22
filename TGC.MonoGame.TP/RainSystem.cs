@@ -15,9 +15,8 @@ namespace TGC.MonoGame.TP
         private float ParticleWidth = 1;
 
         private int MaxParticles = 5000;
-        private float ParticleSeparation = 2000;
+        private float ParticleSeparation = 3000;
         private float ParticleVerticalSeparation = 1000;
-        private float GridSize = 500;
 
         private float HeightStart = 3000;
         private float HeightEnd = -500;
@@ -44,11 +43,11 @@ namespace TGC.MonoGame.TP
                 RainParticles[i].Load();
             }
         }
-        public void Draw(Matrix view, Matrix proj, Vector3 cameraPosition, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, GameTime gameTime)
         {
             for (var i = 0; i < MaxParticles; i++)
             {
-                RainParticles[i].Draw(view, proj, cameraPosition, GridSize, ParticleSeparation, HeightStart, HeightEnd, Speed, gameTime);
+                RainParticles[i].Draw(view, proj, cameraWorld, ParticleSeparation, HeightStart, HeightEnd, Speed, gameTime);
             }
         }
     }

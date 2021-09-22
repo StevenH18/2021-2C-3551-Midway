@@ -231,7 +231,7 @@ namespace TGC.MonoGame.TP
             }
 
             Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
-            RainSystem.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position, gameTime);
+            RainSystem.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.World, gameTime);
             SkyBox.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.Position);
 
             base.Draw(gameTime);
