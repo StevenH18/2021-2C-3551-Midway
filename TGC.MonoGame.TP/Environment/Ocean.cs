@@ -12,9 +12,10 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
+
         // Aca se puede cambiar el tamaño de la mesh
-        public int Width = 20000;
-        public int Height = 20000;
+        public int Width = 50000;
+        public int Height = 50000;
         // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
         private int Density = 256;
         // Gravedad de las olas (afecta la velocidad)
@@ -23,9 +24,11 @@ namespace TGC.MonoGame.TP
         // Para organizar mejor multiples olas enviamos todos los parametros de una
         // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
         // asi es mas facil enviarlo al shader
-        public Vector4 WaveA = new Vector4(1f, 1f, 0.1f, 6000f);
-        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.1f, 3100f);
-        public Vector4 WaveC = new Vector4(-1f, 1.3f, 0.2f, 1800f);
+        public Vector4 WaveA = new Vector4(1f, 1f, 0.05f, 6000f);
+        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.05f, 3100f);
+        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.05f, 1800f);
+
+        public Vector4 IslandA = new Vector4(5000f, 0f, 5000f, 2000f);
 
         public Ocean(GraphicsDevice graphics, ContentManager content)
         {
@@ -58,6 +61,8 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["WaveA"]?.SetValue(WaveA);
             Effect.Parameters["WaveB"]?.SetValue(WaveB);
             Effect.Parameters["WaveC"]?.SetValue(WaveC);
+            // Islas?
+            Effect.Parameters["IslandA"]?.SetValue(IslandA);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
@@ -66,6 +71,20 @@ namespace TGC.MonoGame.TP
                 var triangles = Density * Density * 2;
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
+        }
+        float ClosenessToIsland(Vector3 position)
+        {
+            float previousDistance = 1;
+
+            Vector3 Island = new Vector3(IslandA.X, IslandA.Y, IslandA.Z);
+
+            previousDistance = MathF.Min(previousDistance, Math.Clamp(((position - Island).Length() - IslandA.W) / (MathF.Log(MathF.Max(IslandA.W, 1)) * 200), 0, 1));
+
+            return previousDistance;
+        }
+        float Lerp(float firstFloat, float secondFloat, float by)
+        {
+            return firstFloat * (1 - by) + secondFloat * by;
         }
         /// <summary>
         /// Dada una posicion de un objeto
@@ -80,6 +99,8 @@ namespace TGC.MonoGame.TP
             Vector2 direction = new Vector2(wave.X, wave.Y);
             float steepness = wave.Z;
             float wavelength = wave.W;
+
+            steepness = Lerp(0, steepness, ClosenessToIsland(vertex));
 
             Vector3 p = vertex;
             float k = 2.0f * MathF.PI / wavelength;

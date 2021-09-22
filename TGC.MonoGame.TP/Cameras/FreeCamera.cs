@@ -16,8 +16,8 @@ namespace TGC.MonoGame.TP
         private KeyboardState kbState = default(KeyboardState);
 
         public float MovementUnitsPerSecond { get; set; }
-        public float DefaultMovementUnitsPerSecond { get; set; } = 800f;
-        public float MovementMultiplier { get; set; } = 6f;
+        public float DefaultMovementUnitsPerSecond { get; set; } = 600f;
+        public float MovementMultiplier { get; set; } = 8f;
         public float RotationRadiansPerSecond { get; set; } = 30f;
 
         public float fieldOfViewDegrees = 80f;
