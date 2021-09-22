@@ -216,7 +216,7 @@ namespace TGC.MonoGame.TP
             Ocean.Draw(ShipCamera.View, ShipCamera.Projection, gameTime);
             SkyBox.Draw(ShipCamera.View, ShipCamera.Projection, ShipCamera.Position);
             Islands.Draw(ShipCamera.View, ShipCamera.Projection);
-            RainSystem.Draw(FreeCamera.View, FreeCamera.Projection, FreeCamera.World, gameTime);
+            RainSystem.Draw(ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position), gameTime);
 
             base.Draw(gameTime);
         }

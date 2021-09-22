@@ -15,12 +15,12 @@ namespace TGC.MonoGame.TP
         private float ParticleWidth = 1;
 
         private int MaxParticles = 5000;
-        private float ParticleSeparation = 3000;
+        private float ParticleSeparation = 8000;
         private float ParticleVerticalSeparation = 1000;
 
         private float HeightStart = 3000;
         private float HeightEnd = -500;
-        private float Speed = 2000;
+        private float Speed = 1500;
 
         public RainSystem(GraphicsDevice graphics, ContentManager content)
         {
