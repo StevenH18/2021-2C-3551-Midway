@@ -69,8 +69,23 @@ namespace TGC.MonoGame.TP.Ships
 
 
             rotation += time * control.virar * turningSpeed * speed;
-           
-            originalPos += Vector3.Transform(Vector3.Forward, Rotation) * speed;
+            //creo una linea con la inclinacion de la recta y y hago una resta
+            Vector3 inclinacion = Vector3.Transform(Vector3.Forward, Rotation) * 2 - Vector3.Transform(Vector3.Forward, Rotation);
+
+            if (inclinacion.Y > 0)
+            {
+                //color = Color.Red;
+            }
+            else if (inclinacion.Y < 0)
+            {
+               // color = Color.Green;
+            }
+            else
+            {
+                //color = Color.Yellow;
+            }
+            var potenciaInclinacion = 2;
+            originalPos += Vector3.Transform(Vector3.Forward, Rotation) * speed + Vector3.Transform(Vector3.Forward, Rotation) * -inclinacion.Y * potenciaInclinacion;
 
             flotar(gameTime);
 
