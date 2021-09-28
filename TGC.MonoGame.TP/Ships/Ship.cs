@@ -57,7 +57,7 @@ namespace TGC.MonoGame.TP.Ships
         public void Update(GameTime gameTime,Controll control)
         {
             var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
-            speed = Math.Max(Math.Min(speed + aceleration * control.avanzar, Maxspeed),0);
+            speed = Math.Max(Math.Min(speed + aceleration * control.avanzar, Maxspeed),-Maxspeed);
             
             if (control.avanzar == 0)
             {
