@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Controller;
+using TGC.MonoGame.Samples.Samples.Shaders.SkyBox;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
@@ -24,6 +27,8 @@ namespace TGC.MonoGame.TP
         private FreeCamera FreeCamera { get; set; }
         private Camera Camera { get; set; }
 
+        private ShipCamera ShipCamera { get; set; }
+
         /// <summary>
         ///     Constructor del juego.
         /// </summary>
@@ -41,18 +46,19 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
 
-        private int naves = 10;
+        private int naves = 20;
 
-        private ShipA[] shipsA;
-        private ShipB[] shipsB;
+        private Ship[] ships;
+
         private Ocean Ocean;
+        private SkyBox SkyBox;
+        private RainSystem RainSystem;
+        private Islands Islands;
 
-        // Estoy guardando la posiciones originales de los barcos aca, hay que hacer algo con respecto a esto
-        private Vector3[] positions;
+
 
         private float waveAngle = - MathF.PI * 0.5f;
 
-        private float rotation = 0f;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -66,19 +72,32 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             Graphics.ApplyChanges();
-            // Creo una camara para seguir a nuestro auto
 
+            // Configuro el CullMode para que se pueda ver la skybox
+            var rasterizer = new RasterizerState();
+            //rasterizer.FillMode = FillMode.WireFrame;
+            rasterizer.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rasterizer;
+
+            // Creo una camara para seguir a nuestro auto
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
 
+            ShipCamera = new ShipCamera(GraphicsDevice.Viewport.AspectRatio);
+
             Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
 
-            shipsA = new ShipA[naves];
-            shipsB = new ShipB[naves];
-            positions = new Vector3[naves];
+            ships = new Ship[naves];
+            
             Ocean = new Ocean(GraphicsDevice, Content);
+            Islands = new Islands(Content);
+            RainSystem = new RainSystem(GraphicsDevice, Content);
 
-            for (int i = 0; i < naves*2; i++)
+
+            ships[0] = new ShipA(Content, Ocean, Color.Yellow);
+            ships[0].Position.Z = 5000; //en el medio del oceano
+            ships[0].Position.X = 5000;
+            for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;
                 var variacion = 400;
@@ -86,18 +105,17 @@ namespace TGC.MonoGame.TP
                 var separation = 500;
                 var rand = new Random();
 
-                if(i < naves)
+                if( i%2 == 0)
                 {
-                    shipsA[i] = new ShipA(Content);
-                    shipsA[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
-                    shipsA[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
-                    positions[i] = shipsA[i].Position;
-                }
-                else
+                    ships[i] = new ShipA(Content,Ocean,Color.White);
+                    ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
+                    ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
+
+                }else
                 {
-                    shipsB[i - naves] = new ShipB(Content);
-                    shipsB[i - naves].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
-                    shipsB[i - naves].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
+                    ships[i] = new ShipB(Content, Ocean, Color.Blue);
+                    ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
+                    ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
                 }
 
             }
@@ -113,15 +131,19 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
+            var skyBox = Content.Load<Model>(ContentFolder3D + "SkyBox/cube");
+            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/ClearSky");
+            var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
+
+            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 50000f);
+
             for (int i = 0; i < naves; i++)
             {
-                shipsA[i].Load();
-            }
-            for (int i = 0; i < naves; i++)
-            {
-                shipsB[i].Load();
+                ships[i].Load();
             }
             Ocean.Load();
+            RainSystem.Load();
+            Islands.Load();
 
             base.LoadContent();
         }
@@ -142,50 +164,36 @@ namespace TGC.MonoGame.TP
 
             var time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            // Temporal para probar el movimiento de los barcos
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad4)) rotation -= time * 2f;
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad6)) rotation += time * 2f;
 
             // I J para controlar la inclinacion de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.Steepness <= 1f) Ocean.Steepness += time;
-            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.Steepness >= 0f) Ocean.Steepness -= time;
+            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.WaveA.Z <= 1f) Ocean.WaveA.Z += time;
+            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.WaveA.Z >= 0f) Ocean.WaveA.Z -= time;
 
             // O K para controlar la longitud de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveLength += time * 100f;
-            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveLength -= time * 100f;
+            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveA.W += time * 100f;
+            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveA.W -= time * 100f;
 
             // P L para controlar la direccion de las olas
             if (Keyboard.GetState().IsKeyDown(Keys.P)) waveAngle += time;
             if (Keyboard.GetState().IsKeyDown(Keys.L)) waveAngle -= time;
 
-            Ocean.Direction = new Vector2(MathF.Sin(waveAngle), MathF.Cos(waveAngle));
+            Ocean.WaveA = new Vector4(MathF.Sin(waveAngle), MathF.Cos(waveAngle), Ocean.WaveA.Z, Ocean.WaveA.W);
 
-            for (int i = 0; i < naves; i++)
+            Islands.Update(gameTime);
+
+            Player p = new Player();
+
+            ships[0].Update(gameTime, p.GetControlls());
+
+            for (int i = 1; i < naves; i++)
             {
-                // Temporal para rotar los barcos
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad8)) positions[i] += Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
-                if (Keyboard.GetState().IsKeyDown(Keys.NumPad2)) positions[i] -= Vector3.Transform(Vector3.Forward, shipsA[i].Rotation) * time * 100f;
-
-                (Vector3, Vector3) result = Ocean.WaveNormalPosition(positions[i], gameTime);
-                Vector3 normal = result.Item1;
-                Vector3 position = result.Item2;
-
-                // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
-                shipsA[i].Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
-
-                positions[i].Y = position.Y;
-                shipsA[i].Position = position;
-                shipsA[i].Update(gameTime);
+                ships[i].Update(gameTime, new Controll());
             }
-            for (int i = 0; i < naves; i++)
-            {
-                shipsB[i].Update(gameTime);
-            }
-            
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)){
                 FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
             }
+            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
             Camera.Update(gameTime);
             FreeCamera.Update(gameTime);
             base.Update(gameTime);
@@ -202,15 +210,13 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < naves; i++)
             {
-                shipsA[i].Draw(FreeCamera.View,FreeCamera.Projection,Color.White);
-            }
-             
-            for (int i = 0; i < naves; i++)
-            {
-                shipsB[i].Draw(FreeCamera.View, FreeCamera.Projection, Color.Blue);
+                ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
             }
 
-            Ocean.Draw(FreeCamera.View, FreeCamera.Projection, gameTime);
+            Ocean.Draw(ShipCamera.View, ShipCamera.Projection, gameTime);
+            SkyBox.Draw(ShipCamera.View, ShipCamera.Projection, ShipCamera.Position);
+            Islands.Draw(ShipCamera.View, ShipCamera.Projection);
+            RainSystem.Draw(ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position), gameTime);
 
             base.Draw(gameTime);
         }

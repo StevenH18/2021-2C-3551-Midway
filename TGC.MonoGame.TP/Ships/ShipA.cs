@@ -10,14 +10,14 @@ namespace TGC.MonoGame.TP
 {
     public class ShipA : Ship
     {
-        public ShipA(ContentManager content) : base(content)
+        public ShipA(ContentManager content,Ocean ocean, Color color) : base(content, ocean, color)
         {
             Scale = Matrix.CreateScale(0.015f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public new void Load()
+        public override void Load()
         {
             Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Ships/ShipA/Ship");
             base.Load();
