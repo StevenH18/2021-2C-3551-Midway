@@ -1,36 +1,30 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TGC.MonoGame.Samples.Samples.Shaders.SkyBox
+namespace TGC.MonoGame.TP.Environment
 {
     /// <summary>
     ///     Handles all of the aspects of working with a SkyBox.
     /// </summary>
     public class SkyBox
     {
-        /// <summary>
-        ///     Creates a new SkyBox
-        /// </summary>
-        /// <param name="model">The geometry to use for SkyBox.</param>
-        /// <param name="texture">The SkyBox texture to use.</param>
-        /// <param name="effect">The size of the cube.</param>
-        public SkyBox(Model model, TextureCube texture, Effect effect) : this(model, texture, effect, 50)
-        {
-        }
 
         /// <summary>
         ///     Creates a new SkyBox
         /// </summary>
         /// <param name="model">The geometry to use for SkyBox.</param>
         /// <param name="texture">The SkyBox texture to use.</param>
-        /// <param name="effect">The SkyBox fx to use.</param>
-        /// <param name="size">The SkyBox fx to use.</param>
-        public SkyBox(Model model, TextureCube texture, Effect effect, float size)
+        public SkyBox(GraphicsDevice Graphics, ContentManager Content)
         {
-            Model = model;
-            Texture = texture;
-            Effect = effect;
-            Size = size;
+            var skyBox = Content.Load<Model>(TGCGame.ContentFolder3D + "SkyBox/cube");
+            var skyBoxTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/ClearSky");
+            var skyBoxEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "SkyBox");
+
+            Model = skyBox;
+            Texture = skyBoxTexture;
+            Effect = skyBoxEffect;
+            Size = 5000;
         }
 
         /// <summary>
@@ -63,7 +57,7 @@ namespace TGC.MonoGame.Samples.Samples.Shaders.SkyBox
         /// <param name="view">The view matrix for the effect</param>
         /// <param name="projection">The projection matrix for the effect</param>
         /// <param name="cameraPosition">The position of the camera</param>
-        public void Draw(Matrix view, Matrix projection, Vector3 cameraPosition)
+        public void Draw(Matrix view, Matrix projection, Matrix world)
         {
             // Go through each pass in the effect, but we know there is only one...
             foreach (var pass in Effect.CurrentTechnique.Passes)
@@ -79,11 +73,11 @@ namespace TGC.MonoGame.Samples.Samples.Shaders.SkyBox
                     {
                         part.Effect = Effect;
                         part.Effect.Parameters["World"].SetValue(
-                            Matrix.CreateScale(Size) * Matrix.CreateTranslation(cameraPosition));
+                            Matrix.CreateScale(Size) * world);
                         part.Effect.Parameters["View"].SetValue(view);
                         part.Effect.Parameters["Projection"].SetValue(projection);
                         part.Effect.Parameters["SkyBoxTexture"].SetValue(Texture);
-                        part.Effect.Parameters["CameraPosition"].SetValue(cameraPosition);
+                        part.Effect.Parameters["CameraPosition"].SetValue(world.Translation);
                     }
 
                     // Draw the mesh with the SkyBox effect

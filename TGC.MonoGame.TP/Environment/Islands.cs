@@ -17,7 +17,7 @@ namespace TGC.MonoGame.TP
         public Vector3 Position = new Vector3(5000f, 0f, 5000f);
         protected Matrix World { get; set; }
 
-        public Islands(ContentManager content)
+        public Islands(GraphicsDevice graphics,ContentManager content)
         {
             this.Content = content;
             this.Scale = Matrix.CreateScale(1);

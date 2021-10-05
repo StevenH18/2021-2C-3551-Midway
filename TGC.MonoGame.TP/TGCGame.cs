@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Controller;
-using TGC.MonoGame.Samples.Samples.Shaders.SkyBox;
+using TGC.MonoGame.TP.Environment;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
@@ -22,12 +22,18 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSounds = "Sounds/";
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
-        
+        private GraphicsDeviceManager Graphics { get; }
         private FollowCamera FollowCamera { get; set; }
         private FreeCamera FreeCamera { get; set; }
         private Camera Camera { get; set; }
-
         private ShipCamera ShipCamera { get; set; }
+
+        private int naves = 20;
+
+        private Ship[] ships;
+
+        private MapEnvironment Environment;
+
 
         /// <summary>
         ///     Constructor del juego.
@@ -43,22 +49,6 @@ namespace TGC.MonoGame.TP
             // Hace que el mouse sea visible.
             IsMouseVisible = false;
         }
-
-        private GraphicsDeviceManager Graphics { get; }
-
-        private int naves = 20;
-
-        private Ship[] ships;
-
-        private Ocean Ocean;
-        private SkyBox SkyBox;
-        private RainSystem RainSystem;
-        private Islands Islands;
-
-
-
-        private float waveAngle = - MathF.PI * 0.5f;
-
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -88,13 +78,10 @@ namespace TGC.MonoGame.TP
             Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
 
             ships = new Ship[naves];
-            
-            Ocean = new Ocean(GraphicsDevice, Content);
-            Islands = new Islands(Content);
-            RainSystem = new RainSystem(GraphicsDevice, Content);
 
+            Environment = new MapEnvironment(GraphicsDevice, Content);
 
-            ships[0] = new ShipA(Content, Ocean, Color.Yellow);
+            ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
             ships[0].Position.Z = 5000; //en el medio del oceano
             ships[0].Position.X = 5000;
             for (int i = 1; i < naves; i++)
@@ -107,13 +94,13 @@ namespace TGC.MonoGame.TP
 
                 if( i%2 == 0)
                 {
-                    ships[i] = new ShipA(Content,Ocean,Color.White);
+                    ships[i] = new ShipA(Content, Environment.Ocean, Color.White);
                     ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
                     ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
 
                 }else
                 {
-                    ships[i] = new ShipB(Content, Ocean, Color.Blue);
+                    ships[i] = new ShipB(Content, Environment.Ocean, Color.Blue);
                     ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
                     ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
                 }
@@ -131,19 +118,12 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            var skyBox = Content.Load<Model>(ContentFolder3D + "SkyBox/cube");
-            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/SkyBoxes/ClearSky");
-            var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
-
-            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 50000f);
-
             for (int i = 0; i < naves; i++)
             {
                 ships[i].Load();
             }
-            Ocean.Load();
-            RainSystem.Load();
-            Islands.Load();
+
+            Environment.Load();
 
             base.LoadContent();
         }
@@ -162,25 +142,6 @@ namespace TGC.MonoGame.TP
                 //Salgo del juego.
                 Exit();
 
-            var time = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-
-            // I J para controlar la inclinacion de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.I) && Ocean.WaveA.Z <= 1f) Ocean.WaveA.Z += time;
-            if (Keyboard.GetState().IsKeyDown(Keys.J) && Ocean.WaveA.Z >= 0f) Ocean.WaveA.Z -= time;
-
-            // O K para controlar la longitud de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.O)) Ocean.WaveA.W += time * 100f;
-            if (Keyboard.GetState().IsKeyDown(Keys.K)) Ocean.WaveA.W -= time * 100f;
-
-            // P L para controlar la direccion de las olas
-            if (Keyboard.GetState().IsKeyDown(Keys.P)) waveAngle += time;
-            if (Keyboard.GetState().IsKeyDown(Keys.L)) waveAngle -= time;
-
-            Ocean.WaveA = new Vector4(MathF.Sin(waveAngle), MathF.Cos(waveAngle), Ocean.WaveA.Z, Ocean.WaveA.W);
-
-            Islands.Update(gameTime);
-
             Player p = new Player();
 
             ships[0].Update(gameTime, p.GetControlls());
@@ -196,6 +157,9 @@ namespace TGC.MonoGame.TP
             ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
             Camera.Update(gameTime);
             FreeCamera.Update(gameTime);
+
+            Environment.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -213,10 +177,7 @@ namespace TGC.MonoGame.TP
                 ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
             }
 
-            Ocean.Draw(ShipCamera.View, ShipCamera.Projection, gameTime);
-            SkyBox.Draw(ShipCamera.View, ShipCamera.Projection, ShipCamera.Position);
-            Islands.Draw(ShipCamera.View, ShipCamera.Projection);
-            RainSystem.Draw(ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position), gameTime);
+            Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
             base.Draw(gameTime);
         }
