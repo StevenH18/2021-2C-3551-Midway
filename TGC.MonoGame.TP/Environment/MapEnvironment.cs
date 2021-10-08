@@ -7,6 +7,10 @@ using System.Text;
 
 namespace TGC.MonoGame.TP.Environment
 {
+    public enum Weather
+    {
+        Calm, Rain, Storm
+    }
     public class MapEnvironment
     {
         private GraphicsDevice Graphics;
@@ -51,6 +55,27 @@ namespace TGC.MonoGame.TP.Environment
         public float RainHeightEnd = -500;
         public float RainSpeed = 1000;
 
+        // Weather config
+        public Weather WeatherState = Weather.Calm;
+
+        private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
+        {
+            // Weather Calm Values
+            { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0.05f, 6000f) },
+            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
+
+            // Weather Storm Values
+            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
+            { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
+            { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.1f, 1800f) }
+        };
+
+        private Weather WeatherChangeTo;
+        private bool WeatherChanging = false;
+        private float WeatherAnimationStart = 0;
+        private float WeatherAnimationDuration = 15;
+
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
             Graphics = graphics;
@@ -71,7 +96,18 @@ namespace TGC.MonoGame.TP.Environment
 
         public void Update(GameTime gameTime)
         {
-            
+            if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.P) && !WeatherChanging) {
+                if(WeatherState == Weather.Calm)
+                {
+                    WeatherChangeTo = Weather.Storm;
+                }
+                else
+                {
+                    WeatherChangeTo = Weather.Calm;
+                }
+            }
+
+            AnimateWeather(gameTime);
         }
 
         /// <summary>
@@ -87,6 +123,40 @@ namespace TGC.MonoGame.TP.Environment
             RainSystem.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
             Islands.Draw(view, projection);
+        }
+
+        public void AnimateWeather(GameTime gameTime)
+        {
+            float elapsedTime = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            // Start animating
+            if (WeatherChangeTo != WeatherState && !WeatherChanging)
+            {
+                WeatherChanging = true;
+                WeatherAnimationStart = elapsedTime;
+            }
+            if(WeatherChanging)
+            {
+                float progress = (elapsedTime - WeatherAnimationStart) / WeatherAnimationDuration;
+                WaveA = Vector4.Lerp(
+                    (Vector4)WeatherValues[(WeatherState, "WaveA")], 
+                    (Vector4)WeatherValues[(WeatherChangeTo, "WaveA")],
+                    progress);
+                WaveB = Vector4.Lerp(
+                    (Vector4)WeatherValues[(WeatherState, "WaveB")],
+                    (Vector4)WeatherValues[(WeatherChangeTo, "WaveB")],
+                    progress);
+                WaveC = Vector4.Lerp(
+                    (Vector4)WeatherValues[(WeatherState, "WaveC")],
+                    (Vector4)WeatherValues[(WeatherChangeTo, "WaveC")],
+                    progress);
+
+                if (progress >= 1)
+                {
+                    WeatherChanging = false;
+                    WeatherState = WeatherChangeTo;
+                }
+            }
         }
     }
 }
