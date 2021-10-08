@@ -43,7 +43,7 @@ namespace TGC.MonoGame.TP
             // Maneja la configuracion y la administracion del dispositivo grafico.
             Graphics = new GraphicsDeviceManager(this);
             // Descomentar para que el juego sea pantalla completa.
-            Graphics.IsFullScreen = true;
+            // Graphics.IsFullScreen = true;
             // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
             // Hace que el mouse sea visible.
@@ -63,10 +63,8 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             Graphics.ApplyChanges();
 
-            // Configuro el CullMode para que se pueda ver la skybox
             var rasterizer = new RasterizerState();
             //rasterizer.FillMode = FillMode.WireFrame;
-            rasterizer.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizer;
 
             // Creo una camara para seguir a nuestro auto
@@ -82,8 +80,8 @@ namespace TGC.MonoGame.TP
             Environment = new MapEnvironment(GraphicsDevice, Content);
 
             ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
-            ships[0].Position.Z = 5000; //en el medio del oceano
-            ships[0].Position.X = 5000;
+            ships[0].Position.Z = 6000; //en el medio del oceano
+            ships[0].Position.X = 6000;
             for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;

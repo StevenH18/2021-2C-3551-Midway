@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.Environment
             Model = skyBox;
             Texture = skyBoxTexture;
             Effect = skyBoxEffect;
-            Size = 5000;
+            Size = 10000;
         }
 
         /// <summary>

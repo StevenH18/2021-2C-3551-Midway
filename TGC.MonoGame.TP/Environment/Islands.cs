@@ -7,7 +7,7 @@ using System.Text;
 
 namespace TGC.MonoGame.TP
 {
-    class Islands
+    public class Islands
     {
         protected ContentManager Content;
         protected Model Model { get; set; }

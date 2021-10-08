@@ -27,12 +27,14 @@ samplerCUBE SkyBoxSampler = sampler_state
 struct VertexShaderInput
 {
     float4 Position : POSITION0;
+    float4 Normal : NORMAL;
 };
 
 struct VertexShaderOutput
 {
     float4 Position : POSITION0;
-    float3 TextureCoordinate : TEXCOORD0;
+    float4 Normal : TEXCOORD0;
+    float3 TextureCoordinate : TEXCOORD1;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -42,6 +44,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
+    
+    output.Normal = input.Normal;
 
     float4 VertexPosition = mul(input.Position, World);
     output.TextureCoordinate = VertexPosition.xyz - CameraPosition;

@@ -18,6 +18,38 @@
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float4x4 InverseTransposeWorld;
+
+// Illumination parameters
+float3 AmbientColor; // Light's Ambient Color
+float3 DiffuseColor; // Light's Diffuse Color
+float3 SpecularColor; // Light's Specular Color
+float KAmbient;
+float KDiffuse;
+float KSpecular;
+float Shininess;
+float3 LightPosition;
+float3 EyePosition; // Camera position
+
+// Texture parameters
+texture DiffuseMap;
+sampler2D DiffuseSampler = sampler_state
+{
+    Texture = (DiffuseMap);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+texture NormalMap;
+sampler2D NormalSampler = sampler_state
+{
+    Texture = (NormalMap);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
 
 float Gravity;
 
@@ -27,25 +59,32 @@ float4 WaveC;
 
 float4 IslandA;
 
+float4 Islands[5];
+
 float Time = 0;
 
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
+    float2 TextureCoordinates : TEXCOORD0;
 };
 
 struct VertexShaderOutput
 {
-	float4 Position : SV_POSITION;
-    float3 MyPosition : TEXCOORD0;
-    float3 Normal : TEXCOORD1;
+    float4 Position : SV_POSITION;
+    float2 TextureCoordinates : TEXCOORD0;
+    float3 WorldPosition : TEXCOORD1;
+    float4 Normal : TEXCOORD2;
 };
 
 float ClosenessToIsland(float3 position)
 {
-    float previousDistance = 1;
+    float previousDistance = 0;
     
-    previousDistance = min(previousDistance, clamp((distance(position, IslandA.xyz) - IslandA.w) / (log(max(IslandA.w, 1)) * 200), 0, 1));
+    for (int i = 0; i < 5; i++)
+    {
+        previousDistance = max(previousDistance, saturate(Islands[i].w / distance(position, Islands[i].xyz)));
+    }
 
     return previousDistance;
 }
@@ -58,7 +97,7 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     float steepness = wave.z;
     float wavelength = wave.w;
     
-    steepness = lerp(0, steepness, ClosenessToIsland(vertex));
+    steepness = lerp(steepness, 0, ClosenessToIsland(vertex));
     
     float3 p = vertex;                              // Posicion del vertice
     float k = 2.0 * PI / wavelength;                // Pasar el WaveLength a radianes
@@ -102,7 +141,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     vertex += CalculateWave(WaveB, vertex, tangent, binormal);
     vertex += CalculateWave(WaveC, vertex, tangent, binormal);
     // Calculo la normal y guardo la posicion del vertice transformada
-    float3 normal = normalize(cross(binormal, tangent));
+    float4 normal = float4(normalize(cross(binormal, tangent)), 0);
     input.Position.xyz = vertex;
     
     // Model space to World space
@@ -111,42 +150,58 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);		
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
-	
-	// Guardo en otra variable la posicion en el mundo para que sea accesible en el Pixel Shader
-    output.MyPosition = worldPosition;
-    output.Normal = normal; //mul(float4(normal, 1), World);
+    output.WorldPosition = worldPosition;
+    output.TextureCoordinates = input.TextureCoordinates;
+    output.Normal = normal;
 
     return output;
 }
 
-float MaxHeight(float4 wave)
+float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 worldNormal)
 {
-    float steepness = WaveA.z;
-    float wavelength = WaveA.w;
-    
-    float k = 2.0 * PI / wavelength;
-    
-    return steepness / k;
+    float3 tangentNormal1 = tex2D(NormalSampler, textureCoordinates * 1 + float2(-Time * 0.03, -Time * 0.03)).xyz * 2.0 - 1.0;
+    float3 tangentNormal2 = tex2D(NormalSampler, textureCoordinates * 1 + float2(Time * 0.03, Time * 0.03)).xyz * 2.0 - 1.0;
+    float3 tangentNormal = tangentNormal1 * 0.5 + tangentNormal2 * 0.5;
+
+    float3 Q1 = ddx(worldPosition);
+    float3 Q2 = ddy(worldPosition);
+    float2 st1 = ddx(textureCoordinates);
+    float2 st2 = ddy(textureCoordinates);
+
+    worldNormal = normalize(worldNormal.xyz);
+    float3 T = normalize(Q1 * st2.y - Q2 * st1.y);
+    float3 B = -normalize(cross(worldNormal, T));
+    float3x3 TBN = float3x3(T, B, worldNormal);
+
+    return normalize(mul(tangentNormal, TBN));
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
-{
-    float4 position = float4(input.MyPosition, 1.0);
-	
-    float4 color1 = float4(0.267, 0.491, 0.652, 1);
-    float4 color2 = float4(0.365, 0.665, 0.758, 1);
+{    
+    // Base vectors
+    float3 lightDirection = normalize(LightPosition - input.WorldPosition.xyz);
+    float3 viewDirection = normalize(EyePosition - input.WorldPosition.xyz);
+    float3 halfVector = normalize(lightDirection + viewDirection);
+    //float3 normal = input.Normal.xyz;
+    float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, input.Normal.xyz);
+
+	// Get the texture texel
+    float4 texelColor1 = tex2D(DiffuseSampler, input.TextureCoordinates + float2(Time * 0.01, Time * 0.01));
+    float4 texelColor2 = tex2D(DiffuseSampler, input.TextureCoordinates + float2(Time * 0.02, Time * 0.02));
+    float4 texelColor = texelColor1 * 0.5 + texelColor2 * 0.5;
+
     
-    float maxHeight = 0;
+	// Calculate the diffuse light
+    float NdotL = saturate(dot(normal, lightDirection));
+    float3 diffuseLight = KDiffuse * DiffuseColor * NdotL;
+
+	// Calculate the specular light
+    float NdotH = dot(normal, halfVector);
+    float3 specularLight = sign(NdotL) * KSpecular * SpecularColor * pow(saturate(NdotH), Shininess);
     
-    maxHeight += MaxHeight(WaveA);
-    maxHeight += MaxHeight(WaveB);
-    maxHeight += MaxHeight(WaveC);
-    
-    color1 = lerp(float4(0.167, 0.409, 0.219, 1), color1, ClosenessToIsland(position.xyz));
-    
-    float4 color = lerp(color1, color2, (position.y + maxHeight / 2) / maxHeight);
-	
-    return color; //float4(red, green, blue, 1.0);
+    // Final calculation
+    float4 finalColor = float4(saturate(AmbientColor * KAmbient + diffuseLight) + specularLight, 1);
+    return finalColor;
 }
 
 technique BasicColorDrawing

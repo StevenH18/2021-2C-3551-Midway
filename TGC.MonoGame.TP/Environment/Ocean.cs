@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
+using TGC.MonoGame.TP.Environment;
 
 namespace TGC.MonoGame.TP
 {
@@ -12,40 +13,40 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
+        protected Texture2D DiffuseMap;
+        protected Texture2D NormalMap;
+        protected MapEnvironment Environment;
 
-        // Aca se puede cambiar el tamaño de la mesh
-        public int Width = 50000;
-        public int Height = 50000;
-        // Aca se puede cambiar que tan densa es la mesh (Density = 8 => 8x8 quads)
-        private int Density = 256;
-        // Gravedad de las olas (afecta la velocidad)
-        public float Gravity = 100f;
-
-        // Para organizar mejor multiples olas enviamos todos los parametros de una
-        // ola en un Vector4(DirX, DirY, Steepness, WaveLength)
-        // asi es mas facil enviarlo al shader
-        public Vector4 WaveA = new Vector4(1f, 1f, 0.05f, 6000f);
-        public Vector4 WaveB = new Vector4(1f, 0.6f, 0.05f, 3100f);
-        public Vector4 WaveC = new Vector4(1f, 1.3f, 0.05f, 1800f);
-
-        public Vector4 IslandA = new Vector4(5000f, 0f, 5000f, 2000f);
-
-        public Ocean(GraphicsDevice graphics, ContentManager content)
+        public Ocean(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
         {
-            this.GraphicsDevice = graphics;
-            this.Content = content;
+            GraphicsDevice = graphics;
+            Content = content;
+            Environment = environment;
         }
         public void Load()
         {
             // Se hace esto para que la densidad represente la cantidad de quads
-            Density++;
+            Environment.OceanDensity++;
 
             GenerateMesh();
 
+            DiffuseMap = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_diffuse");
+            NormalMap = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
+
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
+
+            // Setear parametros de iluminacion
+            Effect.Parameters["AmbientColor"]?.SetValue(Environment.OceanAmbientColor);
+            Effect.Parameters["DiffuseColor"]?.SetValue(Environment.OceanDiffuseColor);
+            Effect.Parameters["SpecularColor"]?.SetValue(Environment.OceanSpecularColor);
+
+            Effect.Parameters["KAmbient"]?.SetValue(1f);
+            Effect.Parameters["KDiffuse"]?.SetValue(1f);
+            Effect.Parameters["KSpecular"]?.SetValue(1f);
+            Effect.Parameters["Shininess"]?.SetValue(64.0f);
         }
-        public void Draw(Matrix view, Matrix proj, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             GraphicsDevice.Indices = IndexBuffer;
@@ -54,31 +55,40 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
+            Effect.Parameters["InverseTransposeWorld"]?.SetValue(Matrix.Transpose(Matrix.Invert(Matrix.Identity)));
             // Le paso el tiempo para simular las olas
             Effect.Parameters["Time"]?.SetValue(time);
             // Parametros de las olas
-            Effect.Parameters["Gravity"]?.SetValue(Gravity);
-            Effect.Parameters["WaveA"]?.SetValue(WaveA);
-            Effect.Parameters["WaveB"]?.SetValue(WaveB);
-            Effect.Parameters["WaveC"]?.SetValue(WaveC);
-            // Islas?
-            Effect.Parameters["IslandA"]?.SetValue(IslandA);
+            Effect.Parameters["Gravity"]?.SetValue(Environment.Gravity);
+            Effect.Parameters["WaveA"]?.SetValue(Environment.WaveA);
+            Effect.Parameters["WaveB"]?.SetValue(Environment.WaveB);
+            Effect.Parameters["WaveC"]?.SetValue(Environment.WaveC);
+            // Islas
+            Effect.Parameters["Islands"]?.SetValue(Environment.IslandsPositions);
+            // Iluminacion
+            Effect.Parameters["LightPosition"]?.SetValue(Environment.SunPosition);
+            Effect.Parameters["EyePosition"]?.SetValue(world.Translation);
+            // Textura
+            Effect.Parameters["DiffuseMap"]?.SetValue(DiffuseMap);
+            Effect.Parameters["NormalMap"]?.SetValue(NormalMap);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
-                var triangles = Density * Density * 2;
+                var triangles = Environment.OceanDensity * Environment.OceanDensity * 2;
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
         float ClosenessToIsland(Vector3 position)
         {
-            float previousDistance = 1;
+            float previousDistance = 0;
 
-            Vector3 Island = new Vector3(IslandA.X, IslandA.Y, IslandA.Z);
-
-            previousDistance = MathF.Min(previousDistance, Math.Clamp(((position - Island).Length() - IslandA.W) / (MathF.Log(MathF.Max(IslandA.W, 1)) * 200), 0, 1));
+            for (int i = 0; i < Environment.IslandsPositions.Length; i++)
+            {
+                Vector3 Island = new Vector3(Environment.IslandsPositions[i].X, Environment.IslandsPositions[i].Y, Environment.IslandsPositions[i].Z);
+                previousDistance = MathF.Max(previousDistance, Math.Clamp(Environment.IslandsPositions[i].W / (position - Island).Length(), 0f, 1f));
+            }
 
             return previousDistance;
         }
@@ -100,12 +110,12 @@ namespace TGC.MonoGame.TP
             float steepness = wave.Z;
             float wavelength = wave.W;
 
-            steepness = Lerp(0, steepness, ClosenessToIsland(vertex));
+            steepness = Lerp(steepness, 0f, ClosenessToIsland(vertex));
 
             Vector3 p = vertex;
             float k = 2.0f * MathF.PI / wavelength;
             Vector2 d = Vector2.Normalize(direction);
-            float c = MathF.Sqrt(Gravity / k);
+            float c = MathF.Sqrt(Environment.Gravity / k);
             float f = k * (Vector2.Dot(d, new Vector2(p.X, p.Z)) - time * c);
             float a = steepness / k;
 
@@ -134,9 +144,9 @@ namespace TGC.MonoGame.TP
             Vector3 tangent = new Vector3(1, 0, 0);
             Vector3 binormal = new Vector3(0, 0, 1);
 
-            position += CalculateWave(WaveA, position, ref tangent, ref binormal, gameTime);
-            position += CalculateWave(WaveB, position, ref tangent, ref binormal, gameTime);
-            position += CalculateWave(WaveC, position, ref tangent, ref binormal, gameTime);
+            position += CalculateWave(Environment.WaveA, position, ref tangent, ref binormal, gameTime);
+            position += CalculateWave(Environment.WaveB, position, ref tangent, ref binormal, gameTime);
+            position += CalculateWave(Environment.WaveC, position, ref tangent, ref binormal, gameTime);
 
             Vector3 normal = Vector3.Normalize(Vector3.Cross(binormal, tangent));
 
@@ -146,9 +156,9 @@ namespace TGC.MonoGame.TP
         public void GenerateMesh()
         {
             // Creo vertices en base al GridWidth y GridHeight
-            VertexPosition[] vertices = CalculateVertices();
+            VertexPositionTexture[] vertices = CalculateVertices();
 
-            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPosition.VertexDeclaration, vertices.Length, BufferUsage.None);
+            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPositionTexture.VertexDeclaration, vertices.Length, BufferUsage.None);
 
             VertexBuffer.SetData(vertices);
 
@@ -163,17 +173,18 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// Crea una grilla de vertices que representa un plano para enviar al VertexBuffer
         /// </summary>
-        private VertexPosition[] CalculateVertices()
+        private VertexPositionTexture[] CalculateVertices() // TODO cambiar vertexPosition a VertexPositionTexture
         {
-            var vertices = new VertexPosition[Density * Density];
+            var vertices = new VertexPositionTexture[Environment.OceanDensity * Environment.OceanDensity];
 
             int vertIndex = 0;
-            for (float y = 0; y < Density; ++y)
+            for (float y = 0; y < Environment.OceanDensity; ++y)
             {
-                for (float x = 0; x < Density; ++x)
+                for (float x = 0; x < Environment.OceanDensity; ++x)
                 {
-                    var position = new Vector3(x / Density * Width, 0, y / Density * Height);
-                    vertices[vertIndex++] = new VertexPosition(position);
+                    var position = new Vector3(x / Environment.OceanDensity * Environment.OceanWidth - Environment.OceanWidth / 2, 0, y / Environment.OceanDensity * Environment.OceanHeight - Environment.OceanHeight / 2);
+                    var uv = new Vector2(x / 5, y / 5);
+                    vertices[vertIndex++] = new VertexPositionTexture(position, uv);
                 }
             }
 
@@ -184,20 +195,20 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private uint[] CalculateIndices()
         {
-            var indices = new uint[(Density - 1) * (Density - 1) * 6];
+            var indices = new uint[(Environment.OceanDensity - 1) * (Environment.OceanDensity - 1) * 6];
 
             int indicesIndex = 0;
-            for (int y = 0; y < Density - 1; ++y)
+            for (int y = 0; y < Environment.OceanDensity - 1; ++y)
             {
-                for (int x = 0; x < Density - 1; ++x)
+                for (int x = 0; x < Environment.OceanDensity - 1; ++x)
                 {
-                    int start = y * Density + x;
+                    int start = y * Environment.OceanDensity + x;
                     indices[indicesIndex++] = (uint)start;
                     indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + Density);
+                    indices[indicesIndex++] = (uint)(start + Environment.OceanDensity);
                     indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + 1 + Density);
-                    indices[indicesIndex++] = (uint)(start + Density);
+                    indices[indicesIndex++] = (uint)(start + 1 + Environment.OceanDensity);
+                    indices[indicesIndex++] = (uint)(start + Environment.OceanDensity);
                 }
             }
 
