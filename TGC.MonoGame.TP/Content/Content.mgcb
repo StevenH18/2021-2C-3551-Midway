@@ -168,7 +168,7 @@
 /processorParam:TextureFormat=Color
 /build:Textures/SkyBoxes/ClearSky.dds
 
-#begin Textures/SkyBoxes/skybox.dds
+#begin Textures/SkyBoxes/StormSky.dds
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -178,5 +178,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/SkyBoxes/skybox.dds
+/build:Textures/SkyBoxes/StormSky.dds
 

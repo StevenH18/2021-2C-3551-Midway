@@ -38,8 +38,11 @@ namespace TGC.MonoGame.TP
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "RainShader");
         }
-        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, float particleSeparation, float heightStart, float heightEnd, float speed, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, float particleSeparation, float heightStart, float heightEnd, float speed, bool skip, GameTime gameTime)
         {
+            if (skip)
+                return;
+
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffer(VertexBuffer);
@@ -51,11 +54,6 @@ namespace TGC.MonoGame.TP
             Position.Z = Offset.Z + MathF.Floor((cameraPosition.Z - Offset.Z + particleSeparation / 2) / particleSeparation) * particleSeparation;
 
             Billboard = Matrix.CreateConstrainedBillboard(Position, cameraPosition, Vector3.Up, cameraWorld.Forward, Vector3.Forward);
-
-            /*
-            Position.X = MathF.Floor((cameraPosition.X - particleSeparation / 2 + gridSize / 2) / gridSize) * gridSize;
-            Position.Z = MathF.Floor((cameraPosition.Z - particleSeparation / 2 + gridSize / 2) / gridSize) * gridSize;
-            */
 
             Effect.Parameters["World"]?.SetValue(Billboard);
             Effect.Parameters["View"]?.SetValue(view);

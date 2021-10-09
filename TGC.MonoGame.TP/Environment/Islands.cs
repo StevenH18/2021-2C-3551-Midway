@@ -14,15 +14,15 @@ namespace TGC.MonoGame.TP
         protected Effect Effect { get; set; }
         protected Matrix Scale;
         public Matrix Rotation;
-        public Vector3 Position = new Vector3(5000f, 0f, 5000f);
+        public Vector3 Position = new Vector3(0f, 0f, 0f);
         protected Matrix World { get; set; }
 
-        public Islands(GraphicsDevice graphics,ContentManager content)
+        public Islands(GraphicsDevice graphics, ContentManager content)
         {
-            this.Content = content;
-            this.Scale = Matrix.CreateScale(1);
-            this.Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
-            this.World = Scale * Rotation * Matrix.CreateTranslation(Position);
+            Content = content;
+            Scale = Matrix.CreateScale(1);
+            Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
+            World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
         public void Load()
         {

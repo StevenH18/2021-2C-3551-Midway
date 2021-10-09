@@ -40,7 +40,8 @@ namespace TGC.MonoGame.TP
         {
             for (var i = 0; i < Environment.RainParticles; i++)
             {
-                RainParticles[i].Draw(view, proj, cameraWorld, Environment.RainParticleSeparation, Environment.RainHeightStart, Environment.RainHeightEnd, Environment.RainSpeed, gameTime);
+                bool skip = ((float)i / (float)Environment.RainParticles) >= Environment.RainProgress;
+                RainParticles[i].Draw(view, proj, cameraWorld, Environment.RainParticleSeparation, Environment.RainHeightStart, Environment.RainHeightEnd, Environment.RainSpeed, skip, gameTime);
             }
         }
     }

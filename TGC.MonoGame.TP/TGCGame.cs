@@ -63,9 +63,7 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             Graphics.ApplyChanges();
 
-            var rasterizer = new RasterizerState();
-            //rasterizer.FillMode = FillMode.WireFrame;
-            GraphicsDevice.RasterizerState = rasterizer;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             // Creo una camara para seguir a nuestro auto
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);

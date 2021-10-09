@@ -18,7 +18,7 @@ namespace TGC.MonoGame.TP.Environment
         public SkyBox(GraphicsDevice Graphics, ContentManager Content)
         {
             var skyBox = Content.Load<Model>(TGCGame.ContentFolder3D + "SkyBox/cube");
-            var skyBoxTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/ClearSky");
+            var skyBoxTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/StormSky");
             var skyBoxEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "SkyBox");
 
             Model = skyBox;

@@ -57,7 +57,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(0.6, 0.9, 1, 1);
+    float4 color = float4(0.5, 0.5, 0.5, 1);
 	
     return color;
 }

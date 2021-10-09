@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP
         public void Load()
         {
             // Se hace esto para que la densidad represente la cantidad de quads
-            Environment.OceanDensity++;
+            Environment.OceanQuads++;
 
             GenerateMesh();
 
@@ -44,7 +44,7 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["KAmbient"]?.SetValue(1f);
             Effect.Parameters["KDiffuse"]?.SetValue(1f);
             Effect.Parameters["KSpecular"]?.SetValue(1f);
-            Effect.Parameters["Shininess"]?.SetValue(64.0f);
+            Effect.Parameters["Shininess"]?.SetValue(32.0f);
         }
         public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
         {
@@ -76,7 +76,7 @@ namespace TGC.MonoGame.TP
             {
                 pass.Apply();
 
-                var triangles = Environment.OceanDensity * Environment.OceanDensity * 2;
+                var triangles = Environment.OceanQuads * Environment.OceanQuads * 2;
                 GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
@@ -118,8 +118,6 @@ namespace TGC.MonoGame.TP
             float c = MathF.Sqrt(Environment.Gravity / k);
             float f = k * (Vector2.Dot(d, new Vector2(p.X, p.Z)) - time * c);
             float a = steepness / k;
-
-            // Calculamos la normal para poder usarla en un futuro con iluminacion
 
             tangent += new Vector3(
                 - d.X * d.X * (steepness * MathF.Sin(f)),
@@ -175,15 +173,15 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private VertexPositionTexture[] CalculateVertices() // TODO cambiar vertexPosition a VertexPositionTexture
         {
-            var vertices = new VertexPositionTexture[Environment.OceanDensity * Environment.OceanDensity];
+            var vertices = new VertexPositionTexture[Environment.OceanQuads * Environment.OceanQuads];
 
             int vertIndex = 0;
-            for (float y = 0; y < Environment.OceanDensity; ++y)
+            for (float y = 0; y < Environment.OceanQuads; ++y)
             {
-                for (float x = 0; x < Environment.OceanDensity; ++x)
+                for (float x = 0; x < Environment.OceanQuads; ++x)
                 {
-                    var position = new Vector3(x / Environment.OceanDensity * Environment.OceanWidth - Environment.OceanWidth / 2, 0, y / Environment.OceanDensity * Environment.OceanHeight - Environment.OceanHeight / 2);
-                    var uv = new Vector2(x / 5, y / 5);
+                    var position = new Vector3(x / Environment.OceanQuads * Environment.OceanWidth - Environment.OceanWidth / 2, 0, y / Environment.OceanQuads * Environment.OceanHeight - Environment.OceanHeight / 2);
+                    var uv = new Vector2(x / Environment.OceanQuads * Environment.OcealTiling, y / Environment.OceanQuads * Environment.OcealTiling);
                     vertices[vertIndex++] = new VertexPositionTexture(position, uv);
                 }
             }
@@ -195,20 +193,20 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private uint[] CalculateIndices()
         {
-            var indices = new uint[(Environment.OceanDensity - 1) * (Environment.OceanDensity - 1) * 6];
+            var indices = new uint[(Environment.OceanQuads - 1) * (Environment.OceanQuads - 1) * 6];
 
             int indicesIndex = 0;
-            for (int y = 0; y < Environment.OceanDensity - 1; ++y)
+            for (int y = 0; y < Environment.OceanQuads - 1; ++y)
             {
-                for (int x = 0; x < Environment.OceanDensity - 1; ++x)
+                for (int x = 0; x < Environment.OceanQuads - 1; ++x)
                 {
-                    int start = y * Environment.OceanDensity + x;
+                    int start = y * Environment.OceanQuads + x;
                     indices[indicesIndex++] = (uint)start;
                     indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + Environment.OceanDensity);
+                    indices[indicesIndex++] = (uint)(start + Environment.OceanQuads);
                     indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + 1 + Environment.OceanDensity);
-                    indices[indicesIndex++] = (uint)(start + Environment.OceanDensity);
+                    indices[indicesIndex++] = (uint)(start + 1 + Environment.OceanQuads);
+                    indices[indicesIndex++] = (uint)(start + Environment.OceanQuads);
                 }
             }
 
