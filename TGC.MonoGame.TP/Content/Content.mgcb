@@ -168,6 +168,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/SkyBoxes/ClearSky.dds
 
+#begin Textures/SkyBoxes/RainSky.dds
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/SkyBoxes/RainSky.dds
+
 #begin Textures/SkyBoxes/StormSky.dds
 /importer:TextureImporter
 /processor:TextureProcessor

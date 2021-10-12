@@ -13,10 +13,22 @@ float4x4 Projection;
 
 float3 CameraPosition;
 
-texture SkyBoxTexture;
-samplerCUBE SkyBoxSampler = sampler_state
+float SkyProgress;
+
+texture SkyBoxTextureRain;
+texture SkyBoxTextureStorm;
+samplerCUBE SkyBoxSamplerRain = sampler_state
 {
-    texture = <SkyBoxTexture>;
+    texture = <SkyBoxTextureRain>;
+    magfilter = LINEAR;
+    minfilter = LINEAR;
+    mipfilter = LINEAR;
+    AddressU = Mirror;
+    AddressV = Mirror;
+};
+samplerCUBE SkyBoxSambplerStorm = sampler_state
+{
+    texture = <SkyBoxTextureStorm>;
     magfilter = LINEAR;
     minfilter = LINEAR;
     mipfilter = LINEAR;
@@ -55,7 +67,10 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-    return float4(texCUBE(SkyBoxSampler, normalize(input.TextureCoordinate)).rgb, 1);
+    float4 skyRain = float4(texCUBE(SkyBoxSamplerRain, normalize(input.TextureCoordinate)).rgb, 1);
+    float4 skyStorm = float4(texCUBE(SkyBoxSambplerStorm, normalize(input.TextureCoordinate)).rgb, 1);
+    
+    return skyStorm;
 }
 
 technique Skybox

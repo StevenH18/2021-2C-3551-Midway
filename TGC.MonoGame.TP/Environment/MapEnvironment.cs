@@ -22,7 +22,7 @@ namespace TGC.MonoGame.TP.Environment
         public Islands Islands;
 
         public Vector3 SunPosition = new Vector3(0000f, 7000f, -30000f);
-        public float Gravity = 9.8f;
+        public float Gravity = 50f;
 
         // Ocean config
         public int OceanWidth = 50000;
@@ -47,16 +47,16 @@ namespace TGC.MonoGame.TP.Environment
         public Vector3 OceanSpecularColor = new Vector3(0.949f, 0.874f, 0.670f);
 
         // Rain config
-        public float RainParticleHeight = 25;
+        public float RainParticleHeight = 50;
         public float RainParticleWidth = 2;
 
         public int RainParticles = 5000;
-        public float RainParticleSeparation = 4000;
+        public float RainParticleSeparation = 6000;
         public float RainParticleVerticalSeparation = 2000;
 
         public float RainHeightStart = 3000;
         public float RainHeightEnd = -500;
-        public float RainSpeed = 2000;
+        public float RainSpeed = 1500;
         public float RainProgress = 0;
 
         // Weather config
@@ -67,7 +67,7 @@ namespace TGC.MonoGame.TP.Environment
             // Weather Calm Values
             { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0f, 6000f) },
             { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.01f, 3100f) },
-            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.01f, 1800f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
             { (Weather.Calm, "RainProgress"), 0f },
 
             // Weather Storm Values
@@ -86,7 +86,7 @@ namespace TGC.MonoGame.TP.Environment
         private Weather WeatherChangeTo;
         private bool WeatherChanging;
         private float WeatherAnimationStart;
-        private float WeatherAnimationDuration = 15;
+        private float WeatherAnimationDuration = 1;
 
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
@@ -94,7 +94,7 @@ namespace TGC.MonoGame.TP.Environment
             Content = content;
 
             Ocean = new Ocean(Graphics, Content, this);
-            SkyBox = new SkyBox(Graphics, Content);
+            SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
             Islands = new Islands(Graphics, Content);
         }
