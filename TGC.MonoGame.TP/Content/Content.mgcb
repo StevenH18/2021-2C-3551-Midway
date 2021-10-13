@@ -132,6 +132,48 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/tgc-logo/tgc-logo.fbx
 
+#begin Sounds/Ambience/ocean_ambience.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/ocean_ambience.mp3
+
+#begin Sounds/Ambience/rain_ambience.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/rain_ambience.mp3
+
+#begin Sounds/Ambience/storm_ambience.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/storm_ambience.mp3
+
+#begin Sounds/Ambience/thunder1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/thunder1.wav
+
+#begin Sounds/Ambience/thunder2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/thunder2.wav
+
+#begin Sounds/Ambience/thunder3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/thunder3.wav
+
+#begin Sounds/Ambience/thunder4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Ambience/thunder4.wav
+
 #begin Textures/Ocean/ocean_diffuse.jpg
 /importer:TextureImporter
 /processor:TextureProcessor

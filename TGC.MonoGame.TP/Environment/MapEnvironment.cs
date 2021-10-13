@@ -20,9 +20,10 @@ namespace TGC.MonoGame.TP.Environment
         public RainSystem RainSystem;
         public SkyBox SkyBox;
         public Islands Islands;
+        public SoundSystem SoundSystem;
 
         public Vector3 SunPosition = new Vector3(0000f, 7000f, -30000f);
-        public float Gravity = 50f;
+        public float Gravity = 9.8f;
 
         // Ocean config
         public int OceanWidth = 50000;
@@ -59,6 +60,11 @@ namespace TGC.MonoGame.TP.Environment
         public float RainSpeed = 1500;
         public float RainProgress = 0;
 
+        // Ambience config
+        public float OceanAmbienceVolume = 0f;
+        public float StormAmbienceVolume = 0f;
+        public float RainAmbienceVolume = 0f;
+
         // Weather config
         public Weather WeatherState = Weather.Calm;
 
@@ -68,19 +74,34 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0f, 6000f) },
             { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.01f, 3100f) },
             { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
+
             { (Weather.Calm, "RainProgress"), 0f },
+
+            { (Weather.Calm, "OceanAmbienceVolume"), 0.3f },
+            { (Weather.Calm, "StormAmbienceVolume"), 0f },
+            { (Weather.Calm, "RainAmbienceVolume"), 0f },
 
             // Weather Storm Values
             { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.05f, 6000f) },
             { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
             { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
+
             { (Weather.Rain, "RainProgress"), 0.2f },
+
+            { (Weather.Rain, "OceanAmbienceVolume"), 0.3f },
+            { (Weather.Rain, "StormAmbienceVolume"), 0.5f },
+            { (Weather.Rain, "RainAmbienceVolume"), 0.5f },
 
             // Weather Storm Values
             { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
             { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
             { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.1f, 1800f) },
-            { (Weather.Storm, "RainProgress"), 1f }
+
+            { (Weather.Storm, "RainProgress"), 1f },
+
+            { (Weather.Storm, "OceanAmbienceVolume"), 0.5f },
+            { (Weather.Storm, "StormAmbienceVolume"), 1f },
+            { (Weather.Storm, "RainAmbienceVolume"), 1f }
         };
 
         private Weather WeatherChangeTo;
@@ -97,6 +118,7 @@ namespace TGC.MonoGame.TP.Environment
             SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
             Islands = new Islands(Graphics, Content);
+            SoundSystem = new SoundSystem(Graphics, Content, this);
         }
 
         public void Load()
@@ -104,6 +126,7 @@ namespace TGC.MonoGame.TP.Environment
             Ocean.Load();
             RainSystem.Load();
             Islands.Load();
+            SoundSystem.Load();
 
             // Initialize all values to the default Weather
             LerpWeatherValues(WeatherState, WeatherChangeTo, 0);
@@ -128,6 +151,7 @@ namespace TGC.MonoGame.TP.Environment
             }
 
             AnimateWeather(gameTime);
+            SoundSystem.Update(gameTime);
         }
 
         /// <summary>
@@ -176,6 +200,18 @@ namespace TGC.MonoGame.TP.Environment
             RainProgress = MathHelper.Lerp(
                 (float)WeatherValues[(from, "RainProgress")],
                 (float)WeatherValues[(to, "RainProgress")],
+                progress);
+            OceanAmbienceVolume = MathHelper.Lerp(
+                (float)WeatherValues[(from, "OceanAmbienceVolume")],
+                (float)WeatherValues[(to, "OceanAmbienceVolume")],
+                progress);
+            StormAmbienceVolume = MathHelper.Lerp(
+                (float)WeatherValues[(from, "StormAmbienceVolume")],
+                (float)WeatherValues[(to, "StormAmbienceVolume")],
+                progress);
+            RainAmbienceVolume = MathHelper.Lerp(
+                (float)WeatherValues[(from, "RainAmbienceVolume")],
+                (float)WeatherValues[(to, "RainAmbienceVolume")],
                 progress);
         }
 
