@@ -23,7 +23,7 @@ namespace TGC.MonoGame.TP.Environment
         public SoundSystem SoundSystem;
 
         public Vector3 SunPosition = new Vector3(0000f, 7000f, -30000f);
-        public float Gravity = 9.8f;
+        public float Gravity = 25f;
 
         // Ocean config
         public int OceanWidth = 50000;
@@ -77,7 +77,7 @@ namespace TGC.MonoGame.TP.Environment
 
             { (Weather.Calm, "RainProgress"), 0f },
 
-            { (Weather.Calm, "OceanAmbienceVolume"), 0.3f },
+            { (Weather.Calm, "OceanAmbienceVolume"), 0.5f },
             { (Weather.Calm, "StormAmbienceVolume"), 0f },
             { (Weather.Calm, "RainAmbienceVolume"), 0f },
 
@@ -88,9 +88,9 @@ namespace TGC.MonoGame.TP.Environment
 
             { (Weather.Rain, "RainProgress"), 0.2f },
 
-            { (Weather.Rain, "OceanAmbienceVolume"), 0.3f },
-            { (Weather.Rain, "StormAmbienceVolume"), 0.5f },
-            { (Weather.Rain, "RainAmbienceVolume"), 0.5f },
+            { (Weather.Rain, "OceanAmbienceVolume"), 0.5f },
+            { (Weather.Rain, "StormAmbienceVolume"), 0f },
+            { (Weather.Rain, "RainAmbienceVolume"), 1f },
 
             // Weather Storm Values
             { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
