@@ -14,7 +14,7 @@ namespace TGC.MonoGame.TP
         protected Effect Effect { get; set; }
         protected Matrix Scale;
         public Matrix Rotation;
-        public Vector3 Position = new Vector3(0f, 0f, 0f);
+        public Vector3 Position = new Vector3(-6000f, 0f, -6000f);
         protected Matrix World { get; set; }
 
         public Islands(GraphicsDevice graphics, ContentManager content)

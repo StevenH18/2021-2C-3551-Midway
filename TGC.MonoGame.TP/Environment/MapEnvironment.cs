@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP.Environment
         public int OcealTiling = 64;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(0,0,0,1500),
+            new Vector4(-6000,0,-6000,1500),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),
@@ -51,13 +51,13 @@ namespace TGC.MonoGame.TP.Environment
         public float RainParticleHeight = 50;
         public float RainParticleWidth = 2;
 
-        public int RainParticles = 5000;
-        public float RainParticleSeparation = 6000;
+        public int RainParticles = 50000;
+        public float RainParticleSeparation = 10000;
         public float RainParticleVerticalSeparation = 2000;
 
-        public float RainHeightStart = 3000;
-        public float RainHeightEnd = -500;
-        public float RainSpeed = 1500;
+        public float RainHeightStart = 2000;
+        public float RainHeightEnd = -300;
+        public float RainSpeed = 1000;
         public float RainProgress = 0;
 
         // Ambience config
@@ -72,8 +72,8 @@ namespace TGC.MonoGame.TP.Environment
         {
             // Weather Calm Values
             { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0f, 6000f) },
-            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.01f, 3100f) },
-            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
+            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.01f, 1800f) },
 
             { (Weather.Calm, "RainProgress"), 0f },
 
@@ -164,9 +164,9 @@ namespace TGC.MonoGame.TP.Environment
         public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
         {
             Ocean.Draw(view, projection, world, gameTime);
-            RainSystem.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
             Islands.Draw(view, projection);
+            RainSystem.Draw(view, projection, world, gameTime);
         }
 
         /// <summary>

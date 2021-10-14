@@ -20,10 +20,11 @@ float4x4 View;
 float4x4 Projection;
 float Time = 0;
 
-float Speed = 1000;
-float HeightStart = 5000;
-float HeightEnd = -500;
-
+int ParticlesTotal;
+float Speed;
+float HeightStart;
+float HeightEnd;
+float Progress;
 
 struct VertexShaderInput
 {
@@ -33,33 +34,42 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-    float3 MyPosition : TEXCOORD0;
+    float4 Offset : TEXCOORD0;
+    float Index : TEXCOORD1;
 };
 
+float SkipParticle(float index, float progress)
+{
+    return step((index - 1) / ParticlesTotal, progress);
+}
 
-VertexShaderOutput MainVS(in VertexShaderInput input)
+VertexShaderOutput MainVS(in VertexShaderInput input, float index : BLENDINDICES, float4 offset : POSITION1, float4x4 billboard : POSITION2)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
+    
+    billboard = transpose(billboard);
 	
-    input.Position.y += lerp(HeightStart, HeightEnd, frac(Time / (HeightStart - HeightEnd) * Speed));
-	
+    input.Position.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
+
     // Model space to World space
-    float4 worldPosition = mul(input.Position, World);
+    float4 worldPosition = mul(input.Position, billboard);
     // World space to View space
     float4 viewPosition = mul(worldPosition, View);
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
-    output.MyPosition = worldPosition.xyz;
-
+    output.Offset = offset;
+    output.Index = index;
+	
     return output;
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(0.5, 0.5, 0.5, 1);
+    float4 color = float4(1, 1, 1, 1) * 0.2;
+    float skip = SkipParticle(input.Index, Progress);
 	
-    return color;
+    return color * skip;
 }
 
 technique BasicColorDrawing

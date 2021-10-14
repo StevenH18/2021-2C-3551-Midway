@@ -101,7 +101,6 @@ namespace TGC.MonoGame.TP
             for (float y = 0; y < 2; ++y)
             {
                 var rand = new Random();
-                var rotated = rand.Next(0, 2);
                 
                 for (float x = 0; x < 2; ++x)
                 {

@@ -34,6 +34,7 @@ namespace TGC.MonoGame.TP.Environment
             ThunderSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/thunder2"));
             ThunderSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/thunder3"));
             ThunderSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/thunder4"));
+            ThunderSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/thunder5"));
 
             SoundEffect oceanAmbience = Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/ocean_ambience");
             SoundEffect stormAmbience = Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Ambience/storm_ambience");
