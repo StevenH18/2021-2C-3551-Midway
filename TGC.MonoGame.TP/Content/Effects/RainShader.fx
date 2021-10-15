@@ -46,26 +46,28 @@ float SkipParticle(float index, float progress)
     return step((index - 1) / ParticlesTotal, progress);
 }
 
-VertexShaderOutput MainVS(in VertexShaderInput input, float index : BLENDINDICES, float4 offset : POSITION1, float4x4 billboard : POSITION2)
+VertexShaderOutput MainVS(in VertexShaderInput input, float index : BLENDINDICES, float4 offset : POSITION1)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
-    billboard = transpose(billboard);
-    
+    // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
+    // Se teletransportan al otro lado si salen, como en PACMAN
     offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
     offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
 	
     float x = input.Position.x;
     float z = input.Position.z;
-    float angleToCamera = Time + offset.y;
+    float angleToCamera = Time + offset.y; // Reemplazar con un calculo a la camara (me canse de probar)
     
+    // Rotacion de las particulas con el tiempo
     input.Position.x = x * cos(angleToCamera) + z * sin(angleToCamera);
     input.Position.z = z * cos(angleToCamera) + x * sin(angleToCamera);
 
     // Model space to World space
     float4 worldPosition = mul(input.Position, World);
     
+    // Muevo las particulas con su offset que se obtiene al azar y creo una animacion de caida
     worldPosition.x += offset.x;
     worldPosition.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
     worldPosition.z += offset.z;
@@ -83,6 +85,10 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float index : BLENDINDICES
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 color = float4(1, 1, 1, 1) * 0.2;
+    // Controlar cuantas particulas de lluvia se muestran.
+    // Progress == 0   -> ninguna particula
+    // Progress == 0.5 -> la mitad de las particulas se muestran
+    // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Index, Progress);
 	
     return color * skip;

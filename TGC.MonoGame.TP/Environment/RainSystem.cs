@@ -47,9 +47,6 @@ namespace TGC.MonoGame.TP
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            // Hacer que las particulas formen un cubo donde la camara esta en el centro
-
-            // NO se necesita el World porque por cada particula le defino su correspondiente Matriz
             Effect.Parameters["World"]?.SetValue(Matrix.Identity);
             Effect.Parameters["View"]?.SetValue(view);
             Effect.Parameters["Projection"]?.SetValue(proj);
