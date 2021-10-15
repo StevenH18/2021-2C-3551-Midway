@@ -7,6 +7,10 @@ using TGC.MonoGame.TP.Environment;
 
 namespace TGC.MonoGame.TP
 {
+    /// <summary>
+    ///     Super optimizado con instanciamiento, se pueden poner 500000 particulas de lluvia
+    ///     y anda a 60fps
+    /// </summary>
     public class RainSystem
     {
         protected GraphicsDevice GraphicsDevice;
@@ -24,7 +28,6 @@ namespace TGC.MonoGame.TP
 
         struct RainParticle
         {
-            public float Index;
             public Vector4 PositionOffset;
         }
 
@@ -59,8 +62,6 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
 
-            UpdateInstances();
-
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(VertexBuffer), new VertexBufferBinding(InstanceBuffer, 0, 1));
 
@@ -92,19 +93,22 @@ namespace TGC.MonoGame.TP
                 offset.X = (float)random.NextDouble() * Environment.RainParticleSeparation - Environment.RainParticleSeparation / 2;
                 offset.Y = (float)random.NextDouble() * Environment.RainParticleVerticalSeparation - Environment.RainParticleVerticalSeparation / 2;
                 offset.Z = (float)random.NextDouble() * Environment.RainParticleSeparation - Environment.RainParticleSeparation / 2;
+                offset.W = (float)i;
 
-                Instances[i].Index = (float)i;
                 Instances[i].PositionOffset = offset;
             }
+            UpdateInstances();
         }
 
         private void InitializeVertexDeclaration()
         {
             InstanceVertexDeclaration = new VertexDeclaration(
-                // Index
-                new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.BlendIndices, 0),
+                // INDEX POSITION ???? NO LO PUEDO SACAR O SI NO SE ROMPE TODO
+                // ADEMAS NO LO PUEDO LEER DESDE EL SHADER
+                // ASI QUE EL INDICE DE LA PARTICULA LO MANDO POR EL offset.W del Position Offset
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 0),
                 // Position Offset
-                new VertexElement(sizeof(float), VertexElementFormat.Vector4, VertexElementUsage.Position, 1)
+                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.Position, 2)
             );
         }
 
@@ -135,12 +139,9 @@ namespace TGC.MonoGame.TP
             int vertIndex = 0;
             for (float y = 0; y < 2; ++y)
             {
-                var rand = new Random();
-                var rotated = rand.Next(0, 2);
-
                 for (float x = 0; x < 2; ++x)
                 {
-                    var position = new Vector3(x / 2 * Environment.RainParticleWidth, y / 2 * Environment.RainParticleHeight, 0f);
+                    var position = new Vector3(x / 2 * Environment.RainParticleWidth - Environment.RainParticleWidth / 2, y / 2 * Environment.RainParticleHeight - Environment.RainParticleHeight / 2, 0f);
                     vertices[vertIndex++] = new VertexPosition(position);
                 }
             }
