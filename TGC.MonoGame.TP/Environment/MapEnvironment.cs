@@ -55,7 +55,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainParticleSeparation = 10000;
         public float RainParticleVerticalSeparation = 2000;
 
-        public float RainHeightStart = 2000;
+        public float RainHeightStart = 10000;
         public float RainHeightEnd = -300;
         public float RainSpeed = 1500;
         public float RainProgress = 0;
@@ -107,7 +107,7 @@ namespace TGC.MonoGame.TP.Environment
         private Weather WeatherChangeTo;
         private bool WeatherChanging;
         private float WeatherAnimationStart;
-        private float WeatherAnimationDuration = 1;
+        private float WeatherAnimationDuration = 10;
 
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
@@ -134,6 +134,10 @@ namespace TGC.MonoGame.TP.Environment
 
         public void Update(GameTime gameTime)
         {
+            if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.T))
+            {
+                SoundSystem.PlayRandomThunder();
+            }
             if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.P)) 
             {
                 if(WeatherState == Weather.Calm)
@@ -179,6 +183,10 @@ namespace TGC.MonoGame.TP.Environment
             if (!WeatherChanging)
             {
                 WeatherChangeTo = weather;
+                if(WeatherChangeTo == Weather.Storm)
+                {
+                    SoundSystem.PlayRandomThunder();
+                }
             }
             return !WeatherChanging;
         }

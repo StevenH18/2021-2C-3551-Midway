@@ -41,9 +41,14 @@ struct VertexShaderOutput
     float4 Offset : TEXCOORD1;
 };
 
+float rand(float2 uv)
+{
+    return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453);
+}
+
 float SkipParticle(float index, float progress)
 {
-    return step((index + 1) / ParticlesTotal, progress);
+    return step((index) / ParticlesTotal, progress - 0.01);
 }
 
 // ?????????????????? NO SE PORQUE NO SE PUEDE SACAR INDEX ????????? ESTOY PASANDO EL INDEX POR offset.w
@@ -85,7 +90,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.2;
+    float4 color = float4(1, 1, 1, 1) * 0.15 * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran

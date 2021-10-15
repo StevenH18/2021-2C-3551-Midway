@@ -57,11 +57,6 @@ namespace TGC.MonoGame.TP.Environment
 
         public void Update(GameTime gameTime)
         {
-            if(Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.T))
-            {
-                PlayRandomThunder();
-            }
-
             UpdateAmbienceVolume();
         }
 
