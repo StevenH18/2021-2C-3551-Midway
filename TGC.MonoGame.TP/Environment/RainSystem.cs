@@ -26,7 +26,6 @@ namespace TGC.MonoGame.TP
         {
             public float Index;
             public Vector4 PositionOffset;
-            public Matrix BillboardMatrix;
         }
 
         public RainSystem(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
@@ -51,16 +50,19 @@ namespace TGC.MonoGame.TP
             // Hacer que las particulas formen un cubo donde la camara esta en el centro
 
             // NO se necesita el World porque por cada particula le defino su correspondiente Matriz
+            Effect.Parameters["World"]?.SetValue(Matrix.Identity);
             Effect.Parameters["View"]?.SetValue(view);
             Effect.Parameters["Projection"]?.SetValue(proj);
             Effect.Parameters["Time"]?.SetValue(time);
+            Effect.Parameters["CameraPosition"]?.SetValue(cameraWorld.Translation);
+            Effect.Parameters["ParticleSeparation"]?.SetValue(Environment.RainParticleSeparation);
             Effect.Parameters["ParticlesTotal"]?.SetValue(Environment.RainParticles);
             Effect.Parameters["HeightStart"]?.SetValue(Environment.RainHeightStart);
             Effect.Parameters["HeightEnd"]?.SetValue(Environment.RainHeightEnd);
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
 
-            UpdateInstances(cameraWorld);
+            UpdateInstances();
 
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(VertexBuffer), new VertexBufferBinding(InstanceBuffer, 0, 1));
@@ -75,22 +77,8 @@ namespace TGC.MonoGame.TP
             }
         }
 
-        private void UpdateInstances(Matrix cameraWorld)
+        private void UpdateInstances()
         {
-            for (var i = 0; i < Instances.Length; i++)
-            {
-                Vector3 cameraPosition = cameraWorld.Translation;
-                Vector3 instancePosition = new Vector3(Instances[i].PositionOffset.X, 0f, Instances[i].PositionOffset.Z);
-                Vector3 position = Vector3.Zero;
-
-                position.X = instancePosition.X + MathF.Floor((cameraPosition.X - instancePosition.X + Environment.RainParticleSeparation / 2) / Environment.RainParticleSeparation) * Environment.RainParticleSeparation;
-                position.Z = instancePosition.Z + MathF.Floor((cameraPosition.Z - instancePosition.Z + Environment.RainParticleSeparation / 2) / Environment.RainParticleSeparation) * Environment.RainParticleSeparation;
-
-                Matrix billboard = Matrix.CreateConstrainedBillboard(position, cameraPosition, Vector3.Up, cameraWorld.Forward, Vector3.Forward);
-                Instances[i].BillboardMatrix = billboard;
-            }
-
-            // Set the instace data to the instanceBuffer.
             InstanceBuffer = new VertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
             InstanceBuffer.SetData(Instances);
         }
@@ -119,12 +107,7 @@ namespace TGC.MonoGame.TP
                 // Index
                 new VertexElement(0, VertexElementFormat.Single, VertexElementUsage.BlendIndices, 0),
                 // Position Offset
-                new VertexElement(sizeof(float), VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                // Matrix
-                new VertexElement(sizeof(float) * 5, VertexElementFormat.Vector4, VertexElementUsage.Position, 2),
-                new VertexElement(sizeof(float) * 9, VertexElementFormat.Vector4, VertexElementUsage.Position, 3),
-                new VertexElement(sizeof(float) * 13, VertexElementFormat.Vector4, VertexElementUsage.Position, 4),
-                new VertexElement(sizeof(float) * 17, VertexElementFormat.Vector4, VertexElementUsage.Position, 5)
+                new VertexElement(sizeof(float), VertexElementFormat.Vector4, VertexElementUsage.Position, 1)
             );
         }
 

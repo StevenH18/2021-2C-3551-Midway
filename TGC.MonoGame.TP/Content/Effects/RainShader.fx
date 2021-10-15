@@ -20,6 +20,9 @@ float4x4 View;
 float4x4 Projection;
 float Time = 0;
 
+float3 CameraPosition;
+float ParticleSeparation;
+
 int ParticlesTotal;
 float Speed;
 float HeightStart;
@@ -49,11 +52,24 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float index : BLENDINDICES
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
     billboard = transpose(billboard);
+    
+    offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
+    offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
 	
-    input.Position.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
+    float x = input.Position.x;
+    float z = input.Position.z;
+    float angleToCamera = Time + offset.y;
+    
+    input.Position.x = x * cos(angleToCamera) + z * sin(angleToCamera);
+    input.Position.z = z * cos(angleToCamera) + x * sin(angleToCamera);
 
     // Model space to World space
-    float4 worldPosition = mul(input.Position, billboard);
+    float4 worldPosition = mul(input.Position, World);
+    
+    worldPosition.x += offset.x;
+    worldPosition.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
+    worldPosition.z += offset.z;
+    
     // World space to View space
     float4 viewPosition = mul(worldPosition, View);
 	// View space to Projection space
