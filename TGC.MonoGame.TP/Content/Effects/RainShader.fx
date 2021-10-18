@@ -57,6 +57,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
+    // IGNORAR ES LA FORMA EN LA QUE FUNCIONA POR DEFAULT
+    /*
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
     // Se teletransportan al otro lado si salen, como en PACMAN
     offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
@@ -77,6 +79,20 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     worldPosition.x += offset.x;
     worldPosition.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
     worldPosition.z += offset.z;
+    */
+    
+    // PROBANDO PROBANDO ACA
+    
+    float3 cameraRight = float3(View[0][0], View[1][0], View[2][0]);
+    float3 cameraUp = float3(View[0][1], View[1][1], View[2][1]);
+    float3 vertice = input.Position.xyz;
+    float3 billboardSize = float3(1, 1, 1);
+    
+    float4 worldPosition = mul(input.Position, World);
+    
+    worldPosition.xyz = offset.xyz 
+    + cameraRight * vertice.x * billboardSize.x 
+    + cameraUp * vertice.y * billboardSize.y;
     
     // World space to View space
     float4 viewPosition = mul(worldPosition, View);
