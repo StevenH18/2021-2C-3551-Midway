@@ -10,8 +10,9 @@ namespace TGC.MonoGame.TP
     public class Islands
     {
         protected ContentManager Content;
-        protected Model Model { get; set; }
-        protected Effect Effect { get; set; }
+        protected Model Model;
+        protected Effect Effect;
+        protected List<Texture2D> Textures;
         protected Matrix Scale;
         public Matrix Rotation;
         public Vector3 Position = new Vector3(-6000f, 0f, -6000f);
@@ -26,13 +27,15 @@ namespace TGC.MonoGame.TP
         }
         public void Load()
         {
-            Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Environment/Island");
+            Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Environment/Island1");
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BasicShader");
+            Textures = new List<Texture2D>();
 
             foreach (var mesh in Model.Meshes)
             {
                 foreach (var meshPart in mesh.MeshParts)
                 {
+                    Textures.Add(meshPart.Effect.Parameters["Texture"].GetValueTexture2D());
                     meshPart.Effect = Effect;
                 }
             }
@@ -47,15 +50,21 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Projection"]?.SetValue(proj);
             Effect.Parameters["DiffuseColor"]?.SetValue(new Vector3(0.167f, 0.409f, 0.219f));
 
+            var textureIndex = 0;
+
             foreach (var mesh in Model.Meshes)
             {
-                var w = mesh.ParentBone.Transform * World;
+                foreach (var meshPart in mesh.MeshParts)
+                {
+                    var w = mesh.ParentBone.Transform * World;
 
-                Effect.Parameters["World"]?.SetValue(w);
+                    Effect.Parameters["DiffuseMap"]?.SetValue(Textures[textureIndex]);
+                    Effect.Parameters["World"]?.SetValue(w);
 
-                mesh.Draw();
+                    mesh.Draw();
+                    textureIndex++;
+                }
             }
-
         }
     }
 }

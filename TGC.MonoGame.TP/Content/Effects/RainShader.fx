@@ -90,7 +90,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.15 * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1) * 0.2 * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran

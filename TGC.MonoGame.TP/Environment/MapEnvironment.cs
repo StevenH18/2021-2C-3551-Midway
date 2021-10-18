@@ -22,7 +22,7 @@ namespace TGC.MonoGame.TP.Environment
         public Islands Islands;
         public SoundSystem SoundSystem;
 
-        public Vector3 SunPosition = new Vector3(0000f, 7000f, -30000f);
+        public Vector3 SunPosition = new Vector3(-7500f, 7000f, -50000f);
         public float Gravity = 25f;
 
         // Ocean config
@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP.Environment
         public int OcealTiling = 64;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(-6000,0,-6000,1500),
+            new Vector4(-6000, 0 ,-6000, 3000),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),

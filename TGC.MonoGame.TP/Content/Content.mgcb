@@ -37,7 +37,7 @@
 /processorParam:DebugMode=Auto
 /build:Effects/SkyBox.fx
 
-#begin Models/Environment/Island.fbx
+#begin Models/Environment/Island1.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -53,8 +53,32 @@
 /processorParam:RotationZ=0
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
-/processorParam:TextureFormat=Compressed
-/build:Models/Environment/Island.fbx
+/processorParam:TextureFormat=NoChange
+/build:Models/Environment/Island1.fbx
+
+#begin Models/Environment/Mat_Bump.tif
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/Environment/Mat_Bump.tif
+
+#begin Models/Environment/Mat_Color.tif
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/Environment/Mat_Color.tif
 
 #begin Models/Ships/ShipA/Ship.fbx
 /importer:FbxImporter

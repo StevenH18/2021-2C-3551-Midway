@@ -177,7 +177,10 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
 }
 
 float4 MainPS(VertexShaderOutput input) : COLOR
-{    
+{
+    float island = step(0.9, ClosenessToIsland(input.WorldPosition));
+    float3 diffuseColor = DiffuseColor * (1 - island) + float3(0.1, 0.4, 0.2) * island;
+    
     // Base vectors
     float3 lightDirection = normalize(LightPosition - input.WorldPosition.xyz);
     float3 viewDirection = normalize(EyePosition - input.WorldPosition.xyz);
@@ -193,7 +196,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
 	// Calculate the diffuse light
     float NdotL = saturate(dot(normal, lightDirection));
-    float3 diffuseLight = KDiffuse * DiffuseColor * NdotL;
+    float3 diffuseLight = KDiffuse * diffuseColor * NdotL;
 
 	// Calculate the specular light
     float NdotH = dot(normal, halfVector);
