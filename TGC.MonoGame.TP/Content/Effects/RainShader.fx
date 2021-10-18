@@ -82,15 +82,21 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     */
     
     // PROBANDO PROBANDO ACA
+    // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
+    // Se teletransportan al otro lado si salen, como en PACMAN
+    offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
+    offset.y = lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
+    offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
     
     float3 cameraRight = float3(View[0][0], View[1][0], View[2][0]);
     float3 cameraUp = float3(View[0][1], View[1][1], View[2][1]);
     float3 vertice = input.Position.xyz;
     float3 billboardSize = float3(1, 1, 1);
     
-    float4 worldPosition = mul(input.Position, World);
+    float4 worldPosition = float4(1, 1, 1, 1);
     
-    worldPosition.xyz = offset.xyz 
+    // Billboard (las particulas siempre miran a la camara)
+    worldPosition.xyz = float3(offset.x, offset.y, offset.z)
     + cameraRight * vertice.x * billboardSize.x 
     + cameraUp * vertice.y * billboardSize.y;
     
@@ -106,7 +112,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.15 * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1) * 0.1;
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran

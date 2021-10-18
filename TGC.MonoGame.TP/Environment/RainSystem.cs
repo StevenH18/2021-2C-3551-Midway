@@ -134,17 +134,12 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private VertexPosition[] CalculateVertices()
         {
-            var vertices = new VertexPosition[4];
-
-            int vertIndex = 0;
-            for (float y = 0; y < 2; ++y)
-            {
-                for (float x = 0; x < 2; ++x)
-                {
-                    var position = new Vector3(x / 2 * Environment.RainParticleWidth - Environment.RainParticleWidth / 2, y / 2 * Environment.RainParticleHeight - Environment.RainParticleHeight / 2, 0f);
-                    vertices[vertIndex++] = new VertexPosition(position);
-                }
-            }
+            var vertices = new VertexPosition[] {
+                new VertexPosition(new Vector3(-Environment.RainParticleWidth / 2,  Environment.RainParticleHeight / 2, 0f)),
+                new VertexPosition(new Vector3( Environment.RainParticleWidth / 2,  Environment.RainParticleHeight / 2, 0f)),
+                new VertexPosition(new Vector3(-Environment.RainParticleWidth / 2, -Environment.RainParticleHeight / 2, 0f)),
+                new VertexPosition(new Vector3( Environment.RainParticleWidth / 2, -Environment.RainParticleHeight / 2, 0f))
+            };
 
             return vertices;
         }
@@ -153,22 +148,10 @@ namespace TGC.MonoGame.TP
         /// </summary>
         private uint[] CalculateIndices()
         {
-            var indices = new uint[(1) * (1) * 6];
-
-            int indicesIndex = 0;
-            for (int y = 0; y < 2 - 1; ++y)
-            {
-                for (int x = 0; x < 2 - 1; ++x)
-                {
-                    int start = y * 2 + x;
-                    indices[indicesIndex++] = (uint)start;
-                    indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + 2);
-                    indices[indicesIndex++] = (uint)(start + 1);
-                    indices[indicesIndex++] = (uint)(start + 1 + 2);
-                    indices[indicesIndex++] = (uint)(start + 2);
-                }
-            }
+            var indices = new uint[6]{
+                0, 3, 2,
+                3, 0, 1
+            };
 
             return indices;
         }
