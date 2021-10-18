@@ -57,30 +57,6 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
-    // IGNORAR ES LA FORMA EN LA QUE FUNCIONA POR DEFAULT
-    /*
-    // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
-    // Se teletransportan al otro lado si salen, como en PACMAN
-    offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
-    offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
-	
-    float x = input.Position.x;
-    float z = input.Position.z;
-    float angleToCamera = Time + offset.y; // Reemplazar con un calculo a la camara (me canse de probar)
-    
-    // Rotacion de las particulas con el tiempo
-    input.Position.x = x * cos(angleToCamera) + z * sin(angleToCamera);
-    input.Position.z = z * cos(angleToCamera) + x * sin(angleToCamera);
-
-    // Model space to World space
-    float4 worldPosition = mul(input.Position, World);
-    
-    // Muevo las particulas con su offset que se obtiene al azar y creo una animacion de caida
-    worldPosition.x += offset.x;
-    worldPosition.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
-    worldPosition.z += offset.z;
-    */
-    
     // PROBANDO PROBANDO ACA
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
     // Se teletransportan al otro lado si salen, como en PACMAN
@@ -89,7 +65,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
     
     float3 cameraRight = float3(View[0][0], View[1][0], View[2][0]);
-    float3 cameraUp = float3(View[0][1], View[1][1], View[2][1]);
+    float3 cameraUp = float3(0, 1, 0);
     float3 vertice = input.Position.xyz;
     float3 billboardSize = float3(1, 1, 1);
     
@@ -112,7 +88,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.1;
+    float4 color = float4(1, 1, 1, 1) * 0.15 * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran
