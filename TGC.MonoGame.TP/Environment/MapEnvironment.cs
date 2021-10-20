@@ -49,7 +49,7 @@ namespace TGC.MonoGame.TP.Environment
 
         // Rain config
         public float RainParticleHeight = 50;
-        public float RainParticleWidth = 2;
+        public float RainParticleWidth = 1;
 
         public int RainParticles = 500000;
         public float RainParticleSeparation = 10000;

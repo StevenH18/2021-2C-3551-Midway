@@ -57,26 +57,24 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
+    // PROBANDO PROBANDO ACA
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
     // Se teletransportan al otro lado si salen, como en PACMAN
     offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
+    offset.y = lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
     offset.z = offset.z + floor((CameraPosition.z - offset.z + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
-	
-    float x = input.Position.x;
-    float z = input.Position.z;
-    float angleToCamera = Time + offset.y; // Reemplazar con un calculo a la camara (me canse de probar)
     
-    // Rotacion de las particulas con el tiempo
-    input.Position.x = x * cos(angleToCamera) + z * sin(angleToCamera);
-    input.Position.z = z * cos(angleToCamera) + x * sin(angleToCamera);
-
-    // Model space to World space
-    float4 worldPosition = mul(input.Position, World);
+    float3 cameraRight = float3(View[0][0], View[1][0], View[2][0]);
+    float3 cameraUp = float3(0, 1, 0);
+    float3 vertice = input.Position.xyz;
+    float3 billboardSize = float3(1, 1, 1);
     
-    // Muevo las particulas con su offset que se obtiene al azar y creo una animacion de caida
-    worldPosition.x += offset.x;
-    worldPosition.y += lerp(HeightStart, HeightEnd, frac((Time + offset.y) / (HeightStart - HeightEnd) * Speed));
-    worldPosition.z += offset.z;
+    float4 worldPosition = float4(1, 1, 1, 1);
+    
+    // Billboard (las particulas siempre miran a la camara)
+    worldPosition.xyz = float3(offset.x, offset.y, offset.z)
+    + cameraRight * vertice.x * billboardSize.x 
+    + cameraUp * vertice.y * billboardSize.y;
     
     // World space to View space
     float4 viewPosition = mul(worldPosition, View);
