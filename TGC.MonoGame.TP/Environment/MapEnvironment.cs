@@ -66,7 +66,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainAmbienceVolume = 0f;
 
         // Weather config
-        public Weather WeatherState = Weather.Calm;
+        public Weather WeatherState = Weather.Rain;
 
         private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
         {
@@ -129,6 +129,7 @@ namespace TGC.MonoGame.TP.Environment
             SoundSystem.Load();
 
             // Initialize all values to the default Weather
+            WeatherChangeTo = WeatherState;
             LerpWeatherValues(WeatherState, WeatherChangeTo, 0);
         }
 
