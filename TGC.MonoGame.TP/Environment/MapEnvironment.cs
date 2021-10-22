@@ -19,7 +19,7 @@ namespace TGC.MonoGame.TP.Environment
         public Ocean Ocean;
         public RainSystem RainSystem;
         public SkyBox SkyBox;
-        public Islands Islands;
+        public IslandSystem Islands;
         public SoundSystem SoundSystem;
 
         public Vector3 SunPosition = new Vector3(-7500f, 7000f, -50000f);
@@ -32,8 +32,8 @@ namespace TGC.MonoGame.TP.Environment
         public int OcealTiling = 64;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(-6000, 0 ,-6000, 3000),
-            new Vector4(0,0,0,0),
+            new Vector4(8000, 0, 1000, 3000),
+            new Vector4(0, 0, -6000, 5500),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0)
@@ -117,7 +117,7 @@ namespace TGC.MonoGame.TP.Environment
             Ocean = new Ocean(Graphics, Content, this);
             SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
-            Islands = new Islands(Graphics, Content);
+            Islands = new IslandSystem(Graphics, Content, this);
             SoundSystem = new SoundSystem(Graphics, Content, this);
         }
 
