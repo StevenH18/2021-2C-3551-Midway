@@ -178,7 +178,10 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float island = step(0.9, ClosenessToIsland(input.WorldPosition));
+    // Debug para saber dibuje un color verde dependiendo de que tan cerca se esta de una isla
+    // step(1, ... es para que aparezca un color al rededor de las islas
+    // step(2, ... para que no aparezca
+    float island = step(2, ClosenessToIsland(input.WorldPosition));
     float3 diffuseColor = DiffuseColor * (1 - island) + float3(0.1, 0.4, 0.2) * island;
     
     // Base vectors
