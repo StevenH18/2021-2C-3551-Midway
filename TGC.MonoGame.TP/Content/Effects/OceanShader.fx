@@ -97,7 +97,7 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     float steepness = wave.z;
     float wavelength = wave.w;
     
-    steepness = lerp(steepness, 0, ClosenessToIsland(vertex));
+    steepness = lerp(steepness, 0.01, ClosenessToIsland(vertex));
     
     float3 p = vertex;                              // Posicion del vertice
     float k = 2.0 * PI / wavelength;                // Pasar el WaveLength a radianes

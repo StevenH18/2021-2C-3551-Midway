@@ -19,10 +19,10 @@ namespace TGC.MonoGame.TP.Environment
         public Ocean Ocean;
         public RainSystem RainSystem;
         public SkyBox SkyBox;
-        public IslandSystem Islands;
+        public IslandSystem IslandSystem;
         public SoundSystem SoundSystem;
 
-        public Vector3 SunPosition = new Vector3(-7500f, 7000f, -50000f);
+        public Vector3 SunPosition = new Vector3(-7500f, 2000f, -50000f);
         public float Gravity = 25f;
 
         // Ocean config
@@ -33,7 +33,7 @@ namespace TGC.MonoGame.TP.Environment
         public Vector4[] IslandsPositions = new Vector4[5]
         {
             new Vector4(8000, 0, 1000, 3000),
-            new Vector4(0, 0, -6000, 5500),
+            new Vector4(0, 0, -10000, 6000),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0)
@@ -81,21 +81,21 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Calm, "StormAmbienceVolume"), 0f },
             { (Weather.Calm, "RainAmbienceVolume"), 0f },
 
-            // Weather Storm Values
+            // Weather Rain Values
             { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.05f, 6000f) },
             { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
             { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
 
-            { (Weather.Rain, "RainProgress"), 0.2f },
+            { (Weather.Rain, "RainProgress"), 0.1f },
 
             { (Weather.Rain, "OceanAmbienceVolume"), 0.5f },
             { (Weather.Rain, "StormAmbienceVolume"), 0f },
             { (Weather.Rain, "RainAmbienceVolume"), 1f },
 
             // Weather Storm Values
-            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
-            { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
-            { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.1f, 1800f) },
+            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.3f, 6000f) },
+            { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
+            { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
             { (Weather.Storm, "RainProgress"), 1f },
 
@@ -107,7 +107,7 @@ namespace TGC.MonoGame.TP.Environment
         private Weather WeatherChangeTo;
         private bool WeatherChanging;
         private float WeatherAnimationStart;
-        private float WeatherAnimationDuration = 10;
+        private float WeatherAnimationLengthSeconds = 10;
 
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
@@ -117,7 +117,7 @@ namespace TGC.MonoGame.TP.Environment
             Ocean = new Ocean(Graphics, Content, this);
             SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
-            Islands = new IslandSystem(Graphics, Content, this);
+            IslandSystem = new IslandSystem(Graphics, Content, this);
             SoundSystem = new SoundSystem(Graphics, Content, this);
         }
 
@@ -125,7 +125,7 @@ namespace TGC.MonoGame.TP.Environment
         {
             Ocean.Load();
             RainSystem.Load();
-            Islands.Load();
+            IslandSystem.Load();
             SoundSystem.Load();
 
             // Initialize all values to the default Weather
@@ -170,7 +170,7 @@ namespace TGC.MonoGame.TP.Environment
         {
             Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
-            Islands.Draw(view, projection);
+            IslandSystem.Draw(view, projection);
             RainSystem.Draw(view, projection, world, gameTime);
         }
 
@@ -236,7 +236,7 @@ namespace TGC.MonoGame.TP.Environment
             }
             if(WeatherChanging)
             {
-                float progress = (elapsedTime - WeatherAnimationStart) / WeatherAnimationDuration;
+                float progress = (elapsedTime - WeatherAnimationStart) / WeatherAnimationLengthSeconds;
                 LerpWeatherValues(WeatherState, WeatherChangeTo, progress);
 
                 if (progress >= 1)
