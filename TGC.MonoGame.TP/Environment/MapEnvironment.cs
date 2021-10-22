@@ -22,14 +22,14 @@ namespace TGC.MonoGame.TP.Environment
         public IslandSystem IslandSystem;
         public SoundSystem SoundSystem;
 
-        public Vector3 SunPosition = new Vector3(-7500f, 2000f, -50000f);
+        public Vector3 SunPosition = new Vector3(-7500f, 7000f, -50000f);
         public float Gravity = 25f;
 
         // Ocean config
         public int OceanWidth = 50000;
         public int OceanHeight = 50000;
         public int OceanQuads = 256;
-        public int OcealTiling = 64;
+        public int OceanTiling = 32;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
             new Vector4(8000, 0, 1000, 3000),

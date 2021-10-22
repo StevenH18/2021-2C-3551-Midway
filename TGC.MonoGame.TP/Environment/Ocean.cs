@@ -13,8 +13,11 @@ namespace TGC.MonoGame.TP
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
-        protected Texture2D DiffuseMap;
-        protected Texture2D NormalMap;
+        protected Texture2D Albedo;
+        protected Texture2D Normal;
+        protected Texture2D Roughness;
+        protected Texture2D Ao;
+        protected TextureCube SkyBox;
         protected MapEnvironment Environment;
 
         public Ocean(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
@@ -30,21 +33,14 @@ namespace TGC.MonoGame.TP
 
             GenerateMesh();
 
-            DiffuseMap = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_diffuse");
-            NormalMap = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
+            Albedo = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/pbr/ocean_albedo");
+            Normal = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/pbr/ocean_normal");
+            Roughness = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/pbr/ocean_roughness");
+            Ao = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/pbr/ocean_ao");
+            SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormSky");
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
-
-            // Setear parametros de iluminacion
-            Effect.Parameters["AmbientColor"]?.SetValue(Environment.OceanAmbientColor);
-            Effect.Parameters["DiffuseColor"]?.SetValue(Environment.OceanDiffuseColor);
-            Effect.Parameters["SpecularColor"]?.SetValue(Environment.OceanSpecularColor);
-
-            Effect.Parameters["KAmbient"]?.SetValue(1f);
-            Effect.Parameters["KDiffuse"]?.SetValue(1f);
-            Effect.Parameters["KSpecular"]?.SetValue(1f);
-            Effect.Parameters["Shininess"]?.SetValue(32.0f);
         }
         public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
         {
@@ -55,22 +51,31 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
-            Effect.Parameters["InverseTransposeWorld"]?.SetValue(Matrix.Transpose(Matrix.Invert(Matrix.Identity)));
             // Le paso el tiempo para simular las olas
             Effect.Parameters["Time"]?.SetValue(time);
             // Parametros de las olas
-            Effect.Parameters["Gravity"]?.SetValue(Environment.Gravity);
-            Effect.Parameters["WaveA"]?.SetValue(Environment.WaveA);
-            Effect.Parameters["WaveB"]?.SetValue(Environment.WaveB);
-            Effect.Parameters["WaveC"]?.SetValue(Environment.WaveC);
+            Effect.Parameters["Gravity"].SetValue(Environment.Gravity);
+            Effect.Parameters["WaveA"].SetValue(Environment.WaveA);
+            Effect.Parameters["WaveB"].SetValue(Environment.WaveB);
+            Effect.Parameters["WaveC"].SetValue(Environment.WaveC);
             // Islas
-            Effect.Parameters["Islands"]?.SetValue(Environment.IslandsPositions);
+            Effect.Parameters["Islands"].SetValue(Environment.IslandsPositions);
             // Iluminacion
-            Effect.Parameters["LightPosition"]?.SetValue(Environment.SunPosition);
+            Effect.Parameters["LightPositions"]?.SetValue(new Vector3[] {
+                Environment.SunPosition
+            });
+            Effect.Parameters["LightColors"]?.SetValue(new Vector3[] {
+                Environment.OceanSpecularColor * 50000
+            });
             Effect.Parameters["EyePosition"]?.SetValue(world.Translation);
+            // SkyBox
+            Effect.Parameters["EnvironmentMap"]?.SetValue(SkyBox);
             // Textura
-            Effect.Parameters["DiffuseMap"]?.SetValue(DiffuseMap);
-            Effect.Parameters["NormalMap"]?.SetValue(NormalMap);
+            Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
+            Effect.Parameters["NormalTexture"]?.SetValue(Normal);
+            //Effect.Parameters["MetallicTexture"].SetValue(Metallic);
+            Effect.Parameters["RoughnessTexture"]?.SetValue(Roughness);
+            Effect.Parameters["AoTexture"]?.SetValue(Ao);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
@@ -181,7 +186,7 @@ namespace TGC.MonoGame.TP
                 for (float x = 0; x < Environment.OceanQuads; ++x)
                 {
                     var position = new Vector3(x / Environment.OceanQuads * Environment.OceanWidth - Environment.OceanWidth / 2, 0, y / Environment.OceanQuads * Environment.OceanHeight - Environment.OceanHeight / 2);
-                    var uv = new Vector2(x / Environment.OceanQuads * Environment.OcealTiling, y / Environment.OceanQuads * Environment.OcealTiling);
+                    var uv = new Vector2(x / Environment.OceanQuads * Environment.OceanTiling, y / Environment.OceanQuads * Environment.OceanTiling);
                     vertices[vertIndex++] = new VertexPositionTexture(position, uv);
                 }
             }
