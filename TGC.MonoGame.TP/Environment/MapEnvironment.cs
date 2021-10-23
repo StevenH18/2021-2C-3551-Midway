@@ -28,10 +28,10 @@ namespace TGC.MonoGame.TP.Environment
         public float Gravity = 25f;
 
         // Ocean config
-        public int OceanWidth = 50000;
-        public int OceanHeight = 50000;
-        public int OceanQuads = 256;
-        public int OceanTiling = 32;
+        public int OceanWidth = 100000;
+        public int OceanHeight = 100000;
+        public int OceanQuads = 512;
+        public int OceanTiling = 64;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
             new Vector4(8000, 0, 1000, 3000),
@@ -166,9 +166,9 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="world"></param>
         public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
         {
+            IslandSystem.Draw(view, projection, world);
             Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
-            IslandSystem.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
         }
 

@@ -265,7 +265,7 @@
 /processorParam:Quality=Best
 /build:Sounds/Ambience/thunder5.wav
 
-#begin Textures/Ocean/ocean_diffuse.jpg
+#begin Textures/Ocean/ocean_albedo.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -275,9 +275,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Ocean/ocean_diffuse.jpg
+/build:Textures/Ocean/ocean_albedo.jpg
 
-#begin Textures/Ocean/ocean_normal.jpg
+#begin Textures/Ocean/ocean_normal1.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -287,9 +287,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Ocean/ocean_normal.jpg
+/build:Textures/Ocean/ocean_normal1.jpg
 
-#begin Textures/Ocean/pbr/ocean_albedo.jpg
+#begin Textures/Ocean/ocean_normal2.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -299,9 +299,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Ocean/pbr/ocean_albedo.jpg
+/build:Textures/Ocean/ocean_normal2.jpg
 
-#begin Textures/Ocean/pbr/ocean_ao.jpg
+#begin Textures/Ocean/ocean_normal3.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -311,31 +311,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/Ocean/pbr/ocean_ao.jpg
-
-#begin Textures/Ocean/pbr/ocean_normal.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Ocean/pbr/ocean_normal.jpg
-
-#begin Textures/Ocean/pbr/ocean_roughness.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Ocean/pbr/ocean_roughness.jpg
+/build:Textures/Ocean/ocean_normal3.jpg
 
 #begin Textures/SkyBoxes/ClearSky.dds
 /importer:TextureImporter
@@ -360,6 +336,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/SkyBoxes/RainSky.dds
+
+#begin Textures/SkyBoxes/spaichingen_hill_4k.exr
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/SkyBoxes/spaichingen_hill_4k.exr
 
 #begin Textures/SkyBoxes/StormSky.dds
 /importer:TextureImporter
