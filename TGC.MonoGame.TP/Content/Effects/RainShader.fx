@@ -7,8 +7,6 @@
 	#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-#define PI 3.1415926538
-
 // Custom Effects - https://docs.monogame.net/articles/content/custom_effects.html
 // High-level shader language (HLSL) - https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl
 // Programming guide for HLSL - https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-pguide
@@ -88,7 +86,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.2 * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1) * 0.1 * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran

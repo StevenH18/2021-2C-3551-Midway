@@ -335,7 +335,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
     return float4(ambient, 1.0);
     // TODO Fix tonemapping with reflections
-    return float4(color, 1.0);
+    //return float4(color, 1.0);
 }
 
 /*

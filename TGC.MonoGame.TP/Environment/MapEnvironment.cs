@@ -22,7 +22,9 @@ namespace TGC.MonoGame.TP.Environment
         public IslandSystem IslandSystem;
         public SoundSystem SoundSystem;
 
-        public Vector3 SunPosition = new Vector3(-7500f, 7000f, -50000f);
+        public Vector3 SunPosition = new Vector3(-7500f, 14000f, -50000f);
+        public Vector3 SunColor = new Vector3(0.949f, 0.874f, 0.670f);
+        public float SunIntensity = 50000f;
         public float Gravity = 25f;
 
         // Ocean config
@@ -42,10 +44,6 @@ namespace TGC.MonoGame.TP.Environment
         public Vector4 WaveA;
         public Vector4 WaveB;
         public Vector4 WaveC;
-        // Ocean colors
-        public Vector3 OceanAmbientColor = new Vector3(0.129f, 0.145f, 0.160f);
-        public Vector3 OceanDiffuseColor = new Vector3(0.113f, 0.145f, 0.184f);
-        public Vector3 OceanSpecularColor = new Vector3(0.949f, 0.874f, 0.670f);
 
         // Rain config
         public float RainParticleHeight = 50;
@@ -170,7 +168,7 @@ namespace TGC.MonoGame.TP.Environment
         {
             Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
-            IslandSystem.Draw(view, projection);
+            IslandSystem.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
         }
 

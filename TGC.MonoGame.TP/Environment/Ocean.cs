@@ -65,7 +65,7 @@ namespace TGC.MonoGame.TP
                 Environment.SunPosition
             });
             Effect.Parameters["LightColors"]?.SetValue(new Vector3[] {
-                Environment.OceanSpecularColor * 50000
+                Environment.SunColor * Environment.SunIntensity
             });
             Effect.Parameters["EyePosition"]?.SetValue(world.Translation);
             // SkyBox
