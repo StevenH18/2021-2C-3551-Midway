@@ -62,6 +62,8 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
 
+            //UpdateInstances();
+
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(VertexBuffer), new VertexBufferBinding(InstanceBuffer, 0, 1));
 
@@ -106,9 +108,9 @@ namespace TGC.MonoGame.TP
                 // INDEX POSITION ???? NO LO PUEDO SACAR O SI NO SE ROMPE TODO
                 // ADEMAS NO LO PUEDO LEER DESDE EL SHADER
                 // ASI QUE EL INDICE DE LA PARTICULA LO MANDO POR EL offset.W del Position Offset
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 0),
+                //new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
                 // Position Offset
-                new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.Position, 2)
+                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
             );
         }
 

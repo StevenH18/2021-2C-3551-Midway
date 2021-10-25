@@ -50,7 +50,7 @@ float SkipParticle(float index, float progress)
 }
 
 // ?????????????????? NO SE PORQUE NO SE PUEDE SACAR INDEX ????????? ESTOY PASANDO EL INDEX POR offset.w
-VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, float4 offset : POSITION2)
+VertexShaderOutput MainVS(in VertexShaderInput input, float4 offset : TEXCOORD1)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
@@ -78,7 +78,6 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 index : POSITION1, 
     float4 viewPosition = mul(worldPosition, View);
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
-    output.Index = index;
     output.Offset = offset;
 	
     return output;
@@ -93,7 +92,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Offset.w, Progress);
 	
-    return color * skip;
+    return color;
+
 }
 
 technique BasicColorDrawing

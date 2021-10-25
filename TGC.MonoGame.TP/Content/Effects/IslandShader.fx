@@ -139,6 +139,7 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
     float3x3 TBN = float3x3(T, B, worldNormal);
 
     return normalize(mul(tangentNormal, TBN));
+
 }
 
 float DistributionGGX(float3 normal, float3 halfVector, float roughness)
