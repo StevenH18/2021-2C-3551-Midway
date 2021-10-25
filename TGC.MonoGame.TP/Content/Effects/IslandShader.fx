@@ -180,6 +180,56 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
+float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness)
+{
+    float antiRoughness = 1.0 - roughness;
+    return F0 + (max(float3(antiRoughness, antiRoughness, antiRoughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+float4 irradianceCalculation(VertexShaderOutput input)
+{
+    float3 N = normalize(input.WorldPosition);
+	float3 irradiance = float3(0, 0, 0);
+
+	// tangent space calculation from origin point
+	float3 up = float3(0.0, 1.0, 0.0);
+	float3 right = cross(up, N);
+	up = cross(N, right);
+    
+    float sampleDelta = 0.025;
+	float nrSamples = 0.0;
+
+	float phi = 0.0;
+    float theta = 0.0;
+    
+    while (phi < (2.0 * 3.14))
+	{
+		while (theta < (0.5 * 3.14))
+		{
+            float displacedTheta = theta - (0.25 * 3.14);
+			// spherical to cartesian (in tangent space)
+            float3 tangentSample = float3(sin(displacedTheta) * cos(phi), sin(displacedTheta) * sin(phi), cos(displacedTheta));
+			// tangent space to world
+			float3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * N;
+
+            irradiance += texCUBE(EnvironmentMapSampler, sampleVec).rgb * cos(theta) * sin(theta);
+			nrSamples++;
+			theta += sampleDelta;
+		}
+		phi += sampleDelta;
+	}
+
+	irradiance = PI * irradiance * (1.0 / float(nrSamples));
+	return float4(irradiance, 1.0);
+
+	//FragColor = float4(irradiance, 1.0);
+
+	// Tomamos la posicion en mesh space del cubo unitario como coordenadas de textura
+	// Esta posicion va perfectamente con las coordenadas de textura necesarias para el cubemap
+	// Usamos texCUBE sin lod para tener la maxima resolucion de mipmap
+	//float3 cubeMapSampled = texCUBE(texCubeMap, input.MeshPosition).rgb;
+	//return float4(cubeMapSampled, 1.0);*/
+}
 
 //Pixel Shader
 float4 MainPS(VertexShaderOutput input) : COLOR
@@ -188,63 +238,78 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float metallic = tex2D(MetallicSampler, input.TextureCoordinates).r;
     float roughness = tex2D(RoughnessSampler, input.TextureCoordinates).r;
     float ao = tex2D(AoSampler, input.TextureCoordinates).r;
+    
+    ao = 0.05;
 
     float3 worldNormal = input.Normal;
-    float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
-    float3 view = normalize(EyePosition - input.WorldPosition.xyz);
-
+    float3 N = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
+    float3 V = normalize(EyePosition - input.WorldPosition);
+    float3 R = reflect(-V, N);
+	
+    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
+	// of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
     float3 F0 = float3(0.04, 0.04, 0.04);
     F0 = lerp(F0, albedo, metallic);
-	
-	// Reflectance equation
-    float3 Lo = float3(0.0, 0.0, 0.0);
-	
-    for (int index = 0; index < 4; index++)
-    {
-        float3 light = LightPositions[index] - input.WorldPosition.xyz;
-        float distance = length(light);
-		// Normalize our light vector after using its length
-        light = normalize(light);
-        float3 halfVector = normalize(view + light);
-        float attenuation = 1.0 / (distance);
-        float3 radiance = LightColors[index] * attenuation;
 
+	// reflectance equation
+    float3 Lo = float3(0, 0, 0);
+    for (int i = 0; i < 4; ++i)
+    {
+		// calculate per-light radiance
+        float3 L = normalize(LightPositions[i] - input.WorldPosition);
+        float3 H = normalize(V + L);
+        float distance = length(LightPositions[i] - input.WorldPosition);
+        float attenuation = 1.0 / (distance);
+        float3 radiance = LightColors[i] * attenuation;
 
 		// Cook-Torrance BRDF
-        float NDF = DistributionGGX(normal, halfVector, roughness);
-        float G = GeometrySmith(normal, view, light, roughness);
-        float3 F = fresnelSchlick(max(dot(halfVector, view), 0.0), F0);
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, L, roughness);
+        float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
         float3 nominator = NDF * G * F;
-        float denominator = 4.0 * max(dot(normal, view), 0.0) + 0.001;
+        float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
         float3 specular = nominator / denominator;
 
+		// kS is equal to Fresnel
         float3 kS = F;
-        
-        float3 kD = float3(1.0, 1.0, 1.0) - kS;
-        
+		// for energy conservation, the diffuse and specular light can't
+		// be above 1.0 (unless the surface emits light); to preserve this
+		// relationship the diffuse component (kD) should equal 1.0 - kS.
+        float3 kD = float3(1, 1, 1) - kS;
+		// multiply kD by the inverse metalness such that only non-metals 
+		// have diffuse lighting, or a linear blend if partly metal (pure metals
+		// have no diffuse light).
         kD *= 1.0 - metallic;
 
-		// Scale light by NdotL
-        float NdotL = max(dot(normal, light), 0.0);
+		// scale light by NdotL
+        float NdotL = max(dot(N, L), 0.0);
 
-        //TODO
-        Lo += (kD * NdotL * albedo / PI + specular) * radiance;
+		// add to outgoing radiance Lo
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }
-    
-    float3 ambient = float3(0.03, 0.03, 0.03) * albedo * ao;
 
+	// ambient lighting (we now use IBL as the ambient term)
+    float3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+
+    float3 kS = F;
+    float3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+
+    float3 irradiance = irradianceCalculation(input).rgb;
+    float3 diffuse = irradiance * albedo;
+
+    float3 ambient = (kD * diffuse) * ao;
+    
     float3 color = ambient + Lo;
 
 	// HDR tonemapping
     color = color / (color + float3(1, 1, 1));
-    
-    float exponent = 1.0 / 2.2;
-	// Gamma correct
-    color = pow(color, float3(exponent, exponent, exponent));
-    
-    // cambiar 'albedo' por 'color' o 'Lo' hace que no se renderice la lluvia    
-    return float4(albedo, 1.0);
+	// gamma correct
+    color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+
+    return float4(color, 1.0);
 }
 
 technique BasicColorDrawing

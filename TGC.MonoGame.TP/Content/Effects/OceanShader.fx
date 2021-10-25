@@ -38,38 +38,18 @@ sampler2D AlbedoSampler = sampler_state
 };
 
 //Textura para Normals
-texture NormalTexture1;
-sampler2D NormalSampler1 = sampler_state
+texture NormalTexture;
+sampler2D NormalSampler = sampler_state
 {
-    Texture = (NormalTexture1);
+    Texture = (NormalTexture);
     ADDRESSU = WRAP;
     ADDRESSV = WRAP;
     MINFILTER = LINEAR;
     MAGFILTER = LINEAR;
     MIPFILTER = LINEAR;
 };
-//Textura para Normals
-texture NormalTexture2;
-sampler2D NormalSampler2 = sampler_state
-{
-    Texture = (NormalTexture2);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
-//Textura para Normals
-texture NormalTexture3;
-sampler2D NormalSampler3 = sampler_state
-{
-    Texture = (NormalTexture3);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
+// Que tan pronunciada son las normales en el shader
+float NormalIntensity;
 
 //Textura del skybox o del ambiente
 texture EnvironmentMap;
@@ -103,7 +83,7 @@ struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
     float2 TextureCoordinates : TEXCOORD0;
-    float3 WorldPosition : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD1;
     float4 Normal : TEXCOORD2;
 };
 
@@ -189,8 +169,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 worldNormal)
 {
-    float3 tangentNormal1 = tex2D(NormalSampler1, textureCoordinates + float2(-Time * 0.03, -Time * 0.03)).xyz * 2.0 - 1.0;
-    float3 tangentNormal2 = tex2D(NormalSampler1, textureCoordinates + float2(Time * 0.03, Time * 0.03)).xyz * 2.0 - 1.0;
+    float3 tangentNormal1 = tex2D(NormalSampler, textureCoordinates + float2(-Time * 0.03, -Time * 0.03)).xyz * 2.0 - 1.0;
+    float3 tangentNormal2 = tex2D(NormalSampler, textureCoordinates + float2(Time * 0.03, Time * 0.03)).xyz * 2.0 - 1.0;
     float3 tangentNormal = tangentNormal1 * 0.5 + tangentNormal2 * 0.5;
 
     float3 Q1 = ddx(worldPosition);
@@ -215,6 +195,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     
+    normal = lerp(worldNormal, normal, saturate(NormalIntensity));
+    
     //normal = worldNormal;
     
     //Obtener texel de CubeMap
@@ -229,8 +211,9 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     float3 ambient = lerp(albedo, reflectionColor, fresnel);
     
-    float waterTransparency = lerp(0.5, 1, fresnel);
-
+    float transparencyDistance = distance(input.WorldPosition.xyz, EyePosition) / 1000;
+    float waterTransparency = lerp(0.7, 1, saturate(transparencyDistance));
+    
     return float4(ambient, waterTransparency);
 }
 

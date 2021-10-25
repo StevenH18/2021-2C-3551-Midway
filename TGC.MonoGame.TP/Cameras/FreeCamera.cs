@@ -22,7 +22,7 @@ namespace TGC.MonoGame.TP
 
         public float fieldOfViewDegrees = 80f;
         public float nearClipPlane = .05f;
-        public float farClipPlane = 9000f;
+        public float farClipPlane = 100000f;
         private bool mouseLookIsUsed = true;
 
         private int fpsKeyboardLayout = 1;

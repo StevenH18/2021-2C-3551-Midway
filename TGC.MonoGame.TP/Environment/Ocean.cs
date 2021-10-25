@@ -14,9 +14,7 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         protected Texture2D Albedo;
-        protected Texture2D Normal1;
-        protected Texture2D Normal2;
-        protected Texture2D Normal3;
+        protected Texture2D Normal;
         protected TextureCube SkyBox;
         protected MapEnvironment Environment;
 
@@ -34,10 +32,8 @@ namespace TGC.MonoGame.TP
             GenerateMesh();
 
             Albedo = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_albedo");
-            Normal1 = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal1");
-            Normal2 = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal2");
-            Normal3 = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal3");
-            SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormSky");
+            Normal = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
+            SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormySky");
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
@@ -72,9 +68,8 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["EnvironmentMap"]?.SetValue(SkyBox);
             // Textura
             Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
-            Effect.Parameters["NormalTexture1"]?.SetValue(Normal1);
-            Effect.Parameters["NormalTexture2"]?.SetValue(Normal2);
-            Effect.Parameters["NormalTexture3"]?.SetValue(Normal3);
+            Effect.Parameters["NormalTexture"]?.SetValue(Normal);
+            Effect.Parameters["NormalIntensity"]?.SetValue(Environment.RainProgress + 0.1f);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {

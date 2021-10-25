@@ -18,8 +18,10 @@ namespace TGC.MonoGame.TP
         {
             public Model Model;
             public Effect Effect;
-            public List<Texture2D> Textures;
+            public Texture2D Diffuse;
             public Texture2D Normal;
+            public Texture2D Roughness;
+            public TextureCube SkyBox;
             public Vector3 Position;
         }
 
@@ -31,14 +33,18 @@ namespace TGC.MonoGame.TP
         public void Load()
         {
             Islands = new Island[Environment.IslandsPositions.Length];
+
             for(var i = 0; i < Environment.IslandsPositions.Length; i++)
             {
                 try
                 {
-                    Islands[i].Model = Content.Load<Model>(TGCGame.ContentFolder3D + "Environment/Island" + (i + 1) + "/Island" + (i + 1));
+                    String islandContent = "Environment/Island" + (i + 1) + "/Island" + (i + 1);
+                    Islands[i].Model = Content.Load<Model>(TGCGame.ContentFolder3D + islandContent);
+                    Islands[i].Diffuse = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Color");
+                    Islands[i].Normal = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Normal");
+                    Islands[i].Roughness = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Reflectance");
+                    Islands[i].SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormySky");
                     Islands[i].Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "IslandShader");
-                    Islands[i].Textures = new List<Texture2D>();
-                    Islands[i].Normal = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/pbr/ocean_normal");
 
                     Vector4 position = Environment.IslandsPositions[i];
                     Islands[i].Position = new Vector3(position.X, position.Y, position.Z);
@@ -47,14 +53,13 @@ namespace TGC.MonoGame.TP
                     {
                         foreach (var meshPart in mesh.MeshParts)
                         {
-                            Islands[i].Textures.Add(meshPart.Effect.Parameters["Texture"].GetValueTexture2D());
                             meshPart.Effect = Islands[i].Effect;
                         }
                     }
                 }
                 catch (Exception e)
                 {
-
+                    Islands[i].Model = null;
                 }
             }
         }
@@ -67,9 +72,20 @@ namespace TGC.MonoGame.TP
 
                 island.Effect.Parameters["View"]?.SetValue(view);
                 island.Effect.Parameters["Projection"]?.SetValue(proj);
-                island.Effect.Parameters["InverseTransposeMatrix"]?.SetValue(proj);
+                island.Effect.Parameters["AlbedoTexture"]?.SetValue(island.Diffuse);
+                island.Effect.Parameters["NormalTexture"]?.SetValue(island.Normal);
+                island.Effect.Parameters["RoughnessTexture"]?.SetValue(island.Roughness);
+                island.Effect.Parameters["EnvironmentMap"]?.SetValue(island.SkyBox);
 
-                var textureIndex = 0;
+                island.Effect.Parameters["EyePosition"]?.SetValue(cameraWorld.Translation);
+
+                // Iluminacion
+                island.Effect.Parameters["LightPositions"]?.SetValue(new Vector3[] {
+                    Environment.SunPosition
+                });
+                island.Effect.Parameters["LightColors"]?.SetValue(new Vector3[] {
+                    Environment.SunColor * Environment.SunIntensity
+                });
 
                 foreach (var mesh in island.Model.Meshes)
                 {
@@ -77,22 +93,10 @@ namespace TGC.MonoGame.TP
                     {
                         var islandWorld = mesh.ParentBone.Transform * Matrix.CreateTranslation(island.Position);
 
-                        island.Effect.Parameters["AlbedoTexture"]?.SetValue(island.Textures[textureIndex]);
-                        island.Effect.Parameters["NormalTexture"]?.SetValue(island.Normal);
-                        island.Effect.Parameters["EyePosition"]?.SetValue(cameraWorld.Translation);
-
-                        // Iluminacion
-                        island.Effect.Parameters["LightPositions"]?.SetValue(new Vector3[] {
-                            Environment.SunPosition
-                        });
-                        island.Effect.Parameters["LightColors"]?.SetValue(new Vector3[] {
-                            Environment.SunColor * Environment.SunIntensity
-                        });
                         island.Effect.Parameters["World"]?.SetValue(islandWorld);
                         island.Effect.Parameters["InverseTransposeMatrix"]?.SetValue(Matrix.Transpose(Matrix.Invert(islandWorld)));
 
                         mesh.Draw();
-                        textureIndex++;
                     }
                 }
             }

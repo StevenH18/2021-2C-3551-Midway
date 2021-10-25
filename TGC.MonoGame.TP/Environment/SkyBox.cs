@@ -22,8 +22,8 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="texture">The SkyBox texture to use.</param>
         public SkyBox(GraphicsDevice Graphics, ContentManager Content, MapEnvironment environment)
         {
-            RainTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/RainSky");
-            StormTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/StormSky");
+            RainTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/StormySky");
+            StormTexture = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "/SkyBoxes/StormySky");
             Model = Content.Load<Model>(TGCGame.ContentFolder3D + "SkyBox/cube");
             Environment = environment;
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "SkyBox"); ;

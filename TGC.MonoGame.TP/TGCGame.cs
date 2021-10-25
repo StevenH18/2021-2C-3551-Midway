@@ -170,10 +170,10 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < naves; i++)
             {
-                ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
+                ships[i].Draw(FreeCamera.View, FreeCamera.Projection);
             }
 
-            Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
+            Environment.Draw(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
 
             base.Draw(gameTime);
         }
