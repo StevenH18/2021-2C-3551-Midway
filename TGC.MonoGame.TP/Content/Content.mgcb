@@ -37,6 +37,13 @@
 /processorParam:DebugMode=Auto
 /build:Effects/SkyBox.fx
 
+#begin Fonts/Basic.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Basic.spritefont
+
 #begin Models/Environment/Island.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -179,6 +186,30 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Ambience/thunder5.wav
+
+#begin Textures/background2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/background2.png
+
+#begin Textures/fondo-blanco.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/fondo-blanco.png
 
 #begin Textures/Ocean/ocean_diffuse.jpg
 /importer:TextureImporter
