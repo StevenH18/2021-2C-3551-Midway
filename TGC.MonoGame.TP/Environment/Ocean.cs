@@ -15,6 +15,7 @@ namespace TGC.MonoGame.TP
         protected IndexBuffer IndexBuffer;
         protected Texture2D Albedo;
         protected Texture2D Normal;
+        protected Texture2D Noise;
         protected TextureCube SkyBox;
         protected MapEnvironment Environment;
 
@@ -33,6 +34,7 @@ namespace TGC.MonoGame.TP
 
             Albedo = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_albedo");
             Normal = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
+            Noise = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_noise");
             SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormySky");
 
             // Load Shader
@@ -69,6 +71,7 @@ namespace TGC.MonoGame.TP
             // Textura
             Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
             Effect.Parameters["NormalTexture"]?.SetValue(Normal);
+            Effect.Parameters["NoiseTexture"]?.SetValue(Noise);
             Effect.Parameters["NormalIntensity"]?.SetValue(Environment.RainProgress + 0.1f);
             Effect.Parameters["DepthTexture"]?.SetValue(Environment.OceanDepth);
             Effect.Parameters["DepthColorTexture"]?.SetValue(Environment.OceanDepthColor);

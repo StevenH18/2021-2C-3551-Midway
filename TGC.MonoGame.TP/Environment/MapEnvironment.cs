@@ -39,11 +39,11 @@ namespace TGC.MonoGame.TP.Environment
         public RenderTarget2D OceanDepthColor;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(8000, 0, 1000, 3000),
+            new Vector4(10000, 0, -10000, 3000),
             new Vector4(0, 0, -10000, 6000),
-            new Vector4(0,0,0,6000),
-            new Vector4(0,0,0,0),
-            new Vector4(0,0,0,0)
+            new Vector4(0, 0, 0, 5000),
+            new Vector4(0, 0, 0, 0),
+            new Vector4(0, 0, 0, 0)
         };
         // Waves will be controlled by the WeatherState
         public Vector4 WaveA;
@@ -86,7 +86,7 @@ namespace TGC.MonoGame.TP.Environment
 
             // Weather Rain Values
             { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.1f, 6000f) },
-            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
+            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
             { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
 
             { (Weather.Rain, "RainProgress"), 0.1f },
@@ -96,7 +96,7 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Rain, "RainAmbienceVolume"), 1f },
 
             // Weather Storm Values
-            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.3f, 6000f) },
+            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.5f, 6000f) },
             { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
             { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
@@ -110,7 +110,7 @@ namespace TGC.MonoGame.TP.Environment
         private Weather WeatherChangeTo;
         private bool WeatherChanging;
         private float WeatherAnimationStart;
-        private float WeatherAnimationLengthSeconds = 10;
+        private float WeatherAnimationLengthSeconds = 1;
 
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {

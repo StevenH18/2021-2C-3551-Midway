@@ -51,6 +51,18 @@ sampler2D NormalSampler = sampler_state
 // Que tan pronunciada son las normales en el shader
 float NormalIntensity;
 
+//Textura para Ruido
+texture NoiseTexture;
+sampler2D NoiseSampler = sampler_state
+{
+    Texture = (NoiseTexture);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
 //Textura del skybox o del ambiente
 texture EnvironmentMap;
 samplerCUBE EnvironmentMapSampler = sampler_state
@@ -218,8 +230,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     
-    normal = lerp(worldNormal, normal, saturate(NormalIntensity));
-    
+    normal = lerp(worldNormal, normal, min(saturate(NormalIntensity), 0.5));
     
     //normal = worldNormal;
     
@@ -237,11 +248,13 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
     float3 shoreColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
+    float noise = tex2D(NoiseSampler, input.TextureCoordinates + Time * 0.001).r;
+    float foam = pow(frac(2 * ((cameraDepth) - 1) - Time * 0.1 + noise * 0.5), 8) * cameraDepth;
     
-    shoreColor = lerp(shoreColor, ambient, fresnel - 0.5);
+    shoreColor = lerp(shoreColor, float3(0.5,0.5,0.5), foam);
+    shoreColor = lerp(ambient, shoreColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
     
-    //return float4(shoreColor, 1);
-    //return float4(cameraDepth, cameraDepth, cameraDepth, 1);
+    //return float4(foam, foam, foam, 1);
     
     ambient = lerp(ambient, shoreColor, saturate(cameraDepth));
     

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using TGC.MonoGame.TP.Environment;
 
@@ -22,6 +23,7 @@ namespace TGC.MonoGame.TP
             public Texture2D Diffuse;
             public Texture2D Normal;
             public Texture2D Roughness;
+            public Texture2D Ao;
             public TextureCube SkyBox;
             public Vector3 Position;
         }
@@ -32,6 +34,12 @@ namespace TGC.MonoGame.TP
             Graphics = graphics;
             Environment = environment;
         }
+
+        public static bool Exists(string path)
+        {
+            return File.Exists($@"Content\{path}.xnb");
+        }
+
         public void Load()
         {
             Islands = new Island[Environment.IslandsPositions.Length];
@@ -40,11 +48,21 @@ namespace TGC.MonoGame.TP
             {
                 try
                 {
-                    String islandContent = "Environment/Island" + (i + 1) + "/Island" + (i + 1);
+                    string islandContent = "Environment/Island" + (i + 1) + "/Island" + (i + 1);
                     Islands[i].Model = Content.Load<Model>(TGCGame.ContentFolder3D + islandContent);
-                    Islands[i].Diffuse = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Color");
-                    Islands[i].Normal = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Normal");
-                    Islands[i].Roughness = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Reflectance");
+
+                    if(Exists(TGCGame.ContentFolder3D + islandContent + "_Color"))
+                        Islands[i].Diffuse = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Color");
+
+                    if (Exists(TGCGame.ContentFolder3D + islandContent + "_Normal"))
+                        Islands[i].Normal = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Normal");
+
+                    if (Exists(TGCGame.ContentFolder3D + islandContent + "_Color"))
+                        Islands[i].Roughness = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Reflectance");
+
+                    if (Exists(TGCGame.ContentFolder3D + islandContent + "_Alpha"))
+                        Islands[i].Ao = Content.Load<Texture2D>(TGCGame.ContentFolder3D + islandContent + "_Alpha");
+
                     Islands[i].SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormySky");
                     Islands[i].Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "IslandShader");
 
@@ -102,6 +120,7 @@ namespace TGC.MonoGame.TP
                 island.Effect.Parameters["AlbedoTexture"]?.SetValue(island.Diffuse);
                 island.Effect.Parameters["NormalTexture"]?.SetValue(island.Normal);
                 island.Effect.Parameters["RoughnessTexture"]?.SetValue(island.Roughness);
+                island.Effect.Parameters["AoTexture"]?.SetValue(island.Ao);
                 island.Effect.Parameters["EnvironmentMap"]?.SetValue(island.SkyBox);
 
                 island.Effect.Parameters["EyePosition"]?.SetValue(cameraWorld.Translation);

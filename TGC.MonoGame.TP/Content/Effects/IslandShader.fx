@@ -240,7 +240,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float roughness = tex2D(RoughnessSampler, input.TextureCoordinates).r;
     float ao = tex2D(AoSampler, input.TextureCoordinates).r;
     
-    ao = 0.05;
+    //ao = 0.05;
 
     float3 worldNormal = input.Normal;
     float3 N = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
@@ -301,7 +301,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 irradiance = irradianceCalculation(input).rgb;
     float3 diffuse = irradiance * albedo;
 
-    float3 ambient = (kD * diffuse) * ao;
+    float3 ambient = (kD * diffuse) * ao * 0.1;
     
     float3 color = ambient + Lo;
 
