@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +25,7 @@ namespace TGC.MonoGame.TP.Environment
 
         public Vector3 SunPosition = new Vector3(-7500f, 14000f, -50000f);
         public Vector3 SunColor = new Vector3(0.949f, 0.874f, 0.670f);
-        public float SunIntensity = 150000f;
+        public float SunIntensity = 50000f;
         public float Gravity = 25f;
 
         // Ocean config
@@ -32,11 +33,15 @@ namespace TGC.MonoGame.TP.Environment
         public int OceanHeight = 100000;
         public int OceanQuads = 512;
         public int OceanTiling = 64;
+        public float ShoreWidth = 100;
+        public float ShoreSmoothness = 100;
+        public RenderTarget2D OceanDepth;
+        public RenderTarget2D OceanDepthColor;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
             new Vector4(8000, 0, 1000, 3000),
             new Vector4(0, 0, -10000, 6000),
-            new Vector4(0,0,0,0),
+            new Vector4(0,0,0,6000),
             new Vector4(0,0,0,0),
             new Vector4(0,0,0,0)
         };
@@ -112,6 +117,9 @@ namespace TGC.MonoGame.TP.Environment
             Graphics = graphics;
             Content = content;
 
+            OceanDepth = new RenderTarget2D(graphics, graphics.Viewport.Width, graphics.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+            OceanDepthColor = new RenderTarget2D(graphics, graphics.Viewport.Width, graphics.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+
             Ocean = new Ocean(Graphics, Content, this);
             SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
@@ -153,8 +161,37 @@ namespace TGC.MonoGame.TP.Environment
                 }
             }
 
+            KeyboardState kstate = Keyboard.GetState();
+            if(kstate.IsKeyDown(Keys.O))
+            {
+                ShoreWidth += (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
+            }
+            if (kstate.IsKeyDown(Keys.L))
+            {
+                ShoreWidth -= (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
+            }
+            if (kstate.IsKeyDown(Keys.I))
+            {
+                ShoreSmoothness += (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
+            }
+            if (kstate.IsKeyDown(Keys.K))
+            {
+                ShoreSmoothness -= (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
+            }
+
             AnimateWeather(gameTime);
             SoundSystem.Update(gameTime);
+        }
+
+        public void DrawPreTextures(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
+        {
+            Graphics.SetRenderTarget(OceanDepth);
+            Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+            IslandSystem.DrawCameraDepth(view, projection, world);
+
+            Graphics.SetRenderTarget(OceanDepthColor);
+            Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+            IslandSystem.Draw(view, projection, world);
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ namespace TGC.MonoGame.TP
     public class IslandSystem
     {
         protected ContentManager Content;
+        protected GraphicsDevice Graphics;
         protected MapEnvironment Environment;
         private Island[] Islands;
 
@@ -28,6 +29,7 @@ namespace TGC.MonoGame.TP
         public IslandSystem(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
         {
             Content = content;
+            Graphics = graphics;
             Environment = environment;
         }
         public void Load()
@@ -63,12 +65,37 @@ namespace TGC.MonoGame.TP
                 }
             }
         }
-        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld)
+        public void DrawCameraDepth(Matrix view, Matrix proj, Matrix cameraWorld)
         {
-            foreach(Island island in Islands)
+            foreach (Island island in Islands)
             {
                 if (island.Model == null)
                     continue;
+
+                island.Effect.CurrentTechnique = island.Effect.Techniques["DepthPass"];
+                island.Effect.Parameters["View"]?.SetValue(view);
+                island.Effect.Parameters["Projection"]?.SetValue(proj);
+                island.Effect.Parameters["ShoreWidth"]?.SetValue(Environment.ShoreWidth);
+                island.Effect.Parameters["ShoreSmoothness"]?.SetValue(Environment.ShoreSmoothness);
+
+                foreach (var mesh in island.Model.Meshes)
+                {
+                    var islandWorld = mesh.ParentBone.Transform * Matrix.CreateTranslation(island.Position);
+
+                    island.Effect.Parameters["World"]?.SetValue(islandWorld);
+
+                    mesh.Draw();
+                }
+            }
+        }
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld)
+        {
+            foreach (Island island in Islands)
+            {
+                if (island.Model == null)
+                    continue;
+
+                island.Effect.CurrentTechnique = island.Effect.Techniques["BasicColorDrawing"];
 
                 island.Effect.Parameters["View"]?.SetValue(view);
                 island.Effect.Parameters["Projection"]?.SetValue(proj);

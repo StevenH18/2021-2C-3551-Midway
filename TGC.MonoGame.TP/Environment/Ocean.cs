@@ -8,7 +8,7 @@ namespace TGC.MonoGame.TP
 {
     public class Ocean
     {
-        protected GraphicsDevice GraphicsDevice;
+        protected GraphicsDevice Graphics;
         protected ContentManager Content;
         protected Effect Effect;
         protected VertexBuffer VertexBuffer;
@@ -20,7 +20,7 @@ namespace TGC.MonoGame.TP
 
         public Ocean(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
         {
-            GraphicsDevice = graphics;
+            Graphics = graphics;
             Content = content;
             Environment = environment;
         }
@@ -41,8 +41,8 @@ namespace TGC.MonoGame.TP
         public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
-            GraphicsDevice.Indices = IndexBuffer;
-            GraphicsDevice.SetVertexBuffer(VertexBuffer);
+            Graphics.Indices = IndexBuffer;
+            Graphics.SetVertexBuffer(VertexBuffer);
 
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);
@@ -70,13 +70,15 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
             Effect.Parameters["NormalTexture"]?.SetValue(Normal);
             Effect.Parameters["NormalIntensity"]?.SetValue(Environment.RainProgress + 0.1f);
+            Effect.Parameters["DepthTexture"]?.SetValue(Environment.OceanDepth);
+            Effect.Parameters["DepthColorTexture"]?.SetValue(Environment.OceanDepthColor);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
 
                 var triangles = Environment.OceanQuads * Environment.OceanQuads * 2;
-                GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
+                Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
         }
         float ClosenessToIsland(Vector3 position)
@@ -155,14 +157,14 @@ namespace TGC.MonoGame.TP
             // Creo vertices en base al GridWidth y GridHeight
             VertexPositionTexture[] vertices = CalculateVertices();
 
-            VertexBuffer = new VertexBuffer(GraphicsDevice, VertexPositionTexture.VertexDeclaration, vertices.Length, BufferUsage.None);
+            VertexBuffer = new VertexBuffer(Graphics, VertexPositionTexture.VertexDeclaration, vertices.Length, BufferUsage.None);
 
             VertexBuffer.SetData(vertices);
 
             // Load Indices
             uint[] indices = CalculateIndices();
 
-            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
+            IndexBuffer = new IndexBuffer(Graphics, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
 
             IndexBuffer.SetData(indices);
         }

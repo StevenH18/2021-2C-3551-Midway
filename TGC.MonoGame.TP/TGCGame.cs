@@ -165,6 +165,13 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
+            // FIRST PASS DRAW OCEAN DEPTH
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
+            Environment.DrawPreTextures(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+
+            GraphicsDevice.SetRenderTarget(null);
+
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
 

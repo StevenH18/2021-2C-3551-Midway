@@ -62,6 +62,26 @@ samplerCUBE EnvironmentMapSampler = sampler_state
     AddressV = Clamp;
 };
 
+//Textura del cameraDepth del oceano
+texture DepthTexture;
+sampler2D DepthSampler = sampler_state
+{
+    Texture = (DepthTexture);
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
+//Textura del color de lo que esta debajo del oceano
+texture DepthColorTexture;
+sampler2D DepthColorSampler = sampler_state
+{
+    Texture = (DepthColorTexture);
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
 // Ocean waves parameters
 float Gravity;
 
@@ -85,6 +105,7 @@ struct VertexShaderOutput
     float2 TextureCoordinates : TEXCOORD0;
     float4 WorldPosition : TEXCOORD1;
     float4 Normal : TEXCOORD2;
+    float4 ScreenPosition : TEXCOORD3;
 };
 
 float ClosenessToIsland(float3 position)
@@ -163,6 +184,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     output.WorldPosition = worldPosition;
     output.TextureCoordinates = input.TextureCoordinates;
     output.Normal = normal;
+    output.ScreenPosition = output.Position;
 
     return output;
 }
@@ -189,6 +211,7 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
 //Pixel Shader
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
+    input.ScreenPosition.y = -input.ScreenPosition.y;
     float3 albedo = pow(tex2D(AlbedoSampler, input.TextureCoordinates).rgb, float3(2.2, 2.2, 2.2));
 
     float3 worldNormal = input.Normal;
@@ -196,6 +219,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     
     normal = lerp(worldNormal, normal, saturate(NormalIntensity));
+    
     
     //normal = worldNormal;
     
@@ -211,10 +235,18 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     float3 ambient = lerp(albedo, reflectionColor, fresnel);
     
-    float transparencyDistance = distance(input.WorldPosition.xyz, EyePosition) / 1000;
-    float waterTransparency = lerp(0.7, 1, saturate(transparencyDistance));
+    float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
+    float3 shoreColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
     
-    return float4(ambient, waterTransparency);
+    shoreColor = lerp(shoreColor, ambient, fresnel - 0.5);
+    
+    //return float4(shoreColor, 1);
+    //return float4(cameraDepth, cameraDepth, cameraDepth, 1);
+    
+    ambient = lerp(ambient, shoreColor, saturate(cameraDepth));
+    
+    
+    return float4(ambient, 1);
 }
 
 /*

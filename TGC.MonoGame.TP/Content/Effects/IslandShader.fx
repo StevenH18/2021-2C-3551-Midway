@@ -313,6 +313,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     return float4(color, 1.0);
 }
 
+
 technique BasicColorDrawing
 {
 	pass P0
@@ -321,3 +322,45 @@ technique BasicColorDrawing
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
 };
+
+// Depth Pass
+
+float ShoreWidth;
+float ShoreSmoothness;
+
+struct DepthPassVertexShaderInput
+{
+    float4 Position : POSITION0;
+};
+
+struct DepthPassVertexShaderOutput
+{
+    float4 Position : SV_POSITION;
+    float4 ScreenSpacePosition : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD2;
+};
+
+DepthPassVertexShaderOutput DepthVS(in DepthPassVertexShaderInput input)
+{
+    DepthPassVertexShaderOutput output;
+    output.Position = mul(mul(mul(input.Position, World), View), Projection);
+    output.ScreenSpacePosition = mul(mul(mul(input.Position, World), View), Projection);
+    output.WorldPosition = mul(input.Position, World);
+    return output;
+}
+
+float4 DepthPS(in DepthPassVertexShaderOutput input) : COLOR
+{
+    // Depth based on y world position
+    float depth = (ShoreWidth + input.WorldPosition.y) / ShoreSmoothness;
+    return float4(depth, depth, depth, 1.0);
+}
+
+technique DepthPass
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL DepthVS();
+        PixelShader = compile PS_SHADERMODEL DepthPS();
+    }
+}
