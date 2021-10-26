@@ -239,8 +239,6 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float metallic = tex2D(MetallicSampler, input.TextureCoordinates).r;
     float roughness = tex2D(RoughnessSampler, input.TextureCoordinates).r;
     float ao = tex2D(AoSampler, input.TextureCoordinates).r;
-    
-    //ao = 0.05;
 
     float3 worldNormal = input.Normal;
     float3 N = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
@@ -254,7 +252,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	// reflectance equation
     float3 Lo = float3(0, 0, 0);
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 5; ++i)
     {
 		// calculate per-light radiance
         float3 L = normalize(LightPositions[i] - input.WorldPosition);

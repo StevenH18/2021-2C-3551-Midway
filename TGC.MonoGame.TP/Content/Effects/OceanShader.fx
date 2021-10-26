@@ -230,7 +230,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     
-    normal = lerp(worldNormal, normal, min(saturate(NormalIntensity), 0.5));
+    normal = lerp(worldNormal, normal, min(saturate(NormalIntensity), 1.1 - saturate(ClosenessToIsland(input.WorldPosition.xyz))));
     
     //normal = worldNormal;
     
@@ -244,22 +244,33 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 reflectionColor = texCUBE(EnvironmentMapSampler, reflection).rgb;
     float fresnel = saturate((1.0 - dot(normal, view)));
     
-    float3 ambient = lerp(albedo, reflectionColor, fresnel);
+    // waterColor es el color con los efectos de reflejos en el agua
+    float3 waterColor = lerp(albedo, reflectionColor, fresnel);
     
+    // Obtengo las texturas que se renderizaron en el render target
     float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
     float3 shoreColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
+    // Obtengo textura de ruido
     float noise = tex2D(NoiseSampler, input.TextureCoordinates + Time * 0.001).r;
-    float foam = pow(frac(2 * ((cameraDepth) - 1) - Time * 0.1 + noise * 0.5), 8) * cameraDepth;
+    // Oleaje que choca con las orillas
+    float foam = smoothstep(0.7, 0.8, frac(5 * ((cameraDepth) - 1) - Time * 0.5 + noise * 0.5) * cameraDepth);
     
-    shoreColor = lerp(shoreColor, float3(0.5,0.5,0.5), foam);
-    shoreColor = lerp(ambient, shoreColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
+    // shoreColor es la textura de lo que esta debajo del agua, le aplicamos varias cosas para que los colores se mezclen con lo que queramos
+    
+    // Agregamos oleaje
+    shoreColor = lerp(shoreColor, shoreColor + float3(0.5, 0.5, 0.5), foam);
+    // Agregamos reflejos al oleaje dependiendo del fresnel
+    shoreColor = lerp(shoreColor, waterColor, saturate(fresnel - 0.25));
+    // Si me alejo de las islas dibujo lo mismo que waterColor para que no se vea atravez de las olas
+    // ESTO SE PODRIA MEJORAR
+    shoreColor = lerp(waterColor, shoreColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
     
     //return float4(foam, foam, foam, 1);
     
-    ambient = lerp(ambient, shoreColor, saturate(cameraDepth));
+    // dependiendo de que tan cerca este de la orilla dibujo el color de la orilla o el del agua
+    float3 finalColor = lerp(waterColor, shoreColor, saturate(cameraDepth));
     
-    
-    return float4(ambient, 1);
+    return float4(finalColor, 1);
 }
 
 /*
