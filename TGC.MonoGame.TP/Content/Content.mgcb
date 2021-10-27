@@ -43,6 +43,13 @@
 /processorParam:DebugMode=Auto
 /build:Effects/SkyBox.fx
 
+#begin Fonts/Basic.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Basic.spritefont
+
 #begin Models/Environment/Island1/Island1.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -178,14 +185,6 @@
 /build:Models/Environment/Island2/Island2_Reflectance.tif
 
 #begin Models/Environment/Island3/Island3.fbx
-#begin Fonts/Basic.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/Basic.spritefont
-
-#begin Models/Environment/Island.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -400,19 +399,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/fondo-blanco.png
 
-#begin Textures/Ocean/ocean_diffuse.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/Ocean/ocean_diffuse.jpg
-
-#begin Textures/Ocean/ocean_normal.jpg
 #begin Textures/Ocean/ocean_albedo.jpg
 /importer:TextureImporter
 /processor:TextureProcessor

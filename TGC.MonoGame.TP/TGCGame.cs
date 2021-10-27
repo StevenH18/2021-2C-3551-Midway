@@ -211,6 +211,7 @@ namespace TGC.MonoGame.TP
         {
             // FIRST PASS DRAW OCEAN DEPTH
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
@@ -218,8 +219,6 @@ namespace TGC.MonoGame.TP
 
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
-            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            GraphicsDevice.BlendState = BlendState.Opaque;
             // SpriteBatch = new SpriteBatch(GraphicsDevice);
 
 
