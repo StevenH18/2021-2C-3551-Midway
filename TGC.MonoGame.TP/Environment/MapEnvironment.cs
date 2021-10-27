@@ -51,16 +51,16 @@ namespace TGC.MonoGame.TP.Environment
         public Vector4 WaveC;
 
         // Rain config
-        public float RainParticleHeight = 500;
-        public float RainParticleWidth = 500;
+        public float RainParticleHeight = 50;
+        public float RainParticleWidth = 1;
 
-        public int RainParticles = 5000;
-        public float RainParticleSeparation = 10000;
-        public float RainParticleVerticalSeparation = 2000;
+        public int RainParticles = 500000;
+        public float RainParticleSeparation = 25000;
+        public float RainParticleVerticalSeparation = 10000;
 
         public float RainHeightStart = 5000;
         public float RainHeightEnd = -300;
-        public float RainSpeed = 1;
+        public float RainSpeed = 1500;
         public float RainProgress = 0;
 
         // Ambience config

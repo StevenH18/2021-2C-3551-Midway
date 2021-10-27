@@ -21,20 +21,24 @@ float Time = 0;
 float3 CameraPosition;
 float ParticleSeparation;
 
+float ParticleHeight;
+float ParticleWidth;
+
 int ParticlesTotal;
 float Speed;
 float HeightStart;
 float HeightEnd;
 float Progress;
 
-struct VertexInstanceInputSimple
-{
-    float4 Offset : TEXCOORD0; // the number used must match the vertex declaration.
-};
 
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
+};
+
+struct VertexInstanceInputSimple
+{
+    float4 Offset : TEXCOORD0; // the number used must match the vertex declaration.
 };
 
 struct VertexShaderOutput
@@ -60,6 +64,9 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
 	VertexShaderOutput output = (VertexShaderOutput)0;
     
     float4 offset = instance.Offset;
+    
+    input.Position.y *= -ParticleHeight;
+    input.Position.x *= ParticleWidth;
     
     // PROBANDO PROBANDO ACA
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
@@ -91,14 +98,14 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1);// * 0.1; // * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1) * 0.1 * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran
     // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Offset.w, Progress);
 	
-    return input.Offset;
+    return color * skip;
 }
 
 technique BasicColorDrawing

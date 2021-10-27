@@ -59,6 +59,8 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Time"]?.SetValue(time);
             Effect.Parameters["CameraPosition"]?.SetValue(cameraWorld.Translation);
             Effect.Parameters["ParticleSeparation"]?.SetValue(Environment.RainParticleSeparation);
+            Effect.Parameters["ParticleHeight"]?.SetValue(Environment.RainParticleHeight);
+            Effect.Parameters["ParticleWidth"]?.SetValue(Environment.RainParticleWidth);
             Effect.Parameters["ParticlesTotal"]?.SetValue(Environment.RainParticles);
             Effect.Parameters["HeightStart"]?.SetValue(Environment.RainHeightStart);
             Effect.Parameters["HeightEnd"]?.SetValue(Environment.RainHeightEnd);
@@ -67,8 +69,9 @@ namespace TGC.MonoGame.TP
 
             //UpdateInstances();
 
-            GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffers(Bindings);
+            GraphicsDevice.SetVertexBuffers(Bindings);
+            GraphicsDevice.Indices = IndexBuffer;
 
             Effect.CurrentTechnique.Passes[0].Apply();
 
@@ -81,7 +84,10 @@ namespace TGC.MonoGame.TP
         {
             InstanceBuffer = new VertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
             InstanceBuffer.SetData(Instances);
-            Bindings = new VertexBufferBinding[] { new VertexBufferBinding(InstanceBuffer, 0, 1), new VertexBufferBinding(VertexBuffer) };
+
+            Bindings = new VertexBufferBinding[2];
+            Bindings[0] = new VertexBufferBinding(InstanceBuffer, 0, 1);
+            Bindings[1] = new VertexBufferBinding(VertexBuffer);
         }
 
         private void InitializeInstances()
