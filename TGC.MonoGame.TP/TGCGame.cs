@@ -175,6 +175,7 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
 
+
             for (int i = 0; i < naves; i++)
             {
                 ships[i].Draw(FreeCamera.View, FreeCamera.Projection);

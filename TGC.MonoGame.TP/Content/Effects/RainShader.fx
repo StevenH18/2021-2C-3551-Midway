@@ -27,6 +27,11 @@ float HeightStart;
 float HeightEnd;
 float Progress;
 
+struct VertexInstanceInputSimple
+{
+    float4 Offset : POSITION1; // the number used must match the vertex declaration.
+};
+
 struct VertexShaderInput
 {
 	float4 Position : POSITION0;
@@ -35,7 +40,6 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
-    float4 Index : TEXCOORD0;
     float4 Offset : TEXCOORD1;
 };
 
@@ -50,10 +54,12 @@ float SkipParticle(float index, float progress)
 }
 
 // ?????????????????? NO SE PORQUE NO SE PUEDE SACAR INDEX ????????? ESTOY PASANDO EL INDEX POR offset.w
-VertexShaderOutput MainVS(in VertexShaderInput input, float4 offset : TEXCOORD1)
+VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple instance)
 {
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
+    
+    float4 offset = instance.Offset;
     
     // PROBANDO PROBANDO ACA
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
@@ -85,15 +91,14 @@ VertexShaderOutput MainVS(in VertexShaderInput input, float4 offset : TEXCOORD1)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.1 * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1);// * 0.1; // * rand(input.Offset.xz);
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran
     // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Offset.w, Progress);
 	
-    return color;
-
+    return input.Offset;
 }
 
 technique BasicColorDrawing

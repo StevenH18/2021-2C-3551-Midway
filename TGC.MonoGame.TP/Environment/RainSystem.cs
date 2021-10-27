@@ -23,8 +23,11 @@ namespace TGC.MonoGame.TP
         protected VertexBuffer VertexBuffer;
         protected IndexBuffer IndexBuffer;
         protected VertexBuffer InstanceBuffer;
+        private VertexBufferBinding[] Bindings;
+        private int asd;
 
         private RainParticle[] Instances;
+
 
         struct RainParticle
         {
@@ -62,25 +65,23 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
 
-            //UpdateInstances();
+            UpdateInstances();
 
             GraphicsDevice.Indices = IndexBuffer;
-            GraphicsDevice.SetVertexBuffers(new VertexBufferBinding(VertexBuffer), new VertexBufferBinding(InstanceBuffer, 0, 1));
+            GraphicsDevice.SetVertexBuffers(Bindings);
 
-            foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
+            Effect.CurrentTechnique.Passes[0].Apply();
 
-                var triangles = 2;
+            var triangles = 2;
 
-                GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles, Environment.RainParticles);
-            }
+            GraphicsDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles, Environment.RainParticles);
         }
 
         private void UpdateInstances()
         {
-            InstanceBuffer = new VertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
+            InstanceBuffer = new DynamicVertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
             InstanceBuffer.SetData(Instances);
+            Bindings = new VertexBufferBinding[] { new VertexBufferBinding(InstanceBuffer, 0, 1), new VertexBufferBinding(VertexBuffer) };
         }
 
         private void InitializeInstances()
@@ -105,12 +106,11 @@ namespace TGC.MonoGame.TP
         private void InitializeVertexDeclaration()
         {
             InstanceVertexDeclaration = new VertexDeclaration(
-                // INDEX POSITION ???? NO LO PUEDO SACAR O SI NO SE ROMPE TODO
-                // ADEMAS NO LO PUEDO LEER DESDE EL SHADER
-                // ASI QUE EL INDICE DE LA PARTICULA LO MANDO POR EL offset.W del Position Offset
-                //new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 1),
-                // Position Offset
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1)
+                new VertexElement[]
+                {
+                    // Position Offset
+                    new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.Position, 1)
+                }
             );
         }
 
@@ -124,9 +124,9 @@ namespace TGC.MonoGame.TP
             VertexBuffer.SetData(vertices);
 
             // Load Indices
-            uint[] indices = CalculateIndices();
+            ushort[] indices = CalculateIndices();
 
-            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Length, BufferUsage.None);
+            IndexBuffer = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, indices.Length, BufferUsage.None);
 
             IndexBuffer.SetData(indices);
         }
@@ -148,9 +148,9 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// Crea los indices de los quads (2 triangulos) para enviarlos al IndexBuffer
         /// </summary>
-        private uint[] CalculateIndices()
+        private ushort[] CalculateIndices()
         {
-            var indices = new uint[6]{
+            var indices = new ushort[6]{
                 0, 3, 2,
                 3, 0, 1
             };

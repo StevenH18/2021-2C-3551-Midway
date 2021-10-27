@@ -52,15 +52,15 @@ namespace TGC.MonoGame.TP.Environment
 
         // Rain config
         public float RainParticleHeight = 50;
-        public float RainParticleWidth = 1;
+        public float RainParticleWidth = 50;
 
-        public int RainParticles = 500000;
+        public int RainParticles = 5000;
         public float RainParticleSeparation = 10000;
         public float RainParticleVerticalSeparation = 2000;
 
         public float RainHeightStart = 5000;
         public float RainHeightEnd = -300;
-        public float RainSpeed = 1500;
+        public float RainSpeed = 1;
         public float RainProgress = 0;
 
         // Ambience config
