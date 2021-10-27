@@ -168,7 +168,7 @@ namespace TGC.MonoGame.TP
             // FIRST PASS DRAW OCEAN DEPTH
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            Environment.DrawPreTextures(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+            Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -178,10 +178,10 @@ namespace TGC.MonoGame.TP
 
             for (int i = 0; i < naves; i++)
             {
-                ships[i].Draw(FreeCamera.View, FreeCamera.Projection);
+                ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
             }
 
-            Environment.Draw(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+            Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
             base.Draw(gameTime);
         }
