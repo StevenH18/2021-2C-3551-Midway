@@ -29,7 +29,7 @@ float Progress;
 
 struct VertexInstanceInputSimple
 {
-    float4 Offset : POSITION1; // the number used must match the vertex declaration.
+    float4 Offset : TEXCOORD0; // the number used must match the vertex declaration.
 };
 
 struct VertexShaderInput

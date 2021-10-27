@@ -65,7 +65,7 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
 
-            UpdateInstances();
+            //UpdateInstances();
 
             GraphicsDevice.Indices = IndexBuffer;
             GraphicsDevice.SetVertexBuffers(Bindings);
@@ -79,7 +79,7 @@ namespace TGC.MonoGame.TP
 
         private void UpdateInstances()
         {
-            InstanceBuffer = new DynamicVertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
+            InstanceBuffer = new VertexBuffer(GraphicsDevice, InstanceVertexDeclaration, Environment.RainParticles, BufferUsage.None);
             InstanceBuffer.SetData(Instances);
             Bindings = new VertexBufferBinding[] { new VertexBufferBinding(InstanceBuffer, 0, 1), new VertexBufferBinding(VertexBuffer) };
         }
@@ -109,7 +109,7 @@ namespace TGC.MonoGame.TP
                 new VertexElement[]
                 {
                     // Position Offset
-                    new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.Position, 1)
+                    new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 0)
                 }
             );
         }
