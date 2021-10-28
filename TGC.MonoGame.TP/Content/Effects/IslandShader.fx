@@ -20,6 +20,8 @@ float3 LightColors[5];
 
 float3 EyePosition; // Camera position
 
+float Time = 0;
+
 //Textura para Albedo
 texture AlbedoTexture;
 sampler2D AlbedoSampler = sampler_state
@@ -320,21 +322,31 @@ technique BasicColorDrawing
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
 };
-
-// Depth Pass
-
 float ShoreWidth;
 float ShoreSmoothness;
+
+//Textura para Ruido
+texture NoiseTexture;
+sampler2D NoiseSampler = sampler_state
+{
+    Texture = (NoiseTexture);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
 
 struct DepthPassVertexShaderInput
 {
     float4 Position : POSITION0;
+    float2 TextureCoordinates : TEXCOORD0;
 };
 
 struct DepthPassVertexShaderOutput
 {
     float4 Position : SV_POSITION;
-    float4 ScreenSpacePosition : TEXCOORD1;
+    float2 TextureCoordinates : TEXCOORD1;
     float4 WorldPosition : TEXCOORD2;
 };
 
@@ -342,8 +354,8 @@ DepthPassVertexShaderOutput DepthVS(in DepthPassVertexShaderInput input)
 {
     DepthPassVertexShaderOutput output;
     output.Position = mul(mul(mul(input.Position, World), View), Projection);
-    output.ScreenSpacePosition = mul(mul(mul(input.Position, World), View), Projection);
     output.WorldPosition = mul(input.Position, World);
+    output.TextureCoordinates = input.TextureCoordinates;
     return output;
 }
 
@@ -351,6 +363,10 @@ float4 DepthPS(in DepthPassVertexShaderOutput input) : COLOR
 {
     // Depth based on y world position
     float depth = (ShoreWidth + input.WorldPosition.y) / ShoreSmoothness;
+    float caustics = tex2D(NoiseSampler, input.TextureCoordinates * 40 + Time * 0.1) + tex2D(NoiseSampler, input.TextureCoordinates * 40 - Time * 0.1);
+    
+    depth += depth * caustics;
+    
     return float4(depth, depth, depth, 1.0);
 }
 

@@ -51,18 +51,6 @@ sampler2D NormalSampler = sampler_state
 // Que tan pronunciada son las normales en el shader
 float NormalIntensity;
 
-//Textura para Ruido
-texture NoiseTexture;
-sampler2D NoiseSampler = sampler_state
-{
-    Texture = (NoiseTexture);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
-
 //Textura del skybox o del ambiente
 texture EnvironmentMap;
 samplerCUBE EnvironmentMapSampler = sampler_state
@@ -249,26 +237,19 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     // Obtengo las texturas que se renderizaron en el render target
     float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
-    float3 shoreColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
-    // Obtengo textura de ruido
-    float noise = tex2D(NoiseSampler, input.TextureCoordinates + Time * 0.001).r;
-    // Oleaje que choca con las orillas
-    float foam = smoothstep(0.7, 0.8, frac(5 * ((cameraDepth) - 1) - Time * 0.5 + noise * 0.5) * cameraDepth);
+    float3 underwaterColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
     
-    // shoreColor es la textura de lo que esta debajo del agua, le aplicamos varias cosas para que los colores se mezclen con lo que queramos
+    //return float4(cameraDepth, cameraDepth, cameraDepth, 1);
     
-    // Agregamos oleaje
-    shoreColor = lerp(shoreColor, shoreColor + float3(0.5, 0.5, 0.5), foam);
     // Agregamos reflejos al oleaje dependiendo del fresnel
-    shoreColor = lerp(shoreColor, waterColor, saturate(fresnel - 0.25));
+    underwaterColor = lerp(underwaterColor, waterColor, saturate(fresnel - 0.25));
     // Si me alejo de las islas dibujo lo mismo que waterColor para que no se vea atravez de las olas
     // ESTO SE PODRIA MEJORAR
-    shoreColor = lerp(waterColor, shoreColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
+    underwaterColor = lerp(waterColor, underwaterColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
     
-    //return float4(foam, foam, foam, 1);
     
     // dependiendo de que tan cerca este de la orilla dibujo el color de la orilla o el del agua
-    float3 finalColor = lerp(waterColor, shoreColor, saturate(cameraDepth));
+    float3 finalColor = lerp(waterColor, underwaterColor, max(cameraDepth, 0));
     
     return float4(finalColor, 1);
 }

@@ -68,7 +68,6 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
     input.Position.y *= -ParticleHeight;
     input.Position.x *= ParticleWidth;
     
-    // PROBANDO PROBANDO ACA
     // Hacer que haya un cuadrado de tamanio:"ParticleSeparation" donde siempre estan las particulas
     // Se teletransportan al otro lado si salen, como en PACMAN
     offset.x = offset.x + floor((CameraPosition.x - offset.x + ParticleSeparation / 2) / ParticleSeparation) * ParticleSeparation;
@@ -98,7 +97,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.1 * rand(input.Offset.xz);
+    float4 color = float4(1, 1, 1, 1) * 0.05;
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran

@@ -14,6 +14,7 @@ namespace TGC.MonoGame.TP
         protected ContentManager Content;
         protected GraphicsDevice Graphics;
         protected MapEnvironment Environment;
+        protected Texture2D Noise;
         private Island[] Islands;
 
         struct Island
@@ -42,6 +43,7 @@ namespace TGC.MonoGame.TP
 
         public void Load()
         {
+            Noise = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_noise");
             Islands = new Island[Environment.IslandsPositions.Length];
 
             for(var i = 0; i < Environment.IslandsPositions.Length; i++)
@@ -83,8 +85,10 @@ namespace TGC.MonoGame.TP
                 }
             }
         }
-        public void DrawCameraDepth(Matrix view, Matrix proj, Matrix cameraWorld)
+        public void DrawCameraDepth(Matrix view, Matrix proj, Matrix cameraWorld, GameTime gameTime)
         {
+            var time = (float)gameTime.TotalGameTime.TotalSeconds;
+
             foreach (Island island in Islands)
             {
                 if (island.Model == null)
@@ -95,6 +99,8 @@ namespace TGC.MonoGame.TP
                 island.Effect.Parameters["Projection"]?.SetValue(proj);
                 island.Effect.Parameters["ShoreWidth"]?.SetValue(Environment.ShoreWidth);
                 island.Effect.Parameters["ShoreSmoothness"]?.SetValue(Environment.ShoreSmoothness);
+                island.Effect.Parameters["NoiseTexture"]?.SetValue(Noise);
+                island.Effect.Parameters["Time"]?.SetValue(time);
 
                 foreach (var mesh in island.Model.Meshes)
                 {

@@ -39,7 +39,7 @@ namespace TGC.MonoGame.TP.Environment
         public RenderTarget2D OceanDepthColor;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(0, 0, -10000, 3000),
+            new Vector4(5000, -20, -500, 3000),
             new Vector4(-1000, 0, -1000, 10000),
             new Vector4(4000, 0, 4000, 5000),
             new Vector4(0, 0, 0, 0),
@@ -60,7 +60,7 @@ namespace TGC.MonoGame.TP.Environment
 
         public float RainHeightStart = 5000;
         public float RainHeightEnd = -300;
-        public float RainSpeed = 1500;
+        public float RainSpeed = 3000;
         public float RainProgress = 0;
 
         // Ambience config
@@ -75,8 +75,8 @@ namespace TGC.MonoGame.TP.Environment
         {
             // Weather Calm Values
             { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0f, 6000f) },
-            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
-            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.01f, 1800f) },
+            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0f, 3100f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0f, 1800f) },
 
             { (Weather.Calm, "RainProgress"), 0f },
 
@@ -96,7 +96,7 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Rain, "RainAmbienceVolume"), 1f },
 
             // Weather Storm Values
-            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.3f, 6000f) },
+            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.5f, 6000f) },
             { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
             { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
@@ -187,7 +187,7 @@ namespace TGC.MonoGame.TP.Environment
         {
             Graphics.SetRenderTarget(OceanDepth);
             Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
-            IslandSystem.DrawCameraDepth(view, projection, world);
+            IslandSystem.DrawCameraDepth(view, projection, world, gameTime);
 
             Graphics.SetRenderTarget(OceanDepthColor);
             Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
