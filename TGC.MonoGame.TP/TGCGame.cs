@@ -157,9 +157,6 @@ namespace TGC.MonoGame.TP
                 //Salgo del juego.
                 Exit();
 
-            Player p = new Player();
-            ships[0].Update(gameTime, p.GetControlls());
-
             switch (status)
             {
                 case ST_MENU:
@@ -168,8 +165,7 @@ namespace TGC.MonoGame.TP
                     break;
 
                 case ST_LEVEL_1:
-                    base.Update(gameTime);
-
+                    Player p = new Player();
                     ships[0].Update(gameTime, p.GetControlls());
 
                     for (int i = 1; i < naves; i++)
@@ -183,22 +179,13 @@ namespace TGC.MonoGame.TP
 
                     Environment.Update(gameTime);
 
+                    if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                    {
+                        FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
+                    }
+
                     break;
             }
-
-            for (int i = 1; i < naves; i++)
-            {
-                ships[i].Update(gameTime, new Controll());
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter)){
-                FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
-            }
-            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
-            Camera.Update(gameTime);
-            FreeCamera.Update(gameTime);
-
-           // Environment.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -220,7 +207,6 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
             // SpriteBatch = new SpriteBatch(GraphicsDevice);
-
 
             switch (status)
             {
@@ -262,13 +248,11 @@ namespace TGC.MonoGame.TP
                         SpriteBatch.Begin();
                         SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                         SpriteBatch.End();
-
                     }
 
                     break;
             }
            // base.Draw(gameTime);
-
         }
 
         /// <summary>

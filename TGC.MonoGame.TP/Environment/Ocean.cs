@@ -111,7 +111,7 @@ namespace TGC.MonoGame.TP
             float steepness = wave.Z;
             float wavelength = wave.W;
 
-            steepness = Lerp(steepness, 0.01f, ClosenessToIsland(vertex));
+            steepness = Lerp(steepness, steepness * 0.05f, ClosenessToIsland(vertex));
 
             Vector3 p = vertex;
             float k = 2.0f * MathF.PI / wavelength;
