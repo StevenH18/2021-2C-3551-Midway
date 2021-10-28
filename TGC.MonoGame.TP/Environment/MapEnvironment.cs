@@ -63,6 +63,16 @@ namespace TGC.MonoGame.TP.Environment
         public float RainSpeed = 3000;
         public float RainProgress = 0;
 
+        // Thunder config
+        private SpriteBatch SpriteBatch;
+        private Texture2D WhiteScreen;
+        private float TimeUntilThunderSeconds = 10f;
+        private float ThunderDurationSeconds = 0.1f;
+        private float MaxTimeUntilThunderSeconds = 120f;
+        private float MinTimeUntilThunderSeconds = 40f;
+        private bool StopThunder = false;
+        private bool DrawThunder = false;
+
         // Ambience config
         public float OceanAmbienceVolume = 0f;
         public float StormAmbienceVolume = 0f;
@@ -110,15 +120,18 @@ namespace TGC.MonoGame.TP.Environment
         private Weather WeatherChangeTo;
         private bool WeatherChanging;
         private float WeatherAnimationStart;
-        private float WeatherAnimationLengthSeconds = 1;
+        private float WeatherAnimationLengthSeconds = 10;
 
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
             Graphics = graphics;
             Content = content;
 
-            OceanDepth = new RenderTarget2D(graphics, graphics.Viewport.Width, graphics.Viewport.Height, false, SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+            OceanDepth = new RenderTarget2D(graphics, graphics.Viewport.Width, graphics.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
             OceanDepthColor = new RenderTarget2D(graphics, graphics.Viewport.Width, graphics.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+
+            SpriteBatch = new SpriteBatch(graphics);
+            WhiteScreen = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "fondo-blanco");
 
             Ocean = new Ocean(Graphics, Content, this);
             SkyBox = new SkyBox(Graphics, Content, this);
@@ -179,7 +192,9 @@ namespace TGC.MonoGame.TP.Environment
                 ShoreSmoothness -= (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
             }
 
+            ThunderEffects(gameTime);
             AnimateWeather(gameTime);
+            SoundSystem.Initialize(gameTime);
             SoundSystem.Update(gameTime);
         }
 
@@ -207,6 +222,13 @@ namespace TGC.MonoGame.TP.Environment
             Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
+
+            if(DrawThunder)
+            {
+                SpriteBatch.Begin();
+                SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);
+                SpriteBatch.End();
+            }
         }
 
         /// <summary>
@@ -279,6 +301,41 @@ namespace TGC.MonoGame.TP.Environment
                     WeatherChanging = false;
                     WeatherState = WeatherChangeTo;
                 }
+            }
+        }
+        private void ThunderEffects(GameTime gameTime)
+        {
+            if (WeatherState != Weather.Storm)
+                return;
+
+            float seconds = (float)gameTime.TotalGameTime.TotalSeconds;
+            float miliseconds = (float)gameTime.TotalGameTime.TotalMilliseconds;
+
+            DrawThunder = false;
+
+            // Draw white screen
+            if (seconds % TimeUntilThunderSeconds < ThunderDurationSeconds && miliseconds % 20f < 10f)
+            {
+                DrawThunder = true;
+            }
+
+            if (seconds % TimeUntilThunderSeconds <= ThunderDurationSeconds && StopThunder)
+            {
+                StopThunder = false;
+            }
+
+            if (seconds % TimeUntilThunderSeconds > ThunderDurationSeconds && !StopThunder)
+            {
+                StopThunder = true;
+
+                Random random = new Random();
+                float randomNumber = (float)random.NextDouble();
+
+                ThunderDurationSeconds = 0.1f + randomNumber * 0.2f;
+                TimeUntilThunderSeconds = (1 - randomNumber) * MinTimeUntilThunderSeconds + randomNumber * MaxTimeUntilThunderSeconds;
+
+                SoundSystem.PlayRandomThunder();
+
             }
         }
     }

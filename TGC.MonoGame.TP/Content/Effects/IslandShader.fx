@@ -363,11 +363,9 @@ float4 DepthPS(in DepthPassVertexShaderOutput input) : COLOR
 {
     // Depth based on y world position
     float depth = (ShoreWidth + input.WorldPosition.y) / ShoreSmoothness;
-    float caustics = tex2D(NoiseSampler, input.TextureCoordinates * 40 + Time * 0.1) + tex2D(NoiseSampler, input.TextureCoordinates * 40 - Time * 0.1);
+    float caustics = tex2D(NoiseSampler, input.TextureCoordinates * 40 + Time * 0.1).r + tex2D(NoiseSampler, input.TextureCoordinates * 40 - Time * 0.1).r;
     
-    depth += depth * caustics;
-    
-    return float4(depth, depth, depth, 1.0);
+    return float4(depth, caustics, 0, 1);
 }
 
 technique DepthPass

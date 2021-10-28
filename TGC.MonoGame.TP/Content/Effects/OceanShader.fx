@@ -237,9 +237,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     // Obtengo las texturas que se renderizaron en el render target
     float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
+    float caustics = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz).g;
     float3 underwaterColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
-    
-    //return float4(cameraDepth, cameraDepth, cameraDepth, 1);
     
     // Agregamos reflejos al oleaje dependiendo del fresnel
     underwaterColor = lerp(underwaterColor, waterColor, saturate(fresnel - 0.25));
@@ -249,7 +248,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     
     // dependiendo de que tan cerca este de la orilla dibujo el color de la orilla o el del agua
-    float3 finalColor = lerp(waterColor, underwaterColor, max(cameraDepth, 0));
+    float3 finalColor = lerp(waterColor, underwaterColor, saturate(cameraDepth) * caustics * 4);
     
     return float4(finalColor, 1);
 }

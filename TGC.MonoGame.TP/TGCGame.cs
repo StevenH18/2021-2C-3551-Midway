@@ -38,8 +38,6 @@ namespace TGC.MonoGame.TP
 
         private SpriteFont Font;
 
-        private Texture2D EsferaTex { get; set; }
-
         public const int ST_MENU = 0;
         public const int ST_LEVEL_1 = 1;
         public int status = ST_MENU;
@@ -77,7 +75,7 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             Graphics.ApplyChanges();
 
-           // GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            // GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             // Creo una camara para seguir a nuestro auto
             FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
@@ -138,8 +136,6 @@ namespace TGC.MonoGame.TP
 
             Font = Content.Load<SpriteFont>("Fonts/Basic");
 
-            EsferaTex = Content.Load<Texture2D>(ContentFolderTextures + "fondo-blanco"); 
-
             base.LoadContent();
         }
 
@@ -187,6 +183,8 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
+            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
+
             base.Update(gameTime);
         }
 
@@ -200,7 +198,7 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            Environment.DrawPreTextures(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+            Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -219,7 +217,7 @@ namespace TGC.MonoGame.TP
                     // {
                     //    ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     // }
-                    Environment.Draw(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
                     //SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
@@ -236,19 +234,12 @@ namespace TGC.MonoGame.TP
 
                     for (int i = 0; i < naves; i++)
                     {
-                        ships[i].Draw(FreeCamera.View, FreeCamera.Projection);
+                        ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     }
 
-                    Environment.Draw(gameTime, FreeCamera.View, FreeCamera.Projection, Matrix.CreateTranslation(FreeCamera.Position));
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
 
                     base.Draw(gameTime);
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.X))
-                    {
-                        SpriteBatch.Begin();
-                        SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-                        SpriteBatch.End();
-                    }
 
                     break;
             }

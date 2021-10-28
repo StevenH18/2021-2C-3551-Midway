@@ -18,15 +18,15 @@ namespace TGC.MonoGame.TP.Environment
         private SoundEffectInstance OceanAmbience;
         private SoundEffectInstance StormAmbience;
         private SoundEffectInstance RainAmbience;
+        private float VolumeTimeStart = 0f;
         private float VolumeEaseInSeconds = 5f;
-
+        private bool Initialized = false;
         public SoundSystem(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
         {
             Graphics = graphics;
             Content = content;
             Environment = environment;
         }
-
         public void Load()
         {
             ThunderSounds = new List<SoundEffect>();
@@ -44,22 +44,30 @@ namespace TGC.MonoGame.TP.Environment
             OceanAmbience = oceanAmbience.CreateInstance();
             StormAmbience = stormAmbience.CreateInstance();
             RainAmbience = rainAmbience.CreateInstance();
+        }
 
-            OceanAmbience.IsLooped = true;
-            StormAmbience.IsLooped = true;
-            RainAmbience.IsLooped = true;
+        public void Initialize(GameTime gameTime)
+        {
+            if (Initialized)
+                return;
 
             // Comienzo con volumen en 0 para que no te rompa los timpanos
             OceanAmbience.Volume = 0f;
             StormAmbience.Volume = 0f;
             RainAmbience.Volume = 0f;
 
+            OceanAmbience.IsLooped = true;
+            StormAmbience.IsLooped = true;
+            RainAmbience.IsLooped = true;
+
             OceanAmbience.Play();
             StormAmbience.Play();
             RainAmbience.Play();
 
-        }
+            VolumeTimeStart = (float)gameTime.TotalGameTime.TotalSeconds;
 
+            Initialized = true;
+        }
         public void Update(GameTime gameTime)
         {
             UpdateAmbienceVolume(gameTime);
@@ -68,7 +76,7 @@ namespace TGC.MonoGame.TP.Environment
         private void UpdateAmbienceVolume(GameTime gameTime)
         {
             // Lentamente subo el volumen maximo hasta 1, asi el sonido no es muy impactante
-            float maxVolumeSmooth = (float)Math.Clamp(gameTime.TotalGameTime.TotalSeconds / VolumeEaseInSeconds, 0f, 1f);
+            float maxVolumeSmooth = (float)Math.Clamp((gameTime.TotalGameTime.TotalSeconds - VolumeTimeStart) / VolumeEaseInSeconds, 0f, 1f);
 
             OceanAmbience.Volume = Math.Clamp(Environment.OceanAmbienceVolume, 0f, maxVolumeSmooth);
             StormAmbience.Volume = Math.Clamp(Environment.StormAmbienceVolume, 0f, maxVolumeSmooth);
