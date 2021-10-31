@@ -39,7 +39,7 @@ namespace TGC.MonoGame.TP.Environment
         public RenderTarget2D OceanDepthColor;
         public Vector4[] IslandsPositions = new Vector4[5]
         {
-            new Vector4(5000, -20, -500, 3000),
+            new Vector4(9000, -20, -500, 3000),
             new Vector4(-1000, 0, -1000, 10000),
             new Vector4(4000, 0, 4000, 5000),
             new Vector4(0, 0, 0, 0),
@@ -84,9 +84,9 @@ namespace TGC.MonoGame.TP.Environment
         private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
         {
             // Weather Calm Values
-            { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0f, 6000f) },
-            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0f, 3100f) },
-            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0f, 1800f) },
+            { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0.1f, 6000f) },
+            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
             { (Weather.Calm, "RainProgress"), 0f },
 
@@ -95,9 +95,9 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Calm, "RainAmbienceVolume"), 0f },
 
             // Weather Rain Values
-            { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.1f, 6000f) },
-            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
-            { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.05f, 1800f) },
+            { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
+            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
+            { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
             { (Weather.Rain, "RainProgress"), 0.1f },
 
