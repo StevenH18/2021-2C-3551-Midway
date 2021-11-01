@@ -66,12 +66,13 @@ namespace TGC.MonoGame.TP.Environment
         // Thunder config
         private SpriteBatch SpriteBatch;
         private Texture2D WhiteScreen;
-        private float TimeUntilThunderSeconds = 10f;
-        private float ThunderDurationSeconds = 0.1f;
+        private float TimeUntilThunderSeconds = 1f;
+        private float ThunderDurationSeconds = 0.2f;
         private float MaxTimeUntilThunderSeconds = 120f;
         private float MinTimeUntilThunderSeconds = 40f;
         private bool StopThunder = false;
         private bool DrawThunder = false;
+        private bool OverrideWeatherStorm = false;
 
         // Ambience config
         public float OceanAmbienceVolume = 0f;
@@ -122,6 +123,8 @@ namespace TGC.MonoGame.TP.Environment
         private float WeatherAnimationStart;
         private float WeatherAnimationLengthSeconds = 10;
 
+        private GameTime GameTime;
+
         public MapEnvironment(GraphicsDevice graphics, ContentManager content)
         {
             Graphics = graphics;
@@ -154,9 +157,10 @@ namespace TGC.MonoGame.TP.Environment
 
         public void Update(GameTime gameTime)
         {
+            GameTime = gameTime;
             if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.T))
             {
-                SoundSystem.PlayRandomThunder();
+                PlayThunderEffect();
             }
             if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.P)) 
             {
@@ -174,26 +178,8 @@ namespace TGC.MonoGame.TP.Environment
                 }
             }
 
-            KeyboardState kstate = Keyboard.GetState();
-            if(kstate.IsKeyDown(Keys.O))
-            {
-                ShoreWidth += (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
-            }
-            if (kstate.IsKeyDown(Keys.L))
-            {
-                ShoreWidth -= (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
-            }
-            if (kstate.IsKeyDown(Keys.I))
-            {
-                ShoreSmoothness += (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
-            }
-            if (kstate.IsKeyDown(Keys.K))
-            {
-                ShoreSmoothness -= (float)gameTime.ElapsedGameTime.TotalSeconds * 50;
-            }
-
-            ThunderEffects(gameTime);
-            AnimateWeather(gameTime);
+            ThunderEffects();
+            AnimateWeather();
             SoundSystem.Initialize(gameTime);
             SoundSystem.Update(gameTime);
         }
@@ -243,7 +229,7 @@ namespace TGC.MonoGame.TP.Environment
                 WeatherChangeTo = weather;
                 if(WeatherChangeTo == Weather.Storm)
                 {
-                    SoundSystem.PlayRandomThunder();
+                    PlayThunderEffect();
                 }
             }
             return !WeatherChanging;
@@ -281,9 +267,9 @@ namespace TGC.MonoGame.TP.Environment
                 progress);
         }
 
-        private void AnimateWeather(GameTime gameTime)
+        private void AnimateWeather()
         {
-            float elapsedTime = (float)gameTime.TotalGameTime.TotalSeconds;
+            float elapsedTime = (float)GameTime.TotalGameTime.TotalSeconds;
 
             // Start animating
             if (WeatherChangeTo != WeatherState && !WeatherChanging)
@@ -303,13 +289,13 @@ namespace TGC.MonoGame.TP.Environment
                 }
             }
         }
-        private void ThunderEffects(GameTime gameTime)
+        private void ThunderEffects()
         {
-            if (WeatherState != Weather.Storm)
+            if (WeatherState != Weather.Storm && !OverrideWeatherStorm)
                 return;
 
-            float seconds = (float)gameTime.TotalGameTime.TotalSeconds;
-            float miliseconds = (float)gameTime.TotalGameTime.TotalMilliseconds;
+            float seconds = (float)GameTime.TotalGameTime.TotalSeconds;
+            float miliseconds = (float)GameTime.TotalGameTime.TotalMilliseconds;
 
             DrawThunder = false;
 
@@ -327,6 +313,7 @@ namespace TGC.MonoGame.TP.Environment
             if (seconds % TimeUntilThunderSeconds > ThunderDurationSeconds && !StopThunder)
             {
                 StopThunder = true;
+                OverrideWeatherStorm = false;
 
                 Random random = new Random();
                 float randomNumber = (float)random.NextDouble();
@@ -337,6 +324,11 @@ namespace TGC.MonoGame.TP.Environment
                 SoundSystem.PlayRandomThunder();
 
             }
+        }
+        private void PlayThunderEffect()
+        {
+            OverrideWeatherStorm = true;
+            TimeUntilThunderSeconds = 1f;
         }
     }
 }

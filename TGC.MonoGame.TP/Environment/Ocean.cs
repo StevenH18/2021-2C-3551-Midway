@@ -69,7 +69,7 @@ namespace TGC.MonoGame.TP
             // Textura
             Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
             Effect.Parameters["NormalTexture"]?.SetValue(Normal);
-            Effect.Parameters["NormalIntensity"]?.SetValue(Environment.RainProgress + 0.1f);
+            Effect.Parameters["NormalIntensity"]?.SetValue(1f);
             Effect.Parameters["DepthTexture"]?.SetValue(Environment.OceanDepth);
             Effect.Parameters["DepthColorTexture"]?.SetValue(Environment.OceanDepthColor);
 
