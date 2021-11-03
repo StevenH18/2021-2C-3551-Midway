@@ -191,8 +191,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 worldNormal)
 {
-    float3 tangentNormal1 = tex2D(NormalSampler, textureCoordinates * 0.8 + float2(-Time * 0.01, -Time * 0.01) + 500).xyz * 2.0 - 1.0;
-    float3 tangentNormal2 = tex2D(NormalSampler, textureCoordinates + float2(Time * 0.01, Time * 0.01)).xyz * 2.0 - 1.0;
+    float3 tangentNormal1 = tex2D(NormalSampler, textureCoordinates * 0.8 + float2(-Time * 0.02, -Time * 0.02) + 500).xyz * 2.0 - 1.0;
+    float3 tangentNormal2 = tex2D(NormalSampler, textureCoordinates + float2(Time * 0.02, Time * 0.02)).xyz * 2.0 - 1.0;
     float3 tangentNormal = tangentNormal1 * 0.5 + tangentNormal2 * 0.5;
 
     float3 Q1 = ddx(worldPosition);

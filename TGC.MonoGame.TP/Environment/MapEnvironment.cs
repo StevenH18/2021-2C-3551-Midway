@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP.Environment
         public Vector3 SunPosition = new Vector3(-7500f, 14000f, -50000f);
         public Vector3 SunColor = new Vector3(0.949f, 0.874f, 0.670f);
         public float SunIntensity = 50000f;
-        public float Gravity = 25f;
+        public float Gravity = 50f;
 
         // Ocean config
         public int OceanWidth = 100000;
@@ -55,7 +55,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainParticleWidth = 1;
 
         public int RainParticles = 500000;
-        public float RainParticleSeparation = 25000;
+        public float RainParticleSeparation = 15000;
         public float RainParticleVerticalSeparation = 10000;
 
         public float RainHeightStart = 5000;
@@ -96,9 +96,9 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Calm, "RainAmbienceVolume"), 0f },
 
             // Weather Rain Values
-            { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
-            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
-            { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
+            { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.1f, 6000f) },
+            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
+            { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.1f, 1800f) },
 
             { (Weather.Rain, "RainProgress"), 0.1f },
 
@@ -107,7 +107,7 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Rain, "RainAmbienceVolume"), 1f },
 
             // Weather Storm Values
-            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.5f, 6000f) },
+            { (Weather.Storm, "WaveA"), new Vector4(-1f, -1f, 0.3f, 6000f) },
             { (Weather.Storm, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
             { (Weather.Storm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 

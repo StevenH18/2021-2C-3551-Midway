@@ -94,8 +94,8 @@ namespace TGC.MonoGame.TP
             Hud = new HudController(GraphicsDevice, Content);
 
             ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
-            ships[0].Position.Z = 6; //en el medio del oceano
-            ships[0].Position.X = 6;
+            ships[0].Position.Z = 6000; //en el medio del oceano
+            ships[0].Position.X = 6000;
             for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;
