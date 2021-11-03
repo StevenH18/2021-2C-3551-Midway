@@ -31,6 +31,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/OceanShader.fx
 
+#begin Effects/RadarShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/RadarShader.fx
+
 #begin Effects/RainShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -398,6 +404,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/fondo-blanco.png
+
+#begin Textures/Hud/radar.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Hud/radar.png
+
+#begin Textures/Hud/radar_line.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Hud/radar_line.png
 
 #begin Textures/Ocean/ocean_albedo.jpg
 /importer:TextureImporter

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Controller;
 using TGC.MonoGame.TP.Environment;
+using TGC.MonoGame.TP.Hud;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
@@ -34,6 +35,8 @@ namespace TGC.MonoGame.TP
 
         private MapEnvironment Environment;
 
+        private HudController Hud;
+
         private SpriteBatch SpriteBatch;
 
         private SpriteFont Font;
@@ -53,7 +56,7 @@ namespace TGC.MonoGame.TP
             // Maneja la configuracion y la administracion del dispositivo grafico.
             Graphics = new GraphicsDeviceManager(this);
             // Descomentar para que el juego sea pantalla completa.
-            // Graphics.IsFullScreen = true;
+            //Graphics.IsFullScreen = true;
             // Carpeta raiz donde va a estar toda la Media.
             Content.RootDirectory = "Content";
             // Hace que el mouse sea visible.
@@ -88,6 +91,7 @@ namespace TGC.MonoGame.TP
             ships = new Ship[naves];
 
             Environment = new MapEnvironment(GraphicsDevice, Content);
+            Hud = new HudController(GraphicsDevice, Content);
 
             ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
             ships[0].Position.Z = 6; //en el medio del oceano
@@ -131,6 +135,7 @@ namespace TGC.MonoGame.TP
             }
 
             Environment.Load();
+            Hud.Load();
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -147,11 +152,16 @@ namespace TGC.MonoGame.TP
         protected override void Update(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logica de actualizacion del juego.
-
             // Capturar Input teclado
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 //Salgo del juego.
                 Exit();
+
+            if (Inputs.isJustPressed(Keys.F11))
+            {
+                Graphics.ToggleFullScreen();
+                Graphics.ApplyChanges();
+            }
 
             switch (status)
             {
@@ -172,8 +182,8 @@ namespace TGC.MonoGame.TP
                     ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
                     Camera.Update(gameTime);
                     FreeCamera.Update(gameTime);
-
                     Environment.Update(gameTime);
+                    Hud.Update(gameTime);
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                     {
@@ -194,11 +204,12 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
+
             // FIRST PASS DRAW OCEAN DEPTH
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
+            Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -217,7 +228,7 @@ namespace TGC.MonoGame.TP
                     // {
                     //    ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     // }
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
 
                     //SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
@@ -237,7 +248,8 @@ namespace TGC.MonoGame.TP
                         ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     }
 
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, Matrix.CreateTranslation(ShipCamera.Position));
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
+                    Hud.Draw(gameTime, ships, ShipCamera.World);
 
                     base.Draw(gameTime);
 

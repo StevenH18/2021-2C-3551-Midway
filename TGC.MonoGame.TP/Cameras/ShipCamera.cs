@@ -32,6 +32,8 @@ namespace TGC.MonoGame.TP.Cameras
 
         public Vector3 Position { get; set; }
 
+        public Matrix World { get; set; }
+
         /// <summary>
         /// Crea una FollowCamera que sigue a una matriz de mundo
         /// </summary>
@@ -118,6 +120,7 @@ namespace TGC.MonoGame.TP.Cameras
 
             Position = offsetedPosition;
             View = Matrix.CreateLookAt(offsetedPosition, followedPosition, cameraCorrectUp);
+            World = Matrix.CreateWorld(Position, forward, cameraCorrectUp);
         }
     }
 }
