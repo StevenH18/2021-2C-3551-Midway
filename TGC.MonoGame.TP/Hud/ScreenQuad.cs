@@ -27,7 +27,7 @@ namespace TGC.MonoGame.TP.Hud
             Vector3 TR = new Vector3(1, 1, 0);
 
             Vector3 screenSize = new Vector3(Graphics.Viewport.Width, Graphics.Viewport.Height, 1);
-            Vector3 finalPosition = position / screenSize;
+            Vector3 finalPosition = position / screenSize * 2;
             Vector3 finalSize = (size / screenSize) * 2 + BL;
 
             TL.Y = finalSize.Y;

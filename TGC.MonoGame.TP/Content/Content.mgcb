@@ -19,6 +19,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/BasicShader.fx
 
+#begin Effects/CrosshairShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/CrosshairShader.fx
+
 #begin Effects/IslandShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -55,6 +61,13 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Basic.spritefont
+
+#begin Fonts/WeatherHud.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/WeatherHud.spritefont
 
 #begin Models/Environment/Island1/Island1.fbx
 /importer:FbxImporter
@@ -405,6 +418,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/fondo-blanco.png
 
+#begin Textures/Hud/crosshair.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Hud/crosshair.png
+
 #begin Textures/Hud/radar.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -428,6 +453,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/Hud/radar_line.png
+
+#begin Textures/Hud/radar_mask.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Hud/radar_mask.png
 
 #begin Textures/Ocean/ocean_albedo.jpg
 /importer:TextureImporter

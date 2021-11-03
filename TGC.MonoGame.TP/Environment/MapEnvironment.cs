@@ -70,7 +70,7 @@ namespace TGC.MonoGame.TP.Environment
         private float ThunderDurationSeconds = 0.2f;
         private float MaxTimeUntilThunderSeconds = 120f;
         private float MinTimeUntilThunderSeconds = 40f;
-        private bool StopThunder = false;
+        private bool StopThunder = true;
         private bool DrawThunder = false;
         private bool OverrideWeatherStorm = false;
 
@@ -80,14 +80,14 @@ namespace TGC.MonoGame.TP.Environment
         public float RainAmbienceVolume = 0f;
 
         // Weather config
-        public Weather WeatherState = Weather.Calm;
+        public Weather WeatherState = Weather.Rain;
 
         private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
         {
             // Weather Calm Values
-            { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0.1f, 6000f) },
-            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
-            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
+            { (Weather.Calm, "WaveA"), new Vector4(-1f, -1f, 0.05f, 6000f) },
+            { (Weather.Calm, "WaveB"), new Vector4(-1f, -0.6f, 0.05f, 3100f) },
+            { (Weather.Calm, "WaveC"), new Vector4(-1f, -0.3f, 0.1f, 1800f) },
 
             { (Weather.Calm, "RainProgress"), 0f },
 
@@ -97,7 +97,7 @@ namespace TGC.MonoGame.TP.Environment
 
             // Weather Rain Values
             { (Weather.Rain, "WaveA"), new Vector4(-1f, -1f, 0.2f, 6000f) },
-            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.2f, 3100f) },
+            { (Weather.Rain, "WaveB"), new Vector4(-1f, -0.6f, 0.1f, 3100f) },
             { (Weather.Rain, "WaveC"), new Vector4(-1f, -0.3f, 0.2f, 1800f) },
 
             { (Weather.Rain, "RainProgress"), 0.1f },
@@ -118,8 +118,8 @@ namespace TGC.MonoGame.TP.Environment
             { (Weather.Storm, "RainAmbienceVolume"), 1f }
         };
 
-        private Weather WeatherChangeTo;
-        private bool WeatherChanging;
+        public Weather WeatherChangeTo;
+        public bool WeatherChanging;
         private float WeatherAnimationStart;
         private float WeatherAnimationLengthSeconds = 10;
 

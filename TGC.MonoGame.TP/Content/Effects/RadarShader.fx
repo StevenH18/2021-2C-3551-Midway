@@ -8,6 +8,13 @@
 #endif
 
 #define PI 3.1415926538
+texture RadarMaskTexture;
+sampler2D RadarMaskSampler = sampler_state
+{
+    Texture = (RadarMaskTexture);
+    ADDRESSU = clamp;
+    ADDRESSV = clamp;
+};
 
 texture RadarTexture;
 sampler2D RadarSampler = sampler_state
@@ -27,7 +34,7 @@ sampler2D RadarLineSampler = sampler_state
 
 float3 CameraPosition;
 float3 CameraForward;
-float3 ShipPositions[50];
+float3 ShipPositions[20];
 
 float RadarRange;
 
@@ -50,7 +57,6 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	VertexShaderOutput output = (VertexShaderOutput)0;
 
     output.Position = input.Position;
-    
     output.TextureCoordinates = input.TextureCoordinates;
 
 	return output;
@@ -67,7 +73,7 @@ float2 rotateUV(float2 uv, float rotation, float2 mid)
 float dotInRadar(VertexShaderOutput input, float2 rotation)
 {
     float radarDot = 0;
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 20; i++)
     {        
         float2 shipPosition = float2(ShipPositions[i].x, ShipPositions[i].z);
         float2 cameraPosition = float2(CameraPosition.x, CameraPosition.z);
@@ -89,13 +95,15 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     float2 rotation = rotateUV(input.TextureCoordinates, Time, float2(0.5, 0.5));
     float4 radarLine = tex2D(RadarLineSampler, rotation);
+    float radarLineMask = tex2D(RadarMaskSampler, rotation).a;
     
     float dots = dotInRadar(input, rotation);
+    float4 dotsColor = float4(0, dots, 0, 1);
     
     //return step(distance(input.TextureCoordinates, float2(0.5, 0.5) + float2(cos(Time), sin(Time)) * 0.5), 0.1);
     
     //return float4(CameraForward, 1);
-    return radar + radarLine + float4(0, dots, 0, 0);
+    return radar + radarLine + lerp(0, dotsColor, radarLineMask);
     return float4(1,1,1,1);
 }
 

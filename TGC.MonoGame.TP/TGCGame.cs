@@ -99,9 +99,9 @@ namespace TGC.MonoGame.TP
             for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;
-                var variacion = 400;
+                var variacion = 2500;
                 var offset = 1000;
-                var separation = 500;
+                var separation = 5000;
                 var rand = new Random();
 
                 if( i%2 == 0)
@@ -249,7 +249,7 @@ namespace TGC.MonoGame.TP
                     }
 
                     Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
-                    Hud.Draw(gameTime, ships, ShipCamera.World);
+                    Hud.Draw(gameTime, ships, ShipCamera.World, Environment);
 
                     base.Draw(gameTime);
 
