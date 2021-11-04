@@ -37,7 +37,7 @@ sampler2D AlbedoSampler = sampler_state
     MIPFILTER = LINEAR;
 };
 
-//Textura para Normals
+//Textura para Normales
 texture NormalTexture;
 sampler2D NormalSampler = sampler_state
 {
@@ -50,6 +50,18 @@ sampler2D NormalSampler = sampler_state
 };
 // Que tan pronunciada son las normales en el shader
 float NormalIntensity;
+
+//Textura para Foam
+texture NoiseTexture;
+sampler2D NoiseSampler = sampler_state
+{
+    Texture = (NoiseTexture);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
 
 //Textura del skybox o del ambiente
 texture EnvironmentMap;
@@ -89,7 +101,11 @@ float4 WaveA;
 float4 WaveB;
 float4 WaveC;
 
+// Islands
 float4 Islands[5];
+
+// Ship foam parameters
+float3 TrailPositions[3];
 
 float Time = 0;
 
@@ -148,12 +164,20 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
 		-d.y * d.y * (steepness * sin(f))
 	);
     
-    
     return float3(
         d.x * a * cos(f),
         a * sin(f),
         d.y * a * cos(f)
     );
+}
+
+float ShipFoamAmmount(float3 worldPosition)
+{
+    float trail = 0;
+    
+    
+    
+    return trail;
 }
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -208,6 +232,14 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
     return normalize(mul(tangentNormal, TBN));
 }
 
+float3 ShipFoamColor(VertexShaderOutput input)
+{
+    float3 foamColor1 = tex2D(NoiseSampler, input.TextureCoordinates * 20 + Time).rgb * 0.5 + 0.5;
+    float3 foamColor2 = tex2D(NoiseSampler, input.TextureCoordinates * 20 - Time).rgb * 0.5 + 0.5;
+    float3 foamColor = foamColor1 * 0.5 + foamColor2 * 0.5;
+    return foamColor;
+}
+
 //Pixel Shader
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
@@ -228,17 +260,19 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     viewRotated.x = view.x * cos(angle) + view.z * sin(angle);
     viewRotated.z = view.z * cos(angle) + view.x * sin(angle);
     
-    float3 reflection = reflect(viewRotated, normal);
-    float3 reflectionColor = texCUBE(EnvironmentMapSampler, reflection).rgb;
-    float fresnel = saturate((1.0 - dot(normal, view)));
-    
-    // waterColor es el color con los efectos de reflejos en el agua
-    float3 waterColor = lerp(albedo, reflectionColor, saturate(fresnel - 0.25));
-    
     // Obtengo las texturas que se renderizaron en el render target
     float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
     float caustics = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz).g;
     float3 underwaterColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
+    float3 reflection = reflect(viewRotated, normal);
+    float3 reflectionColor = texCUBE(EnvironmentMapSampler, reflection).rgb;
+    
+    float fresnel = saturate((1.0 - dot(normal, view)));
+    // waterColor es el color con los efectos de reflejos en el agua
+    float3 waterColor = lerp(albedo, reflectionColor, saturate(fresnel - 0.25));
+    
+    // Add foam
+    waterColor = lerp(waterColor, waterColor + ShipFoamColor(input), ShipFoamAmmount(input.WorldPosition.xyz));
     
     // Agregamos reflejos al oleaje dependiendo del fresnel
     underwaterColor = lerp(underwaterColor, waterColor, saturate(fresnel - 0.25));

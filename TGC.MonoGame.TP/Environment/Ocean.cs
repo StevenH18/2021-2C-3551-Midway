@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
 using TGC.MonoGame.TP.Environment;
+using TGC.MonoGame.TP.Ships;
+using System.Linq;
 
 namespace TGC.MonoGame.TP
 {
@@ -15,8 +17,17 @@ namespace TGC.MonoGame.TP
         protected IndexBuffer IndexBuffer;
         protected Texture2D Albedo;
         protected Texture2D Normal;
+        protected Texture2D Noise;
         protected TextureCube SkyBox;
         protected MapEnvironment Environment;
+        protected TrailPoint[] Trail;
+        protected struct TrailPoint {
+            public Vector3 Position;
+            public TrailPoint(Vector3 position)
+            {
+                Position = position;
+            }
+        }
 
         public Ocean(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
         {
@@ -33,12 +44,13 @@ namespace TGC.MonoGame.TP
 
             Albedo = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_albedo");
             Normal = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
+            Noise = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_noise");
             SkyBox = Content.Load<TextureCube>(TGCGame.ContentFolderTextures + "SkyBoxes/StormySky");
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
         }
-        public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix world, Ship[] ships, GameTime gameTime)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             Graphics.Indices = IndexBuffer;
@@ -70,8 +82,21 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["AlbedoTexture"]?.SetValue(Albedo);
             Effect.Parameters["NormalTexture"]?.SetValue(Normal);
             Effect.Parameters["NormalIntensity"]?.SetValue(1f);
+            Effect.Parameters["NoiseTexture"]?.SetValue(Noise);
             Effect.Parameters["DepthTexture"]?.SetValue(Environment.OceanDepth);
             Effect.Parameters["DepthColorTexture"]?.SetValue(Environment.OceanDepthColor);
+
+            TrailPoint[] trailPoints = new TrailPoint[]
+            {
+                new TrailPoint(new Vector3(0,0,0)),
+                new TrailPoint(new Vector3(50,0,0)),
+                new TrailPoint(new Vector3(100,0,0)),
+            };
+
+            /*
+            // Ship foam
+            Effect.Parameters["TrailPositions"]?.SetValue(Trail.Select(trail => trail.Position).ToArray());
+            */
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {

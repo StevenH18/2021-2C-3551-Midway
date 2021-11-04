@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP.Environment
 {
@@ -202,10 +203,10 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="projection"></param>
         /// <param name="view"></param>
         /// <param name="world"></param>
-        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
+        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world, Ship[] ships)
         {
             IslandSystem.Draw(view, projection, world);
-            Ocean.Draw(view, projection, world, gameTime);
+            Ocean.Draw(view, projection, world, ships, gameTime);
             SkyBox.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
 
