@@ -105,7 +105,9 @@ float4 WaveC;
 float4 Islands[5];
 
 // Ship foam parameters
-float3 TrailPositions[3];
+float4 TrailPositions[100];
+float TrailLifeTimes[100];
+float TrailFadeout = 0;
 
 float Time = 0;
 
@@ -171,15 +173,6 @@ float3 CalculateWave(float4 wave, float3 vertex, inout float3 tangent, inout flo
     );
 }
 
-float ShipFoamAmmount(float3 worldPosition)
-{
-    float trail = 0;
-    
-    
-    
-    return trail;
-}
-
 VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     // Clear the output
@@ -232,47 +225,69 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
     return normalize(mul(tangentNormal, TBN));
 }
 
-float3 ShipFoamColor(VertexShaderOutput input)
+float3 GetNormals(VertexShaderOutput input)
 {
-    float3 foamColor1 = tex2D(NoiseSampler, input.TextureCoordinates * 20 + Time).rgb * 0.5 + 0.5;
-    float3 foamColor2 = tex2D(NoiseSampler, input.TextureCoordinates * 20 - Time).rgb * 0.5 + 0.5;
-    float3 foamColor = foamColor1 * 0.5 + foamColor2 * 0.5;
-    return foamColor;
-}
-
-//Pixel Shader
-float4 MainPS(VertexShaderOutput input) : COLOR
-{
-    input.ScreenPosition.y = -input.ScreenPosition.y;
-    float3 albedo = pow(tex2D(AlbedoSampler, input.TextureCoordinates).rgb, float3(2.2, 2.2, 2.2));
-
     float3 worldNormal = input.Normal;
     float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
-    float3 view = normalize(EyePosition - input.WorldPosition.xyz);
-    
-    normal = lerp(worldNormal, normal, min(saturate(NormalIntensity), 1.1 - saturate(ClosenessToIsland(input.WorldPosition.xyz))));
-    
-    //normal = worldNormal;
-    
+    return lerp(worldNormal, normal, min(saturate(NormalIntensity), 1.1 - saturate(ClosenessToIsland(input.WorldPosition.xyz))));
+}
+
+float3 GetReflection(VertexShaderOutput input, float3 normal, float3 view)
+{
     //Obtener texel de CubeMap
     float3 viewRotated = -view;
     float angle = PI;
     viewRotated.x = view.x * cos(angle) + view.z * sin(angle);
     viewRotated.z = view.z * cos(angle) + view.x * sin(angle);
     
-    // Obtengo las texturas que se renderizaron en el render target
-    float cameraDepth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
-    float caustics = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz).g;
-    float3 underwaterColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
     float3 reflection = reflect(viewRotated, normal);
-    float3 reflectionColor = texCUBE(EnvironmentMapSampler, reflection).rgb;
+    return texCUBE(EnvironmentMapSampler, reflection).rgb;
+}
+
+float2 GetTrails(VertexShaderOutput input)
+{
+    float2 trail = float2(0, 0);
     
+    for (int i = 0; i < 100; i++)
+    {
+        float distanceFromWorld = distance(TrailPositions[i].xyz, input.WorldPosition.xyz);
+        float maxSize = TrailPositions[i].w * (Time + 1 - TrailLifeTimes[i]);
+        
+        trail.x += (1 - smoothstep(0, maxSize, distanceFromWorld));
+        trail.y += (1 - smoothstep(0, maxSize + 10, distanceFromWorld)) * (saturate(Time - TrailLifeTimes[i] - 2));
+
+    }
+    
+    return trail;
+}
+
+//Pixel Shader
+float4 MainPS(VertexShaderOutput input) : COLOR
+{
+    input.ScreenPosition.y = -input.ScreenPosition.y;
+    float3 normal = GetNormals(input);
+    float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     float fresnel = saturate((1.0 - dot(normal, view)));
+    
+    float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
+    float3 foam2 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
+    float outerTrail = saturate(sin(min(GetTrails(input).x, PI)));
+    float innerTrail = saturate(GetTrails(input).x / 25);
+    float trailMask = GetTrails(input).y;
+    
+    //normal = lerp(normal, normal * 2, outerTrail);
+    
+    float3 albedo = pow(tex2D(AlbedoSampler, input.TextureCoordinates).rgb, float3(2.2, 2.2, 2.2));
+    float3 reflectionColor = GetReflection(input, normal, view);
+    float3 underwaterColor = tex2D(DepthColorSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz);
+    float depth = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2).r;
+    float caustics = tex2D(DepthSampler, (input.ScreenPosition.xy / input.ScreenPosition.w + 1) / 2 + normal.xz).g;
+    
     // waterColor es el color con los efectos de reflejos en el agua
     float3 waterColor = lerp(albedo, reflectionColor, saturate(fresnel - 0.25));
     
-    // Add foam
-    waterColor = lerp(waterColor, waterColor + ShipFoamColor(input), ShipFoamAmmount(input.WorldPosition.xyz));
+    // agregamos foam al watercolor usando el innerTrail
+    waterColor = waterColor + saturate(foam1 * innerTrail + saturate(pow(outerTrail + foam2 * outerTrail, 10)) * 0.7 - trailMask);
     
     // Agregamos reflejos al oleaje dependiendo del fresnel
     underwaterColor = lerp(underwaterColor, waterColor, saturate(fresnel - 0.25));
@@ -282,7 +297,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     underwaterColor = lerp(waterColor, underwaterColor, smoothstep(0.5, 1, ClosenessToIsland(EyePosition)));
     
     // dependiendo de que tan cerca este de la orilla dibujo el color de la orilla o el del agua
-    float3 finalColor = lerp(waterColor, underwaterColor, saturate(cameraDepth) * caustics * 4);
+    float3 finalColor = lerp(waterColor, underwaterColor, saturate(depth) * caustics * 4);
   
     return float4(finalColor, 1);
 }

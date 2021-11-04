@@ -28,7 +28,7 @@ namespace TGC.MonoGame.TP.Ships
         private float aceleration = 0.02f;
         public float speed = 0;
         private const float turningSpeed = 0.07f;
-        private const float Maxspeed = 5;
+        public float Maxspeed = 5;
 
         public Ship(ContentManager content, Ocean ocean,Color color)
         {

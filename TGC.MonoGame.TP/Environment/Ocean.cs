@@ -21,12 +21,12 @@ namespace TGC.MonoGame.TP
         protected TextureCube SkyBox;
         protected MapEnvironment Environment;
         protected TrailPoint[] Trail;
+        protected int MaxTrails = 100;
+        protected int CurrentTrail = 0;
+        protected float TrailFadeout;
         protected struct TrailPoint {
-            public Vector3 Position;
-            public TrailPoint(Vector3 position)
-            {
-                Position = position;
-            }
+            public Vector4 Position;
+            public float LifeTime;
         }
 
         public Ocean(GraphicsDevice graphics, ContentManager content, MapEnvironment environment)
@@ -49,8 +49,14 @@ namespace TGC.MonoGame.TP
 
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "OceanShader");
+
+            Trail = new TrailPoint[MaxTrails];
         }
-        public void Draw(Matrix view, Matrix proj, Matrix world, Ship[] ships, GameTime gameTime)
+        public void Update(GameTime gameTime, Ship[] ships)
+        {
+            UpdateTrails(gameTime, ships);
+        }
+        public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             Graphics.Indices = IndexBuffer;
@@ -85,18 +91,10 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["NoiseTexture"]?.SetValue(Noise);
             Effect.Parameters["DepthTexture"]?.SetValue(Environment.OceanDepth);
             Effect.Parameters["DepthColorTexture"]?.SetValue(Environment.OceanDepthColor);
-
-            TrailPoint[] trailPoints = new TrailPoint[]
-            {
-                new TrailPoint(new Vector3(0,0,0)),
-                new TrailPoint(new Vector3(50,0,0)),
-                new TrailPoint(new Vector3(100,0,0)),
-            };
-
-            /*
             // Ship foam
             Effect.Parameters["TrailPositions"]?.SetValue(Trail.Select(trail => trail.Position).ToArray());
-            */
+            Effect.Parameters["TrailLifeTimes"]?.SetValue(Trail.Select(trail => trail.LifeTime).ToArray());
+            Effect.Parameters["TrailFadeout"]?.SetValue(TrailFadeout);
 
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
@@ -104,6 +102,28 @@ namespace TGC.MonoGame.TP
 
                 var triangles = Environment.OceanQuads * Environment.OceanQuads * 2;
                 Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
+            }
+        }
+        void UpdateTrails(GameTime gameTime, Ship[] ships)
+        {
+            float seconds = (float)gameTime.TotalGameTime.TotalSeconds;
+            float miliseconds = (float)gameTime.TotalGameTime.Milliseconds;
+            float delay = 10;
+
+            if(MathF.Abs(ships[0].speed) > 0)
+                TrailFadeout = seconds + 1;
+
+            if(miliseconds % delay == 0)
+            {
+                Vector3 trailPosition = ships[0].World.Translation + ships[0].Rotation.Forward * MathF.Sign(ships[0].speed) * 100;
+                float trailSize = 50 * MathF.Abs(ships[0].speed / ships[0].Maxspeed);
+
+                Trail[CurrentTrail].Position = new Vector4(trailPosition.X, trailPosition.Y, trailPosition.Z, trailSize);
+                Trail[CurrentTrail].LifeTime = seconds;
+
+                CurrentTrail++;
+                if (CurrentTrail >= Trail.Length)
+                    CurrentTrail = 0;
             }
         }
         float ClosenessToIsland(Vector3 position)

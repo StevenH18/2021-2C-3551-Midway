@@ -94,8 +94,8 @@ namespace TGC.MonoGame.TP
             Hud = new HudController(GraphicsDevice, Content);
 
             ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
-            ships[0].Position.Z = 0; //en el medio del oceano
-            ships[0].Position.X = 0;
+            ships[0].Position.Z = 1; //en el medio del oceano
+            ships[0].Position.X = 1;
             for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;
@@ -182,7 +182,7 @@ namespace TGC.MonoGame.TP
                     ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
                     Camera.Update(gameTime);
                     FreeCamera.Update(gameTime);
-                    Environment.Update(gameTime);
+                    Environment.Update(gameTime, ships);
                     Hud.Update(gameTime);
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Enter))
@@ -228,7 +228,7 @@ namespace TGC.MonoGame.TP
                     // {
                     //    ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     // }
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World, ships);
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
 
                     //SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
@@ -248,7 +248,7 @@ namespace TGC.MonoGame.TP
                         ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
                     }
 
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World, ships);
+                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
                     Hud.Draw(gameTime, ships, ShipCamera.World, Environment);
 
                     base.Draw(gameTime);

@@ -156,7 +156,7 @@ namespace TGC.MonoGame.TP.Environment
             LerpWeatherValues(WeatherState, WeatherChangeTo, 0);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Ship[] ships)
         {
             GameTime = gameTime;
             if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.T))
@@ -181,6 +181,7 @@ namespace TGC.MonoGame.TP.Environment
 
             ThunderEffects();
             AnimateWeather();
+            Ocean.Update(gameTime, ships);
             SoundSystem.Initialize(gameTime);
             SoundSystem.Update(gameTime);
         }
@@ -203,10 +204,10 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="projection"></param>
         /// <param name="view"></param>
         /// <param name="world"></param>
-        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world, Ship[] ships)
+        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
         {
             IslandSystem.Draw(view, projection, world);
-            Ocean.Draw(view, projection, world, ships, gameTime);
+            Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
 
