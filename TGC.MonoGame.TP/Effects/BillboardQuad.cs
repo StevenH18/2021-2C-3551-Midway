@@ -14,35 +14,58 @@ namespace TGC.MonoGame.TP.Effects
         private VertexBuffer VertexBuffer;
         private IndexBuffer IndexBuffer;
 
+        public Texture2D SpriteSheet;
+        public Effect Effect;
+
         public Vector3 Position;
         public float Width;
         public float Height;
-        public Vector2 SpritePixelSize;
+        public Vector2 PixelSize;
         public Vector2 SpriteSheetSize;
         public Vector2 SpriteOffset = Vector2.Zero;
-        public int SpriteIndex;
+        public int SpriteIndex = 0;
+        public int SpriteCount;
 
-        public BillboardQuad(GraphicsDevice graphics, Vector3 position, Vector2 size)
+        public BillboardQuad(GraphicsDevice graphics, Texture2D spriteSheet, Effect effect, Vector2 size, Vector2 pixelSize, Vector2 spriteSheetSize, int spriteCount)
         {
             Graphics = graphics;
+
+            SpriteSheet = spriteSheet;
+            Effect = effect;
             Width = size.X;
             Height = size.Y;
+            PixelSize = pixelSize;
+            SpriteSheetSize = spriteSheetSize;
+            SpriteCount = spriteCount;
 
             InitializeGeometry();
         }
-
+        public void Play()
+        {
+            SpriteIndex = 0;
+        }
+        public void Update(GameTime gameTime)
+        {
+            if (SpriteIndex < SpriteCount)
+            {
+                SpriteIndex++;
+            }
+        }
         public void Draw(GameTime gameTime, Matrix view, Matrix proj, Effect effect)
         {
+            if (SpriteIndex >= SpriteCount)
+                return;
+
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
 
-            SpriteOffset = new Vector2(SpriteIndex % ((SpriteSheetSize.X) / SpritePixelSize.X), MathF.Floor(SpriteIndex / (SpriteSheetSize.X / SpritePixelSize.X)));
-            SpriteOffset = SpriteOffset * SpritePixelSize;
+            SpriteOffset = new Vector2(SpriteIndex % ((SpriteSheetSize.X) / PixelSize.X), MathF.Floor(SpriteIndex / (SpriteSheetSize.X / PixelSize.X)));
+            SpriteOffset = SpriteOffset * PixelSize;
 
             effect.Parameters["World"]?.SetValue(Matrix.CreateTranslation(Position));
             effect.Parameters["View"]?.SetValue(view);
             effect.Parameters["Projection"]?.SetValue(proj);
             effect.Parameters["Time"]?.SetValue(time);
-            effect.Parameters["SpritePixelSize"]?.SetValue(SpritePixelSize);
+            effect.Parameters["SpritePixelSize"]?.SetValue(PixelSize);
             effect.Parameters["SpriteSheetSize"]?.SetValue(SpriteSheetSize);
             effect.Parameters["SpriteOffset"]?.SetValue(SpriteOffset);
 

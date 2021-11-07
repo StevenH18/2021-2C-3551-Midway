@@ -104,7 +104,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Offset.w, Progress);
 	
-    return 0.05 * skip;
+    return color * skip;
 }
 
 technique BasicColorDrawing

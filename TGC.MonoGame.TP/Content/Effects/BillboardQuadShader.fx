@@ -64,8 +64,10 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 waterSplash = tex2D(SpriteSheetSampler, (input.TextureCoordinates * SpritePixelSize + SpriteOffset) / SpriteSheetSize);
+    
+    waterSplash.rgb = pow(waterSplash.rgb, 2.2);
+    
     return waterSplash;
-
 }
 
 technique BasicColorDrawing

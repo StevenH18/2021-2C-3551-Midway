@@ -184,6 +184,7 @@ namespace TGC.MonoGame.TP
                     }
 
                     ActiveCamera.Update(gameTime, Ships[0]);
+                    EffectSystem.Update(gameTime);
                     Environment.Update(gameTime, Ships);
                     Hud.Update(gameTime);
 
@@ -192,9 +193,6 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
-            EffectSystem.ExplosionPosition = Ships[3].Position + new Vector3(0, 240,0);
-            EffectSystem.Update(gameTime);
-            ActiveCamera.Update(gameTime, Ships[0]);
 
             base.Update(gameTime);
         }
@@ -205,7 +203,6 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void Draw(GameTime gameTime)
         {
-
             // FIRST PASS DRAW OCEAN DEPTH
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
@@ -246,7 +243,10 @@ namespace TGC.MonoGame.TP
                     }
 
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-                    EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection);
+
+                    GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                    EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+
                     Hud.Draw(gameTime, Ships, ActiveCamera.World, Environment);
 
 

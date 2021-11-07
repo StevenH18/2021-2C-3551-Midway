@@ -210,6 +210,7 @@ namespace TGC.MonoGame.TP.Environment
             IslandSystem.Draw(view, projection, world);
             Ocean.Draw(view, projection, world, gameTime);
             SkyBox.Draw(view, projection, world);
+            Graphics.DepthStencilState = DepthStencilState.DepthRead;
             RainSystem.Draw(view, projection, world, gameTime);
 
             if (DrawThunder)

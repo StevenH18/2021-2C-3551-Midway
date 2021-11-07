@@ -13,25 +13,23 @@ namespace TGC.MonoGame.TP.Effects
         private GraphicsDevice Graphics;
         private ContentManager Content;
 
-        public Effect WaterSplashEffect;
-        public BillboardQuad WaterSplashQuad;
-        public Texture2D WaterSplashSpriteSheet;
-        public Vector3 WaterSplashPosition = new Vector3(0, 250, 1000);
         public Vector2 WaterSplashSize = new Vector2(640, 360);
         public Vector2 WaterSplashSpritePixelSize = new Vector2(640, 360);
         public Vector2 WaterSplashSpriteSheetSize = new Vector2(5760, 5760);
-        public int WaterSplashSpriteIndex = 0;
         public int WaterSplashSpriteCount = 135;
 
-        public Effect ExplosionEffect;
-        public BillboardQuad ExplosionQuad;
-        public Texture2D ExplosionSpriteSheet;
-        public Vector3 ExplosionPosition = new Vector3(0, 300, -5000);
         public Vector2 ExplosionSize = new Vector2(640 * 2, 360 * 2);
         public Vector2 ExplosionSpritePixelSize = new Vector2(640, 360);
         public Vector2 ExplosionSpriteSheetSize = new Vector2(9600, 9360);
-        public int ExplosionSpriteIndex = 0;
         public int ExplosionSpriteCount = 375;
+
+        public List<BillboardQuad> Sprites = new List<BillboardQuad>();
+
+        public List<BillboardQuad> ExplosionSprites = new List<BillboardQuad>();
+        public int CurrentExplosion = 0;
+
+        public List<BillboardQuad> WaterSplashSprites = new List<BillboardQuad>();
+        public int CurrentWaterSplash = 0;
 
         public EffectSystem(GraphicsDevice graphics, ContentManager content)
         {
@@ -41,56 +39,108 @@ namespace TGC.MonoGame.TP.Effects
 
         public void Load()
         {
-            WaterSplashEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
-            WaterSplashSpriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/water_splash");
-            WaterSplashQuad = new BillboardQuad(Graphics, WaterSplashPosition, WaterSplashSize);
+            CreateExplosion();
+            CreateExplosion();
+            CreateExplosion();
+            CreateExplosion();
+            CreateWaterSplash();
+            CreateWaterSplash();
+            CreateWaterSplash();
+            CreateWaterSplash();
+        }
 
-            ExplosionEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
-            ExplosionSpriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/explosion");
-            ExplosionQuad = new BillboardQuad(Graphics, ExplosionPosition, ExplosionSize);
+        public void CreateExplosion()
+        {
+            Texture2D spriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/explosion");
+            Effect effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
+
+            BillboardQuad billboard = new BillboardQuad(Graphics, spriteSheet, effect, ExplosionSize, ExplosionSpritePixelSize, ExplosionSpriteSheetSize, ExplosionSpriteCount);
+
+            ExplosionSprites.Add(billboard);
+            Sprites.Add(billboard);
+        }
+        public void CreateWaterSplash()
+        {
+            Texture2D spriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/water_splash");
+            Effect effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
+
+            BillboardQuad billboard = new BillboardQuad(Graphics, spriteSheet, effect, WaterSplashSize, WaterSplashSpritePixelSize, WaterSplashSpriteSheetSize, WaterSplashSpriteCount);
+
+            WaterSplashSprites.Add(billboard);
+            Sprites.Add(billboard);
+        }
+
+        public void PlayExplosion(Vector3 position)
+        {
+            BillboardQuad currentExplosion = ExplosionSprites[CurrentExplosion];
+
+            currentExplosion.Position = position;
+            currentExplosion.Play();
+
+            CurrentExplosion++;
+            if (CurrentExplosion >= ExplosionSprites.Count)
+                CurrentExplosion = 0;
+        }
+        public void PlayWaterSplash(Vector3 position)
+        {
+            BillboardQuad currentWaterSplash = WaterSplashSprites[CurrentWaterSplash];
+
+            currentWaterSplash.Position = position;
+            currentWaterSplash.Play();
+
+            CurrentWaterSplash++;
+            if (CurrentWaterSplash >= WaterSplashSprites.Count)
+                CurrentWaterSplash = 0;
         }
 
         public void Update(GameTime gameTime)
         {
-
-            ExplosionQuad.Position = ExplosionPosition;
-
-            if (Inputs.isJustPressed(Keys.K)) 
+            if (Inputs.isJustPressed(Keys.K))
             {
-                WaterSplashSpriteIndex = 0;
-                ExplosionSpriteIndex = 0;
+                var random = new Random();
+                var position = new Vector3(random.Next(-1500, 1500), 200f, random.Next(-1500, 1500));
+                PlayExplosion(position);
             }
 
-            Animate(gameTime);
+            if (Inputs.isJustPressed(Keys.I))
+            {
+                var random = new Random();
+                var position = new Vector3(random.Next(-1500, 1500), 200f, random.Next(-1500, 1500));
+                PlayWaterSplash(position);
+            }
+
+            for (int i = 0; i < Sprites.Count; i++)
+            {
+                Sprites[i].Update(gameTime);
+            }
         }
 
-        public void Draw(GameTime gameTime, Matrix view, Matrix proj)
+        public void Draw(GameTime gameTime, Matrix view, Matrix proj, Matrix cameraWorld)
         {
+            /*
             WaterSplashQuad.SpritePixelSize = WaterSplashSpritePixelSize;
             WaterSplashQuad.SpriteSheetSize = WaterSplashSpriteSheetSize;
             WaterSplashQuad.SpriteIndex = WaterSplashSpriteIndex;
 
             WaterSplashEffect.Parameters["SpriteSheet"]?.SetValue(WaterSplashSpriteSheet);
             WaterSplashQuad.Draw(gameTime, view, proj, WaterSplashEffect);
+            */
 
-            ExplosionQuad.SpritePixelSize = ExplosionSpritePixelSize;
-            ExplosionQuad.SpriteSheetSize = ExplosionSpriteSheetSize;
-            ExplosionQuad.SpriteIndex = ExplosionSpriteIndex;
+            Vector3 cameraPosition = cameraWorld.Translation;
 
-            ExplosionEffect.Parameters["SpriteSheet"]?.SetValue(ExplosionSpriteSheet);
-            ExplosionQuad.Draw(gameTime, view, proj, ExplosionEffect);
-        }
+            Sprites.Sort((y, x) => Vector3.Distance(x.Position, cameraPosition).CompareTo(Vector3.Distance(y.Position, cameraPosition)));
 
-        public void Animate(GameTime gameTime)
-        {
-            if(WaterSplashSpriteIndex < WaterSplashSpriteCount)
+            for (int i = 0; i < Sprites.Count; i++)
             {
-                WaterSplashSpriteIndex++;
+                Sprites[i].PixelSize = Sprites[i].PixelSize;
+                Sprites[i].SpriteSheetSize = Sprites[i].SpriteSheetSize;
+                Sprites[i].Position = Sprites[i].Position;
+
+                Sprites[i].Effect.Parameters["SpriteSheet"]?.SetValue(Sprites[i].SpriteSheet);
+
+                Sprites[i].Draw(gameTime, view, proj, Sprites[i].Effect);
             }
-            if (ExplosionSpriteIndex < ExplosionSpriteCount)
-            {
-                ExplosionSpriteIndex++;
-            }
+
         }
     }
 }
