@@ -36,6 +36,7 @@ namespace TGC.MonoGame.TP.Effects
             Height = size.Y;
             PixelSize = pixelSize;
             SpriteSheetSize = spriteSheetSize;
+            SpriteIndex = spriteCount;
             SpriteCount = spriteCount;
 
             InitializeGeometry();

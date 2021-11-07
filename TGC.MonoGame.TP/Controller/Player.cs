@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TGC.MonoGame.TP.Controller
 {
-    class Player : Controller
+    class Player : PlayerController
     {
         public override Control GetControls()
         {

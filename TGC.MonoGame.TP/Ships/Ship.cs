@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.TP.Controller;
+using TGC.MonoGame.TP.Effects;
+using TGC.MonoGame.TP.Environment;
 
 namespace TGC.MonoGame.TP.Ships
 {
@@ -13,6 +15,9 @@ namespace TGC.MonoGame.TP.Ships
         protected ContentManager Content;
         protected Model Model;
         protected Effect Effect;
+
+        protected EffectSystem EffectSystem;
+
         protected struct TexturesShipA
         {
             public List<Texture2D> Albedos;
@@ -29,18 +34,20 @@ namespace TGC.MonoGame.TP.Ships
         public Matrix World;
         public Vector3 Position;
 
-        private float Viraje = 0;
+        public PlayerController Controller;
+
+        public float Viraje = 0;
         private Ocean Ocean;
-        Vector3 OriginalPos;
+        public Vector3 OriginalPos;
         protected Color Color;
 
         public float Aceleration = 0.02f;
         public float Speed = 0;
         public float TurningSpeed = 0.07f;
         public float MaxSpeed = 5;
-        public Ship(ContentManager content, Ocean ocean,Color color)
+
+        public Ship(ContentManager content, Color color)
         {
-            this.Ocean = ocean;
             this.Content = content;
             this.Color = color;
 
@@ -66,9 +73,16 @@ namespace TGC.MonoGame.TP.Ships
             }
             OriginalPos = Position;
         }
-        public void Update(GameTime gameTime,Control control)
+        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
         {
+            Ocean = environment.Ocean;
+            EffectSystem = effectSystem;
+
+            Controller.EffectSystem = effectSystem;
+
+            var control = Controller.GetControls();
             var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
             Speed = Math.Max(Math.Min(Speed + Aceleration * control.Avanzar, MaxSpeed),-MaxSpeed);
             
             if (control.Avanzar == 0)
@@ -84,28 +98,15 @@ namespace TGC.MonoGame.TP.Ships
             //creo una linea con la inclinacion de la recta y y hago una resta
             Vector3 inclinacion = Vector3.Transform(Vector3.Forward, Rotation) * 2 - Vector3.Transform(Vector3.Forward, Rotation);
 
-            if (inclinacion.Y > 0)
-            {
-                //color = Color.Red;
-            }
-            else if (inclinacion.Y < 0)
-            {
-               // color = Color.Green;
-            }
-            else
-            {
-                //color = Color.Yellow;
-            }
             var potenciaInclinacion = 2;
             OriginalPos += Vector3.Transform(Vector3.Forward, Rotation) * Speed + Vector3.Transform(Vector3.Forward, Rotation) * -inclinacion.Y * potenciaInclinacion;
 
-            flotar(gameTime);
+            Flotar(gameTime);
 
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
-            
         }
        
-        private void flotar(GameTime gameTime)
+        private void Flotar(GameTime gameTime)
         {
 
             (Vector3, Vector3) result = Ocean.WaveNormalPosition(OriginalPos, gameTime);

@@ -10,7 +10,7 @@ namespace TGC.MonoGame.TP
 {
     public class ShipA : Ship
     {
-        public ShipA(ContentManager content,Ocean ocean, Color color) : base(content, ocean, color)
+        public ShipA(ContentManager content, Color color) : base(content, color)
         {
             Scale = Matrix.CreateScale(0.015f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);

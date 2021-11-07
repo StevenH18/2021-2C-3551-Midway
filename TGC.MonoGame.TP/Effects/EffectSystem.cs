@@ -13,12 +13,12 @@ namespace TGC.MonoGame.TP.Effects
         private GraphicsDevice Graphics;
         private ContentManager Content;
 
-        public Vector2 WaterSplashSize = new Vector2(640, 360);
-        public Vector2 WaterSplashSpritePixelSize = new Vector2(640, 360);
-        public Vector2 WaterSplashSpriteSheetSize = new Vector2(5760, 5760);
-        public int WaterSplashSpriteCount = 135;
+        public Vector2 WaterSplashSize = new Vector2(1280, 720);
+        public Vector2 WaterSplashSpritePixelSize = new Vector2(1280, 720);
+        public Vector2 WaterSplashSpriteSheetSize = new Vector2(10240, 10800);
+        public int WaterSplashSpriteCount = 120;
 
-        public Vector2 ExplosionSize = new Vector2(640 * 2, 360 * 2);
+        public Vector2 ExplosionSize = new Vector2(1280, 720);
         public Vector2 ExplosionSpritePixelSize = new Vector2(640, 360);
         public Vector2 ExplosionSpriteSheetSize = new Vector2(9600, 9360);
         public int ExplosionSpriteCount = 375;
@@ -98,14 +98,14 @@ namespace TGC.MonoGame.TP.Effects
             if (Inputs.isJustPressed(Keys.K))
             {
                 var random = new Random();
-                var position = new Vector3(random.Next(-1500, 1500), 200f, random.Next(-1500, 1500));
+                var position = new Vector3(random.Next(-500, 500), 250f, random.Next(-500, 500));
                 PlayExplosion(position);
             }
 
             if (Inputs.isJustPressed(Keys.I))
             {
                 var random = new Random();
-                var position = new Vector3(random.Next(-1500, 1500), 200f, random.Next(-1500, 1500));
+                var position = new Vector3(random.Next(-500, 500), 370f, random.Next(-500, 500));
                 PlayWaterSplash(position);
             }
 
@@ -117,15 +117,6 @@ namespace TGC.MonoGame.TP.Effects
 
         public void Draw(GameTime gameTime, Matrix view, Matrix proj, Matrix cameraWorld)
         {
-            /*
-            WaterSplashQuad.SpritePixelSize = WaterSplashSpritePixelSize;
-            WaterSplashQuad.SpriteSheetSize = WaterSplashSpriteSheetSize;
-            WaterSplashQuad.SpriteIndex = WaterSplashSpriteIndex;
-
-            WaterSplashEffect.Parameters["SpriteSheet"]?.SetValue(WaterSplashSpriteSheet);
-            WaterSplashQuad.Draw(gameTime, view, proj, WaterSplashEffect);
-            */
-
             Vector3 cameraPosition = cameraWorld.Translation;
 
             Sprites.Sort((y, x) => Vector3.Distance(x.Position, cameraPosition).CompareTo(Vector3.Distance(y.Position, cameraPosition)));

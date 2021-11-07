@@ -29,9 +29,7 @@ namespace TGC.MonoGame.TP
         private ShipCamera ShipCamera;
         private Camera ActiveCamera;
 
-        private int ShipsCount = 20;
-        private Ship[] Ships;
-
+        private ShipsSystem ShipsSystem;
         private MapEnvironment Environment;
         private HudController Hud;
         private EffectSystem EffectSystem;
@@ -78,37 +76,10 @@ namespace TGC.MonoGame.TP
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             ActiveCamera = ShipCamera;
 
-            Ships = new Ship[ShipsCount];
-
+            ShipsSystem = new ShipsSystem(Content);
             Environment = new MapEnvironment(GraphicsDevice, Content);
             Hud = new HudController(GraphicsDevice, Content);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
-
-            Ships[0] = new ShipA(Content, Environment.Ocean, Color.Gray);
-            Ships[0].Position.Z = 6; //en el medio del oceano
-            Ships[0].Position.X = 6;
-            for (int i = 1; i < ShipsCount; i++)
-            {
-                var repeticion = 5;
-                var variacion = 2500;
-                var offset = 1000;
-                var separation = 5000;
-                var rand = new Random();
-
-                if( i%2 == 0)
-                {
-                    Ships[i] = new ShipA(Content, Environment.Ocean, Color.Gray);
-                    Ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
-                    Ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
-
-                }else
-                {
-                    Ships[i] = new ShipB(Content, Environment.Ocean, Color.Black);
-                    Ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
-                    Ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
-                }
-
-            }
 
             base.Initialize();
         }
@@ -120,11 +91,7 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            for (int i = 0; i < ShipsCount; i++)
-            {
-                Ships[i].Load();
-            }
-
+            ShipsSystem.Load();
             Environment.Load();
             Hud.Load();
             EffectSystem.Load();
@@ -175,17 +142,10 @@ namespace TGC.MonoGame.TP
                     break;
 
                 case ST_LEVEL_1:
-                    Player p = new Player();
-                    Ships[0].Update(gameTime, p.GetControls());
-
-                    for (int i = 1; i < ShipsCount; i++)
-                    {
-                        Ships[i].Update(gameTime, new Control());
-                    }
-
-                    ActiveCamera.Update(gameTime, Ships[0]);
+                    ShipsSystem.Update(gameTime, Environment, EffectSystem);
+                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[0]);
                     EffectSystem.Update(gameTime);
-                    Environment.Update(gameTime, Ships);
+                    Environment.Update(gameTime, ShipsSystem.Ships);
                     Hud.Update(gameTime);
 
                     IsMouseVisible = false;
@@ -235,20 +195,11 @@ namespace TGC.MonoGame.TP
 
                     break;
                 case ST_LEVEL_1:
-
-
-                    for (int i = 0; i < ShipsCount; i++)
-                    {
-                        Ships[i].Draw(ActiveCamera.View, ActiveCamera.Projection);
-                    }
-
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-
                     GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                     EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-
-                    Hud.Draw(gameTime, Ships, ActiveCamera.World, Environment);
-
+                    Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);
 

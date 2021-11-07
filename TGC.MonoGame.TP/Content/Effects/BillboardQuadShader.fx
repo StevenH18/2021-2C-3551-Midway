@@ -16,11 +16,8 @@ texture SpriteSheet;
 sampler2D SpriteSheetSampler = sampler_state
 {
     Texture = (SpriteSheet);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
+    ADDRESSU = clamp;
+    ADDRESSV = clamp;
 };
 
 float2 SpritePixelSize;
