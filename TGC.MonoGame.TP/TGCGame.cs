@@ -193,7 +193,7 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
-            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
+            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].Speed);
 
             base.Update(gameTime);
         }

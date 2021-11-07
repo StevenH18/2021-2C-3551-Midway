@@ -110,13 +110,13 @@ namespace TGC.MonoGame.TP
             float miliseconds = (float)gameTime.TotalGameTime.Milliseconds;
             float delay = 10;
 
-            if(MathF.Abs(ships[0].speed) > 0)
+            if(MathF.Abs(ships[0].Speed) > 0)
                 TrailFadeout = seconds + 1;
 
             if(miliseconds % delay == 0)
             {
-                Vector3 trailPosition = ships[0].World.Translation + ships[0].Rotation.Forward * MathF.Sign(ships[0].speed) * 100;
-                float trailSize = 50 * MathF.Abs(ships[0].speed / ships[0].Maxspeed);
+                Vector3 trailPosition = ships[0].World.Translation + ships[0].Rotation.Forward * MathF.Sign(ships[0].Speed) * 100;
+                float trailSize = 50 * MathF.Abs(ships[0].Speed / ships[0].MaxSpeed);
 
                 Trail[CurrentTrail].Position = new Vector4(trailPosition.X, trailPosition.Y, trailPosition.Z, trailSize);
                 Trail[CurrentTrail].LifeTime = seconds;

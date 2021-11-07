@@ -34,10 +34,10 @@ namespace TGC.MonoGame.TP.Ships
         Vector3 OriginalPos;
         protected Color Color;
 
-        private float Aceleration = 0.02f;
+        public float Aceleration = 0.02f;
         public float Speed = 0;
-        private const float TurningSpeed = 0.07f;
-        private const float MaxSpeed = 5;
+        public float TurningSpeed = 0.07f;
+        public float MaxSpeed = 5;
         public Ship(ContentManager content, Ocean ocean,Color color)
         {
             this.Ocean = ocean;
