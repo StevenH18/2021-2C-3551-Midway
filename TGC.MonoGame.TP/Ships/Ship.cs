@@ -11,34 +11,46 @@ namespace TGC.MonoGame.TP.Ships
     public abstract class Ship
     {
         protected ContentManager Content;
-        public Matrix World { get; set; }
-        protected Model Model { get; set; }
-        protected Effect Effect { get; set; }
-        protected Matrix Scale;
+        protected Model Model;
+        protected Effect Effect;
+        protected struct TexturesShipA
+        {
+            public List<Texture2D> Albedos;
+        }
+        protected struct TexturesShipB
+        {
+            public List<Texture2D> Albedos;
+        }
+        protected static TexturesShipA TexturesA;
+        protected static TexturesShipB TexturesB;
+
+        public Matrix Scale;
         public Matrix Rotation;
+        public Matrix World;
         public Vector3 Position;
 
+        private float Viraje = 0;
+        private Ocean Ocean;
+        Vector3 OriginalPos;
+        protected Color Color;
 
-        private float rotation = 0;
-        private Ocean ocean;
-        Vector3 originalPos;
-        private Color color;
-
-        //
-        private float aceleration = 0.02f;
-        public float speed = 0;
-        private const float turningSpeed = 0.07f;
-        public float Maxspeed = 5;
-
+        private float Aceleration = 0.02f;
+        public float Speed = 0;
+        private const float TurningSpeed = 0.07f;
+        private const float MaxSpeed = 5;
         public Ship(ContentManager content, Ocean ocean,Color color)
         {
-            this.ocean = ocean;
+            this.Ocean = ocean;
             this.Content = content;
-            this.color = color;
+            this.Color = color;
 
-            originalPos = new Vector3();
+            OriginalPos = Vector3.Zero;
 
+            if (Ship.TexturesA.Albedos == null)
+                Ship.TexturesA.Albedos = new List<Texture2D>();
 
+            if (Ship.TexturesB.Albedos == null)
+                Ship.TexturesB.Albedos = new List<Texture2D>();
         }
 
         public virtual void Load()
@@ -52,23 +64,23 @@ namespace TGC.MonoGame.TP.Ships
                     meshPart.Effect = Effect;
                 }
             }
-            originalPos = Position;
+            OriginalPos = Position;
         }
         public void Update(GameTime gameTime,Controll control)
         {
             var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
-            speed = Math.Max(Math.Min(speed + aceleration * control.avanzar, Maxspeed),-Maxspeed);
+            Speed = Math.Max(Math.Min(Speed + Aceleration * control.avanzar, MaxSpeed),-MaxSpeed);
             
             if (control.avanzar == 0)
             {
-                var retroceso = -1 * Math.Sign(speed);
-                speed += retroceso * aceleration ;
-                if (speed / retroceso > 0)
-                    speed = 0;
+                var retroceso = -1 * Math.Sign(Speed);
+                Speed += retroceso * Aceleration ;
+                if (Speed / retroceso > 0)
+                    Speed = 0;
             }
 
 
-            rotation += time * control.virar * turningSpeed * speed;
+            Viraje += time * control.virar * TurningSpeed * Speed;
             //creo una linea con la inclinacion de la recta y y hago una resta
             Vector3 inclinacion = Vector3.Transform(Vector3.Forward, Rotation) * 2 - Vector3.Transform(Vector3.Forward, Rotation);
 
@@ -85,7 +97,7 @@ namespace TGC.MonoGame.TP.Ships
                 //color = Color.Yellow;
             }
             var potenciaInclinacion = 2;
-            originalPos += Vector3.Transform(Vector3.Forward, Rotation) * speed + Vector3.Transform(Vector3.Forward, Rotation) * -inclinacion.Y * potenciaInclinacion;
+            OriginalPos += Vector3.Transform(Vector3.Forward, Rotation) * Speed + Vector3.Transform(Vector3.Forward, Rotation) * -inclinacion.Y * potenciaInclinacion;
 
             flotar(gameTime);
 
@@ -96,35 +108,20 @@ namespace TGC.MonoGame.TP.Ships
         private void flotar(GameTime gameTime)
         {
 
-            (Vector3, Vector3) result = ocean.WaveNormalPosition(originalPos, gameTime);
+            (Vector3, Vector3) result = Ocean.WaveNormalPosition(OriginalPos, gameTime);
             Vector3 normal = result.Item1;
             Vector3 position = result.Item2;
 
             // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
-            Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, rotation);
+            Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, Viraje);
 
-            originalPos.Y = 0f;
+            OriginalPos.Y = 0f;
             Position = position;
         }
 
-        public void Draw(Matrix view, Matrix proj)
+        public virtual void Draw(Matrix view, Matrix proj)
         {
 
-            Effect.Parameters["View"].SetValue(view);
-            Effect.Parameters["Projection"].SetValue(proj);
-            Effect.Parameters["DiffuseColor"].SetValue(color.ToVector3());
-
-            foreach (var mesh in Model.Meshes)
-            {
-
-                var w = mesh.ParentBone.Transform * World;
-
-                Effect.Parameters["World"].SetValue(w);
-
-                mesh.Draw();
-            }
-
         }
-
     }
 }

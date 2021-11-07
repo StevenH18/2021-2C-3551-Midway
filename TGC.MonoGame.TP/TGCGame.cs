@@ -93,9 +93,9 @@ namespace TGC.MonoGame.TP
             Environment = new MapEnvironment(GraphicsDevice, Content);
             Hud = new HudController(GraphicsDevice, Content);
 
-            ships[0] = new ShipA(Content, Environment.Ocean, Color.Yellow);
-            ships[0].Position.Z = 1; //en el medio del oceano
-            ships[0].Position.X = 1;
+            ships[0] = new ShipA(Content, Environment.Ocean, Color.Gray);
+            ships[0].Position.Z = 6; //en el medio del oceano
+            ships[0].Position.X = 6;
             for (int i = 1; i < naves; i++)
             {
                 var repeticion = 5;
@@ -106,13 +106,13 @@ namespace TGC.MonoGame.TP
 
                 if( i%2 == 0)
                 {
-                    ships[i] = new ShipA(Content, Environment.Ocean, Color.White);
+                    ships[i] = new ShipA(Content, Environment.Ocean, Color.Gray);
                     ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
                     ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
 
                 }else
                 {
-                    ships[i] = new ShipB(Content, Environment.Ocean, Color.Blue);
+                    ships[i] = new ShipB(Content, Environment.Ocean, Color.Black);
                     ships[i].Position.Z = ((i % repeticion) * separation) + rand.Next(-variacion, variacion) + offset;
                     ships[i].Position.X = ((int)Math.Floor(i / (float)repeticion) * separation * 2) + rand.Next(-variacion * 2, variacion * 2) + offset;
                 }
@@ -179,7 +179,7 @@ namespace TGC.MonoGame.TP
                         ships[i].Update(gameTime, new Controll());
                     }
 
-                    ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].speed);
+                    ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].Speed);
                     Camera.Update(gameTime);
                     FreeCamera.Update(gameTime);
                     Environment.Update(gameTime, ships);
