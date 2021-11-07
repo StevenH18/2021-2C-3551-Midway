@@ -17,9 +17,9 @@ namespace TGC.MonoGame.TP
         private KeyboardState kbState = default(KeyboardState);
 
         public float MovementUnitsPerSecond { get; set; }
-        public float DefaultMovementUnitsPerSecond { get; set; } = 600f;
+        public float DefaultMovementUnitsPerSecond { get; set; } = 100f;
         public float MovementMultiplier { get; set; } = 8f;
-        public float RotationRadiansPerSecond { get; set; } = 30f;
+        public float RotationRadiansPerSecond { get; set; } = 5;
 
         public float fieldOfViewDegrees = 80f;
         public float nearClipPlane = .05f;
@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// operates pretty much like a fps camera.
         /// </summary>
-        public const int CAM_UI_OPTION_FPS_LAYOUT = 0;
+        public const int CAM_UI_OPTION_FPS_LAYOUT = 1;
         /// <summary>
         /// I put this one on by default.
         /// free cam i use this for editing its more like a air plane or space camera.
@@ -230,25 +230,35 @@ namespace TGC.MonoGame.TP
         {
             MouseState state = Mouse.GetState(gameWindow);
             KeyboardState kstate = Keyboard.GetState();
-            if (kstate.IsKeyDown(Keys.W))
+
+            if (kstate.IsKeyDown(Keys.Space))
+            {
+                mouseLookIsUsed = false;
+            }
+            else
+            {
+                mouseLookIsUsed = true;
+            }
+
+            if (kstate.IsKeyDown(Keys.W) && mouseLookIsUsed)
             {
                 MoveForward(gameTime);
             }
-            else if (kstate.IsKeyDown(Keys.S) == true)
+            else if (kstate.IsKeyDown(Keys.S) == true && mouseLookIsUsed)
             {
                 MoveBackward(gameTime);
             }
             // strafe. 
-            if (kstate.IsKeyDown(Keys.A) == true)
+            if (kstate.IsKeyDown(Keys.A) == true && mouseLookIsUsed)
             {
                 MoveLeft(gameTime);
             }
-            else if (kstate.IsKeyDown(Keys.D) == true)
+            else if (kstate.IsKeyDown(Keys.D) == true && mouseLookIsUsed)
             {
                 MoveRight(gameTime);
             }
             // movement multiplier
-            if(kstate.IsKeyDown(Keys.LeftShift) == true)
+            if (kstate.IsKeyDown(Keys.LeftShift) == true)
             {
                 MovementUnitsPerSecond = DefaultMovementUnitsPerSecond * MovementMultiplier;
             }
@@ -256,9 +266,6 @@ namespace TGC.MonoGame.TP
             {
                 MovementUnitsPerSecond = DefaultMovementUnitsPerSecond;
             }
-
-           
-          
 
             // rotate 
             if (kstate.IsKeyDown(Keys.Left) == true)
@@ -279,14 +286,14 @@ namespace TGC.MonoGame.TP
                 RotateDown(gameTime);
             }
             
-            if (kstate.IsKeyDown(Keys.Q) == true)
+            if (kstate.IsKeyDown(Keys.Q) == true && mouseLookIsUsed)
             {
                 if (cameraTypeOption == CAM_TYPE_OPTION_FIXED)
                     MoveUpInNonLocalSystemCoordinates(gameTime);
                 if (cameraTypeOption == CAM_TYPE_OPTION_FREE)
                     MoveUp(gameTime);
             }
-            else if (kstate.IsKeyDown(Keys.E) == true)
+            else if (kstate.IsKeyDown(Keys.E) == true && mouseLookIsUsed)
             {
                 if (cameraTypeOption == CAM_TYPE_OPTION_FIXED)
                     MoveDownInNonLocalSystemCoordinates(gameTime);
@@ -304,14 +311,6 @@ namespace TGC.MonoGame.TP
                 farClipPlane = Math.Max(farClipPlane - 1000, 100);
                 ReCreateThePerspectiveProjectionMatrix();
             }
-
-            if (state.LeftButton == ButtonState.Pressed)
-            {
-                if (mouseLookIsUsed == false)
-                    mouseLookIsUsed = true;
-                else
-                    mouseLookIsUsed = false;
-            }
             if (mouseLookIsUsed)
             {
                 Vector2 diff = state.Position.ToVector2() - mState.Position.ToVector2();
@@ -319,6 +318,9 @@ namespace TGC.MonoGame.TP
                     RotateLeftOrRight(gameTime, diff.X);
                 if (diff.Y != 0f)
                     RotateUpOrDown(gameTime, diff.Y);
+
+                Mouse.SetPosition(gameWindow.ClientBounds.Width / 2, gameWindow.ClientBounds.Height / 2);
+                state = Mouse.GetState();
             }
             mState = state;
             kbState = kstate;
@@ -392,6 +394,7 @@ namespace TGC.MonoGame.TP
                 mouseLookIsUsed = true;
             else
                 mouseLookIsUsed = false;
+
             if (mouseLookIsUsed)
             {
                 Vector2 diff = state.Position.ToVector2() - mState.Position.ToVector2();
