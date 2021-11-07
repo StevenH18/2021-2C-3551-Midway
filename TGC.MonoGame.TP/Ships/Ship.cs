@@ -66,12 +66,12 @@ namespace TGC.MonoGame.TP.Ships
             }
             OriginalPos = Position;
         }
-        public void Update(GameTime gameTime,Controll control)
+        public void Update(GameTime gameTime,Control control)
         {
             var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
-            Speed = Math.Max(Math.Min(Speed + Aceleration * control.avanzar, MaxSpeed),-MaxSpeed);
+            Speed = Math.Max(Math.Min(Speed + Aceleration * control.Avanzar, MaxSpeed),-MaxSpeed);
             
-            if (control.avanzar == 0)
+            if (control.Avanzar == 0)
             {
                 var retroceso = -1 * Math.Sign(Speed);
                 Speed += retroceso * Aceleration ;
@@ -80,7 +80,7 @@ namespace TGC.MonoGame.TP.Ships
             }
 
 
-            Viraje += time * control.virar * TurningSpeed * Speed;
+            Viraje += time * control.Virar * TurningSpeed * Speed;
             //creo una linea con la inclinacion de la recta y y hago una resta
             Vector3 inclinacion = Vector3.Transform(Vector3.Forward, Rotation) * 2 - Vector3.Transform(Vector3.Forward, Rotation);
 

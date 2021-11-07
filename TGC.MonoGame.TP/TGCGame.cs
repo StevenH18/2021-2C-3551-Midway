@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Controller;
+using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 using TGC.MonoGame.TP.Hud;
 using TGC.MonoGame.TP.Ships;
@@ -33,6 +34,7 @@ namespace TGC.MonoGame.TP
 
         private MapEnvironment Environment;
         private HudController Hud;
+        private EffectSystem EffectSystem;
 
         private SpriteBatch SpriteBatch;
         private SpriteFont Font;
@@ -80,6 +82,7 @@ namespace TGC.MonoGame.TP
 
             Environment = new MapEnvironment(GraphicsDevice, Content);
             Hud = new HudController(GraphicsDevice, Content);
+            EffectSystem = new EffectSystem(GraphicsDevice, Content);
 
             Ships[0] = new ShipA(Content, Environment.Ocean, Color.Gray);
             Ships[0].Position.Z = 6; //en el medio del oceano
@@ -124,6 +127,7 @@ namespace TGC.MonoGame.TP
 
             Environment.Load();
             Hud.Load();
+            EffectSystem.Load();
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -172,11 +176,11 @@ namespace TGC.MonoGame.TP
 
                 case ST_LEVEL_1:
                     Player p = new Player();
-                    Ships[0].Update(gameTime, p.GetControlls());
+                    Ships[0].Update(gameTime, p.GetControls());
 
                     for (int i = 1; i < ShipsCount; i++)
                     {
-                        Ships[i].Update(gameTime, new Controll());
+                        Ships[i].Update(gameTime, new Control());
                     }
 
                     ActiveCamera.Update(gameTime, Ships[0]);
@@ -188,6 +192,8 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
+            EffectSystem.ExplosionPosition = Ships[3].Position + new Vector3(0, 240,0);
+            EffectSystem.Update(gameTime);
             ActiveCamera.Update(gameTime, Ships[0]);
 
             base.Update(gameTime);
@@ -240,13 +246,16 @@ namespace TGC.MonoGame.TP
                     }
 
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+                    EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection);
                     Hud.Draw(gameTime, Ships, ActiveCamera.World, Environment);
+
 
                     base.Draw(gameTime);
 
                     break;
             }
-           // base.Draw(gameTime);
+
+            // base.Draw(gameTime);
         }
 
         /// <summary>

@@ -7,27 +7,27 @@ namespace TGC.MonoGame.TP.Controller
 {
     class Player : Controller
     {
-        public override Controll GetControlls()
+        public override Control GetControls()
         {
-            Controll control = new Controll();
+            Control control = new Control();
 
             KeyboardState kstate = Keyboard.GetState();
 
             if (kstate.IsKeyDown(Keys.W))
             {
-                control.avanzar = 1;
+                control.Avanzar = 1;
             }
             if (kstate.IsKeyDown(Keys.S))
             {
-                control.avanzar = -1;
+                control.Avanzar = -1;
             }
             if (kstate.IsKeyDown(Keys.D))
             {
-                control.virar = -1;
+                control.Virar = -1;
             }
             if (kstate.IsKeyDown(Keys.A))
             {
-                control.virar = 1;
+                control.Virar = 1;
             }
             return control;
         }

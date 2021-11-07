@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP.Environment
@@ -211,7 +212,7 @@ namespace TGC.MonoGame.TP.Environment
             SkyBox.Draw(view, projection, world);
             RainSystem.Draw(view, projection, world, gameTime);
 
-            if(DrawThunder)
+            if (DrawThunder)
             {
                 SpriteBatch.Begin();
                 SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);

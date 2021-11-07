@@ -24,10 +24,7 @@ namespace TGC.MonoGame.TP
         protected IndexBuffer IndexBuffer;
         protected VertexBuffer InstanceBuffer;
         private VertexBufferBinding[] Bindings;
-        private int asd;
-
         private RainParticle[] Instances;
-
 
         struct RainParticle
         {
@@ -69,7 +66,6 @@ namespace TGC.MonoGame.TP
 
             //UpdateInstances();
 
-            GraphicsDevice.SetVertexBuffers(Bindings);
             GraphicsDevice.SetVertexBuffers(Bindings);
             GraphicsDevice.Indices = IndexBuffer;
 

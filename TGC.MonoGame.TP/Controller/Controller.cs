@@ -6,7 +6,7 @@ namespace TGC.MonoGame.TP.Controller
 {
     public abstract class Controller
     {
-        public abstract Controll GetControlls();
+        public abstract Control GetControls();
 
         public abstract void update();
 

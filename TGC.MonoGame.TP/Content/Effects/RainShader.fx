@@ -97,14 +97,14 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-    float4 color = float4(1, 1, 1, 1) * 0.05;
+    float4 color = 0.05;
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran
     // Progress == 1   -> todas las particulas aparecen en pantalla
     float skip = SkipParticle(input.Offset.w, Progress);
 	
-    return color * skip;
+    return 0.05 * skip;
 }
 
 technique BasicColorDrawing
