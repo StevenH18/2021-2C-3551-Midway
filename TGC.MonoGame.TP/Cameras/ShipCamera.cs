@@ -1,9 +1,11 @@
 ﻿using BepuUtilities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using TGC.MonoGame.TP.Ships;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
@@ -12,17 +14,13 @@ namespace TGC.MonoGame.TP.Cameras
     /// <summary>
     /// Una camara que sigue objetos
     /// </summary>
-    public class ShipCamera
+    public class ShipCamera : Camera
     {
         private const float AxisDistanceToTarget = 400f;
 
         private const float AngleFollowSpeed = 0.030f;
 
         private const float AngleThreshold = 0f;
-
-        public Matrix Projection { get; private set; }
-
-        public Matrix View { get; private set; }
 
         private Vector3 CurrentBackVector { get; set; } = Vector3.Backward;
 
@@ -32,14 +30,13 @@ namespace TGC.MonoGame.TP.Cameras
 
         public Vector3 Position { get; set; }
 
-        public Matrix World { get; set; }
-
         /// <summary>
         /// Crea una FollowCamera que sigue a una matriz de mundo
         /// </summary>
         /// <param name="aspectRatio"></param>
-        public ShipCamera(float aspectRatio)
+        public ShipCamera(GraphicsDevice gfxDevice, GameWindow window)
         {
+            float aspectRatio = gfxDevice.Viewport.AspectRatio;
             // Orthographic camera
             // Projection = Matrix.CreateOrthographic(screenWidth, screenHeight, 0.01f, 10000f);
 
@@ -54,8 +51,12 @@ namespace TGC.MonoGame.TP.Cameras
         /// <param name="gameTime">The Game Time to calculate framerate-independent movement</param>
         /// <param name="followedWorld">The World matrix to follow</param>
        
-        public void Update(GameTime gameTime, Matrix Rotation,Matrix followedWorld,float speed) //agregue speed para poder hacer un efecto de que la camara se mueve mas lento mientras el barco arranca
+        public override void Update(GameTime gameTime, Ship ship) //agregue speed para poder hacer un efecto de que la camara se mueve mas lento mientras el barco arranca
         {
+            Matrix followedRotation = ship.Rotation;
+            Matrix followedWorld = ship.World;
+            float speed = ship.Speed;
+
             // Obtengo el tiempo
             var elapsedTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -63,13 +64,12 @@ namespace TGC.MonoGame.TP.Cameras
             var followedPosition = followedWorld.Translation;
 
             // Obtengo el vector atras de la matriz de mundo que estoy siguiendo
-
-            var followedRigth = Vector3.Transform(Vector3.Backward, Rotation);
+            var followedRigth = Vector3.Transform(Vector3.Backward, followedRotation);
 
             // Si el producto escalar entre el vector Derecha anterior
             // y el actual es mas grande que un limite,
             // muevo el Interpolator (desde 0 a 1) mas cerca de 1
-            if (speed !=  0)
+            if (speed != 0)
             {
                 // Incremento el Interpolator
                 BackVectorInterpolator += elapsedTime * AngleFollowSpeed;
@@ -87,7 +87,6 @@ namespace TGC.MonoGame.TP.Cameras
             else
                 // Si el angulo no pasa de cierto limite, lo pongo de nuevo en cero
                 BackVectorInterpolator = 0f;
-        
             // Guardo el vector Derecha para usar en la siguiente iteracion
             PastBackVector = followedRigth;
 

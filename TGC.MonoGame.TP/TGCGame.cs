@@ -24,10 +24,9 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
         private GraphicsDeviceManager Graphics { get; }
-        private FollowCamera FollowCamera { get; set; }
-        private FreeCamera FreeCamera { get; set; }
-        private Camera Camera { get; set; }
-        private ShipCamera ShipCamera { get; set; }
+        private FreeCamera FreeCamera;
+        private ShipCamera ShipCamera;
+        private Camera ActiveCamera;
 
         private int naves = 20;
 
@@ -80,13 +79,9 @@ namespace TGC.MonoGame.TP
 
             // GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            // Creo una camara para seguir a nuestro auto
-            FollowCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
-
-            ShipCamera = new ShipCamera(GraphicsDevice.Viewport.AspectRatio);
-
-            Camera = new Camera(60, GraphicsDevice,0.1f,1000f);
+            ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
+            ActiveCamera = FreeCamera;
 
             ships = new Ship[naves];
 
@@ -163,6 +158,18 @@ namespace TGC.MonoGame.TP
                 Graphics.ApplyChanges();
             }
 
+            if (Inputs.isJustPressed(Keys.G))
+            {
+                if(ActiveCamera.Equals(ShipCamera))
+                {
+                    ActiveCamera = FreeCamera;
+                }
+                else
+                {
+                    ActiveCamera = ShipCamera;
+                }
+            }
+
             switch (status)
             {
                 case ST_MENU:
@@ -179,21 +186,14 @@ namespace TGC.MonoGame.TP
                         ships[i].Update(gameTime, new Controll());
                     }
 
-                    ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].Speed);
-                    Camera.Update(gameTime);
-                    FreeCamera.Update(gameTime);
+                    ActiveCamera.Update(gameTime, ships[0]);
                     Environment.Update(gameTime, ships);
                     Hud.Update(gameTime);
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                    {
-                        FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
-                    }
 
                     break;
             }
 
-            ShipCamera.Update(gameTime, ships[0].Rotation, ships[0].World, ships[0].Speed);
+            ActiveCamera.Update(gameTime, ships[0]);
 
             base.Update(gameTime);
         }
@@ -209,7 +209,7 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            Environment.DrawPreTextures(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
+            Environment.DrawPreTextures(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -224,11 +224,7 @@ namespace TGC.MonoGame.TP
 
                     //PARA AGREGAR OTRAS TEXTURAS
                     SpriteBatch.Begin();
-                    // for (int i = 0; i < naves; i++)
-                    // {
-                    //    ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
-                    // }
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
+                    Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
 
                     //SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
@@ -245,11 +241,11 @@ namespace TGC.MonoGame.TP
 
                     for (int i = 0; i < naves; i++)
                     {
-                        ships[i].Draw(ShipCamera.View, ShipCamera.Projection);
+                        ships[i].Draw(ActiveCamera.View, ActiveCamera.Projection);
                     }
 
-                    Environment.Draw(gameTime, ShipCamera.View, ShipCamera.Projection, ShipCamera.World);
-                    Hud.Draw(gameTime, ships, ShipCamera.World, Environment);
+                    Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+                    Hud.Draw(gameTime, ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);
 

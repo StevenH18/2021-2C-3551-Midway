@@ -4,10 +4,11 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
 {
-    class FreeCamera
+    public class FreeCamera : Camera
     {
         private GraphicsDevice graphicsDevice = null;
         private GameWindow gameWindow = null;
@@ -92,22 +93,6 @@ namespace TGC.MonoGame.TP
         /// Most hybrid cameras are a blend of the two but all are based on one or both of the above.
         /// </summary>
         private Vector3 up = Vector3.Up;
-        /// <summary>
-        /// This serves as the cameras world orientation like almost all 3d game objects they have a world matrix. 
-        /// It holds all orientational values and is used to move the camera properly thru the world space.
-        /// </summary>
-        private Matrix camerasWorld = Matrix.Identity;
-        /// <summary>
-        /// The view matrice is created from the cameras world matrice but it has special properties.
-        /// Using create look at to create this matrix you move from the world space into the view space.
-        /// If you are working on world objects you should not take individual elements from this to directly operate on world matrix components.
-        /// As well the multiplication of a view matrix by a world matrix moves the resulting matrix into view space itself.
-        /// </summary>
-        private Matrix viewMatrix = Matrix.Identity;
-        /// <summary>
-        /// The projection matrix. This matrice creates a vanishing point and skews all objects drawn to create the illusion of depth and a perspective parallax view at distance.
-        /// </summary>
-        private Matrix projectionMatrix = Matrix.Identity;
 
         /// <summary>
         /// Gets or sets the the camera's position in the world.
@@ -116,11 +101,11 @@ namespace TGC.MonoGame.TP
         {
             set
             {
-                camerasWorld.Translation = value;
+                World.Translation = value;
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
-            get { return camerasWorld.Translation; }
+            get { return World.Translation; }
         }
         /// <summary>
         /// Gets or Sets the direction the camera is looking at in the world.
@@ -130,11 +115,11 @@ namespace TGC.MonoGame.TP
         {
             set
             {
-                camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, value, up);
+                World = Matrix.CreateWorld(World.Translation, value, up);
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
-            get { return camerasWorld.Forward; }
+            get { return World.Forward; }
         }
         /// <summary>
         /// Get the cameras up vector. You shouldn't need to set the up you shouldn't at all if you are using the free camera type.
@@ -144,7 +129,7 @@ namespace TGC.MonoGame.TP
             set
             {
                 up = value;
-                camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, camerasWorld.Forward, value);
+                World = Matrix.CreateWorld(World.Translation, World.Forward, value);
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
@@ -158,11 +143,11 @@ namespace TGC.MonoGame.TP
         {
             set
             {
-                camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, value, up);
+                World = Matrix.CreateWorld(World.Translation, value, up);
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
-            get { return camerasWorld.Forward; }
+            get { return World.Forward; }
         }
         /// <summary>
         /// Sets a positional target in the world to look at.
@@ -171,7 +156,7 @@ namespace TGC.MonoGame.TP
         {
             set
             {
-                camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, Vector3.Normalize(value - camerasWorld.Translation), up);
+                World = Matrix.CreateWorld(World.Translation, Vector3.Normalize(value - World.Translation), up);
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
             }
@@ -183,48 +168,9 @@ namespace TGC.MonoGame.TP
         {
             set
             {
-                camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, Vector3.Normalize(value.Translation - camerasWorld.Translation), up);
+                World = Matrix.CreateWorld(World.Translation, Vector3.Normalize(value.Translation - World.Translation), up);
                 // since we know here that a change has occured to the cameras world orientations we can update the view matrix.
                 ReCreateWorldAndView();
-            }
-        }
-
-        /// <summary>
-        /// Directly set or get the world matrix this also updates the view matrix
-        /// </summary>
-        public Matrix World
-        {
-            get
-            {
-                return camerasWorld;
-            }
-            set
-            {
-                camerasWorld = value;
-                viewMatrix = Matrix.CreateLookAt(camerasWorld.Translation, camerasWorld.Forward + camerasWorld.Translation, camerasWorld.Up);
-            }
-        }
-
-        /// <summary>
-        /// Gets the view matrix we never really set the view matrix ourselves outside this method just get it.
-        /// The view matrix is remade internally when we know the world matrix forward or position is altered.
-        /// </summary>
-        public Matrix View
-        {
-            get
-            {
-                return viewMatrix;
-            }
-        }
-
-        /// <summary>
-        /// Gets the projection matrix.
-        /// </summary>
-        public Matrix Projection
-        {
-            get
-            {
-                return projectionMatrix;
             }
         }
 
@@ -237,10 +183,10 @@ namespace TGC.MonoGame.TP
             if (cameraTypeOption == CAM_TYPE_OPTION_FIXED)
                 up = Vector3.Up;
             if (cameraTypeOption == CAM_UI_OPTION_EDIT_LAYOUT)
-                up = camerasWorld.Up;
+                up = World.Up;
 
-            camerasWorld = Matrix.CreateWorld(camerasWorld.Translation, camerasWorld.Forward, up);
-            viewMatrix = Matrix.CreateLookAt(camerasWorld.Translation, camerasWorld.Forward + camerasWorld.Translation, camerasWorld.Up);
+            World = Matrix.CreateWorld(World.Translation, World.Forward, up);
+            View = Matrix.CreateLookAt(World.Translation, World.Forward + World.Translation, World.Up);
         }
 
         /// <summary>
@@ -248,7 +194,7 @@ namespace TGC.MonoGame.TP
         /// </summary>
         public void ReCreateThePerspectiveProjectionMatrix()
         {
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(fieldOfViewDegrees), graphicsDevice.Viewport.AspectRatio, nearClipPlane, farClipPlane);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(fieldOfViewDegrees), graphicsDevice.Viewport.AspectRatio, nearClipPlane, farClipPlane);
         }
         /// <summary>
         /// Changes the perspective matrix to a new near far and field of view.
@@ -271,11 +217,9 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// update the camera.
         /// </summary>
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, Ship ship)
         {
-         
-                FpsUiControlsLayout(gameTime);
-
+            FpsUiControlsLayout(gameTime);
         }
 
         /// <summary>
@@ -477,71 +421,71 @@ namespace TGC.MonoGame.TP
 
         public void MoveForward(GameTime gameTime)
         {
-            Position += (camerasWorld.Forward * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Forward * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void MoveBackward(GameTime gameTime)
         {
-            Position += (camerasWorld.Backward * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Backward * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void MoveLeft(GameTime gameTime)
         {
-            Position += (camerasWorld.Left * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Left * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void MoveRight(GameTime gameTime)
         {
-            Position += (camerasWorld.Right * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Right * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void MoveUp(GameTime gameTime)
         {
-            Position += (camerasWorld.Up * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Up * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void MoveDown(GameTime gameTime)
         {
-            Position += (camerasWorld.Down * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += (World.Down * MovementUnitsPerSecond) * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
         public void RotateUp(GameTime gameTime)
         {
             var radians = RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Right, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Right, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
         public void RotateDown(GameTime gameTime)
         {
             var radians = -RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Right, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Right, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
         public void RotateLeft(GameTime gameTime)
         {
             var radians = RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Up, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Up, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
         public void RotateRight(GameTime gameTime)
         {
             var radians = -RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Up, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Up, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
         public void RotateRollClockwise(GameTime gameTime)
         {
             var radians = RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var pos = camerasWorld.Translation;
-            camerasWorld *= Matrix.CreateFromAxisAngle(camerasWorld.Forward, MathHelper.ToRadians(radians));
-            camerasWorld.Translation = pos;
+            var pos = World.Translation;
+            World *= Matrix.CreateFromAxisAngle(World.Forward, MathHelper.ToRadians(radians));
+            World.Translation = pos;
             ReCreateWorldAndView();
         }
         public void RotateRollCounterClockwise(GameTime gameTime)
         {
             var radians = -RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            var pos = camerasWorld.Translation;
-            camerasWorld *= Matrix.CreateFromAxisAngle(camerasWorld.Forward, MathHelper.ToRadians(radians));
-            camerasWorld.Translation = pos;
+            var pos = World.Translation;
+            World *= Matrix.CreateFromAxisAngle(World.Forward, MathHelper.ToRadians(radians));
+            World.Translation = pos;
             ReCreateWorldAndView();
         }
 
@@ -549,14 +493,14 @@ namespace TGC.MonoGame.TP
         public void RotateLeftOrRight(GameTime gameTime, float amount)
         {
             var radians = amount * -RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Up, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Up, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
         public void RotateUpOrDown(GameTime gameTime, float amount)
         {
             var radians = amount * -RotationRadiansPerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix matrix = Matrix.CreateFromAxisAngle(camerasWorld.Right, MathHelper.ToRadians(radians));
+            Matrix matrix = Matrix.CreateFromAxisAngle(World.Right, MathHelper.ToRadians(radians));
             LookAtDirection = Vector3.TransformNormal(LookAtDirection, matrix);
             ReCreateWorldAndView();
         }
