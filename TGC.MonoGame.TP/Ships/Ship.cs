@@ -36,11 +36,11 @@ namespace TGC.MonoGame.TP.Ships
 
         public float Velocity = 0;
         public float MaxVelocity = 5;
-        public float Acceleration = 0.2f;
+        public float Acceleration = 0.5f;
 
         public float AngularVelocity = 0f;
         public float MaxAngularVelocity = 0.005f;
-        public float AngularAcceleration = 0.002f;
+        public float AngularAcceleration = 0.02f;
 
         public Ship(ContentManager content, GraphicsDevice graphics)
         {

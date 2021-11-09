@@ -194,10 +194,10 @@ namespace TGC.MonoGame.TP
 
                     break;
                 case ST_LEVEL_1:
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                     EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);

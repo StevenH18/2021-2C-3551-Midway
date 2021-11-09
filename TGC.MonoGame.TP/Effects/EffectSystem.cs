@@ -39,17 +39,14 @@ namespace TGC.MonoGame.TP.Effects
 
         public void Load()
         {
-            CreateExplosion();
-            CreateExplosion();
-            CreateExplosion();
-            CreateExplosion();
-            CreateWaterSplash();
-            CreateWaterSplash();
-            CreateWaterSplash();
-            CreateWaterSplash();
+            for(var i = 0; i < 50; i++)
+            {
+                InitializeExplosion();
+                InitializeWaterSplash();
+            }
         }
 
-        public void CreateExplosion()
+        public void InitializeExplosion()
         {
             Texture2D spriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/explosion");
             Effect effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
@@ -59,7 +56,7 @@ namespace TGC.MonoGame.TP.Effects
             ExplosionSprites.Add(billboard);
             Sprites.Add(billboard);
         }
-        public void CreateWaterSplash()
+        public void InitializeWaterSplash()
         {
             Texture2D spriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/water_splash");
             Effect effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
@@ -70,7 +67,7 @@ namespace TGC.MonoGame.TP.Effects
             Sprites.Add(billboard);
         }
 
-        public void PlayExplosion(Vector3 position)
+        public void CreateExplosion(Vector3 position)
         {
             BillboardQuad currentExplosion = ExplosionSprites[CurrentExplosion];
 
@@ -81,7 +78,7 @@ namespace TGC.MonoGame.TP.Effects
             if (CurrentExplosion >= ExplosionSprites.Count)
                 CurrentExplosion = 0;
         }
-        public void PlayWaterSplash(Vector3 position)
+        public void CreateWaterSplash(Vector3 position)
         {
             BillboardQuad currentWaterSplash = WaterSplashSprites[CurrentWaterSplash];
 
@@ -98,15 +95,15 @@ namespace TGC.MonoGame.TP.Effects
             if (Inputs.isJustPressed(Keys.K))
             {
                 var random = new Random();
-                var position = new Vector3(random.Next(-500, 500), 250f, random.Next(-500, 500));
-                PlayExplosion(position);
+                var position = new Vector3(random.Next(-2000, 2000), 250f, random.Next(-2000, 2000));
+                CreateExplosion(position);
             }
 
             if (Inputs.isJustPressed(Keys.I))
             {
                 var random = new Random();
-                var position = new Vector3(random.Next(-500, 500), 370f, random.Next(-500, 500));
-                PlayWaterSplash(position);
+                var position = new Vector3(random.Next(-2000, 2000), 370f, random.Next(-2000, 2000));
+                CreateWaterSplash(position);
             }
 
             for (int i = 0; i < Sprites.Count; i++)

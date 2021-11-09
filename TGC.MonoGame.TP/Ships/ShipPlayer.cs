@@ -32,16 +32,16 @@ namespace TGC.MonoGame.TP.Ships
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                AngularVelocity -= AngularAcceleration * (Velocity / MaxVelocity) * time;
+                AngularVelocity -= AngularAcceleration * time;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                AngularVelocity += AngularAcceleration * (Velocity / MaxVelocity) * time;
+                AngularVelocity += AngularAcceleration * time;
             }
 
             if (!Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                if (Math.Abs(Velocity) > 0.003f && !Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.S))
+                if (Math.Abs(Velocity) > 0.003f)
                 {
                     Velocity -= Math.Sign(Velocity) * Acceleration * time;
                 }
@@ -50,7 +50,7 @@ namespace TGC.MonoGame.TP.Ships
                     Velocity = 0;
                 }
             }
-            if (!Keyboard.GetState().IsKeyDown(Keys.D) && !Keyboard.GetState().IsKeyDown(Keys.A) || Math.Abs(Velocity) < 2f) 
+            if (!Keyboard.GetState().IsKeyDown(Keys.D) && !Keyboard.GetState().IsKeyDown(Keys.A)) 
             { 
                 if (Math.Abs(AngularVelocity) > 0.0003f)
                 {
@@ -62,8 +62,8 @@ namespace TGC.MonoGame.TP.Ships
                 }
             }
 
-            Velocity = Math.Clamp(Velocity, -MaxVelocity * 0.5f, MaxVelocity);
-            AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity);
+            Velocity = Math.Clamp(Velocity, -MaxVelocity, MaxVelocity);
+            AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity) * MathF.Pow(Math.Abs(Velocity / MaxVelocity), 0.2f);
         }
 
         public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
