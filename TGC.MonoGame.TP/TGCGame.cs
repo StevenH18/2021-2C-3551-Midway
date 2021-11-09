@@ -143,7 +143,7 @@ namespace TGC.MonoGame.TP
 
                 case ST_LEVEL_1:
                     ShipsSystem.Update(gameTime, Environment, EffectSystem);
-                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[0]);
+                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[1]);
                     EffectSystem.Update(gameTime);
                     Environment.Update(gameTime, ShipsSystem.Ships);
                     Hud.Update(gameTime);

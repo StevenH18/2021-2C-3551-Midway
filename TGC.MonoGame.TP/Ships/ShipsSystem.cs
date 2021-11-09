@@ -15,8 +15,8 @@ namespace TGC.MonoGame.TP.Ships
         private MapEnvironment Environment;
         public EffectSystem EffectSystem;
 
-        public int ShipsCount = 4;
-        public int ShipsSeparation = 5000;
+        public int ShipsCount = 2;
+        public int ShipsSeparation = 15000;
         public Ship[] Ships;
 
         public ShipsSystem(ContentManager content)
@@ -46,8 +46,8 @@ namespace TGC.MonoGame.TP.Ships
                     Ship = Ships[i]
                 };
 
-                Ships[i].Position.X = random.Next(-ShipsSeparation, ShipsSeparation) + 10000;
-                Ships[i].Position.Z = random.Next(-ShipsSeparation, ShipsSeparation) - 10000;
+                Ships[i].Position.X = random.Next(-ShipsSeparation, ShipsSeparation);
+                Ships[i].Position.Z = random.Next(-ShipsSeparation, ShipsSeparation);
 
                 Ships[i].Controller = cpu;
             }
