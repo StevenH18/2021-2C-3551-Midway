@@ -10,7 +10,7 @@ namespace TGC.MonoGame.TP
 {
     public class ShipA : Ship
     {
-        public ShipA(ContentManager content, Color color) : base(content, color)
+        public ShipA(ContentManager content, GraphicsDevice graphics) : base(content, graphics)
         {
             Scale = Matrix.CreateScale(0.015f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);
@@ -39,7 +39,7 @@ namespace TGC.MonoGame.TP
         {
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.ToVector3());
+            Effect.Parameters["DiffuseColor"].SetValue(Color.Gray.ToVector3());
 
             var textureIndex = 0;
             foreach (var mesh in Model.Meshes)

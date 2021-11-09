@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Controller;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 using TGC.MonoGame.TP.Hud;
@@ -76,7 +75,7 @@ namespace TGC.MonoGame.TP
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             ActiveCamera = ShipCamera;
 
-            ShipsSystem = new ShipsSystem(Content);
+            ShipsSystem = new ShipsSystem(Content, GraphicsDevice);
             Environment = new MapEnvironment(GraphicsDevice, Content);
             Hud = new HudController(GraphicsDevice, Content);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
@@ -143,7 +142,7 @@ namespace TGC.MonoGame.TP
 
                 case ST_LEVEL_1:
                     ShipsSystem.Update(gameTime, Environment, EffectSystem);
-                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[1]);
+                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[0]);
                     EffectSystem.Update(gameTime);
                     Environment.Update(gameTime, ShipsSystem.Ships);
                     Hud.Update(gameTime);
@@ -195,10 +194,10 @@ namespace TGC.MonoGame.TP
 
                     break;
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                     EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);

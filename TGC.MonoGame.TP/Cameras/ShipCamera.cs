@@ -55,7 +55,7 @@ namespace TGC.MonoGame.TP.Cameras
         {
             Matrix followedRotation = ship.Rotation;
             Matrix followedWorld = ship.World;
-            float speed = ship.Speed;
+            float speed = ship.Velocity;
 
             // Obtengo el tiempo
             var elapsedTime = Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);

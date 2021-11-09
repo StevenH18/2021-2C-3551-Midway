@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using TGC.MonoGame.TP.Controller;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -13,10 +12,9 @@ namespace TGC.MonoGame.TP.Ships
     public abstract class Ship
     {
         protected ContentManager Content;
+        protected GraphicsDevice Graphics;
         protected Model Model;
         protected Effect Effect;
-
-        protected EffectSystem EffectSystem;
 
         protected struct TexturesShipA
         {
@@ -32,26 +30,22 @@ namespace TGC.MonoGame.TP.Ships
         public Matrix Scale;
         public Matrix Rotation;
         public Matrix World;
+
         public Vector3 Position;
+        public float Angle = 0;
 
-        public PlayerController Controller;
+        public float Velocity = 0;
+        public float MaxVelocity = 5;
+        public float Acceleration = 0.2f;
 
-        public float Viraje = 0;
-        private Ocean Ocean;
-        public Vector3 OriginalPos;
-        protected Color Color;
+        public float AngularVelocity = 0f;
+        public float MaxAngularVelocity = 0.005f;
+        public float AngularAcceleration = 0.002f;
 
-        public float Aceleration = 0.02f;
-        public float Speed = 0;
-        public float TurningSpeed = 0.07f;
-        public float MaxSpeed = 5;
-
-        public Ship(ContentManager content, Color color)
+        public Ship(ContentManager content, GraphicsDevice graphics)
         {
-            this.Content = content;
-            this.Color = color;
-
-            OriginalPos = Vector3.Zero;
+            Content = content;
+            Graphics = graphics;
 
             if (Ship.TexturesA.Albedos == null)
                 Ship.TexturesA.Albedos = new List<Texture2D>();
@@ -71,53 +65,10 @@ namespace TGC.MonoGame.TP.Ships
                     meshPart.Effect = Effect;
                 }
             }
-            OriginalPos = Position;
         }
-        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
+        public virtual void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
         {
-            Ocean = environment.Ocean;
-            EffectSystem = effectSystem;
-
-            Controller.EffectSystem = effectSystem;
-
-            var control = Controller.GetControls();
-            var time = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
-            Speed = Math.Max(Math.Min(Speed + Aceleration * control.Avanzar, MaxSpeed),-MaxSpeed);
-            
-            if (control.Avanzar == 0)
-            {
-                var retroceso = -1 * Math.Sign(Speed);
-                Speed += retroceso * Aceleration ;
-                if (Speed / retroceso > 0)
-                    Speed = 0;
-            }
-
-
-            Viraje += time * control.Virar * TurningSpeed * Speed;
-            //creo una linea con la inclinacion de la recta y y hago una resta
-            Vector3 inclinacion = Vector3.Transform(Vector3.Forward, Rotation) * 2 - Vector3.Transform(Vector3.Forward, Rotation);
-
-            var potenciaInclinacion = 2;
-            OriginalPos += Vector3.Transform(Vector3.Forward, Rotation) * Speed + Vector3.Transform(Vector3.Forward, Rotation) * -inclinacion.Y * potenciaInclinacion;
-
-            Flotar(gameTime);
-
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
-        }
-       
-        private void Flotar(GameTime gameTime)
-        {
-
-            (Vector3, Vector3) result = Ocean.WaveNormalPosition(OriginalPos, gameTime);
-            Vector3 normal = result.Item1;
-            Vector3 position = result.Item2;
-
-            // MAGIA MAGIA MAGIA NEGRA !!!!!!!!!!!!!!!!!!!
-            Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, Viraje);
-
-            OriginalPos.Y = 0f;
-            Position = position;
         }
 
         public virtual void Draw(Matrix view, Matrix proj)

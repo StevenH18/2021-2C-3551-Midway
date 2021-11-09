@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using TGC.MonoGame.TP.Controller;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -12,26 +12,29 @@ namespace TGC.MonoGame.TP.Ships
     public class ShipsSystem
     {
         private ContentManager Content;
+        private GraphicsDevice Graphics;
         private MapEnvironment Environment;
         public EffectSystem EffectSystem;
 
-        public int ShipsCount = 2;
+        public int ShipsCount = 1;
         public int ShipsSeparation = 15000;
         public Ship[] Ships;
+        public Ship ShipPlayer;
 
-        public ShipsSystem(ContentManager content)
+        public ShipsSystem(ContentManager content, GraphicsDevice graphics)
         {
             Content = content;
+            Graphics = graphics;
 
             Ships = new Ship[ShipsCount];
 
-            Ships[0] = new ShipA(Content, Color.Gray);
-            Player player = new Player();
-            Ships[0].Controller = player;
+            Ships[0] = new ShipPlayer(Content, Graphics);
+            ShipPlayer = Ships[0];
 
-            Ships[0].Position.X = 1;
-            Ships[0].Position.Z = 1;
+            ShipPlayer.Position.X = 1;
+            ShipPlayer.Position.Z = 1;
 
+            /*
             for (int i = 1; i < ShipsCount; i++)
             {
                 Random random = new Random();
@@ -51,9 +54,11 @@ namespace TGC.MonoGame.TP.Ships
 
                 Ships[i].Controller = cpu;
             }
+            */
         }
         public void Load()
         {
+            ShipPlayer.Load();
             for (int i = 0; i < ShipsCount; i++)
             {
                 Ships[i].Load();
@@ -63,6 +68,7 @@ namespace TGC.MonoGame.TP.Ships
         {
             Environment = environment;
             EffectSystem = effectSystem;
+            ShipPlayer.Update(gameTime, Environment, EffectSystem);
             for (int i = 0; i < ShipsCount; i++)
             {
                 Ships[i].Update(gameTime, Environment, EffectSystem);
@@ -70,6 +76,7 @@ namespace TGC.MonoGame.TP.Ships
         }
         public void Draw(Matrix view, Matrix proj)
         {
+            ShipPlayer.Draw(view, proj);
             for (int i = 0; i < ShipsCount; i++)
             {
                 Ships[i].Draw(view, proj);
