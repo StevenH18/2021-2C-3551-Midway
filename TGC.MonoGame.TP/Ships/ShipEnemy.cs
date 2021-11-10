@@ -18,13 +18,17 @@ namespace TGC.MonoGame.TP.Ships
     class ShipEnemy : ShipB
     {
         private Vector3[] WayPoints;
+        private Vector3 WayPointVariation;
+
         private int CurrentWayPoint;
-        private int PreviousWayPoint;
         private EnemyState EnemyState;
         private ShipPlayer ShipPlayer;
 
         private float ShootingRange = 1000;
         private float ChaseRange = 5000;
+
+        private float VelocityLerp = 0.01f;
+        private float AngleLerp = 0.02f;
 
         public ShipEnemy(ContentManager content, GraphicsDevice graphics, ShipPlayer shipPlayer) : base(content, graphics)
         {
@@ -32,9 +36,16 @@ namespace TGC.MonoGame.TP.Ships
 
             WayPoints = new Vector3[]
             {
-                new Vector3(15000, 0, 5000),
-                new Vector3(15000, 0, -5000),
-                new Vector3(20000, 0, 0)
+                new Vector3(14000, 0, 10000),
+                new Vector3(16000, 0, 0),
+                new Vector3(14000, 0, -12000),
+                new Vector3(6000, 0, -10000),
+                new Vector3(0, 0, -10000),
+                new Vector3(-8000, 0, -12000),
+                new Vector3(-14000, 0, -2000),
+                new Vector3(-10000, 0, 9000),
+                new Vector3(0, 0, 8000),
+                new Vector3(6000, 0, 10000),
             };
             CurrentWayPoint = 0;
         }
@@ -64,14 +75,18 @@ namespace TGC.MonoGame.TP.Ships
 
         private void Wandering()
         {
-            var target = Position - WayPoints[CurrentWayPoint];
-            var distanceToWayPoint = Vector3.Distance(Position, WayPoints[CurrentWayPoint]);
+            var target = Position - (WayPoints[CurrentWayPoint] + WayPointVariation);
+            var distanceToWayPoint = Vector3.Distance(Position, WayPoints[CurrentWayPoint] + WayPointVariation);
 
-            Velocity = Lerp(Velocity, MaxVelocity, 0.001f);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), 0.005f * Velocity / MaxVelocity);
+            Velocity = Lerp(Velocity, 5f, VelocityLerp);
+            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
 
             if (distanceToWayPoint < 500f)
             {
+                Random random = new Random();
+                float variation = (float)random.NextDouble() * 2000 - 1000;
+                WayPointVariation = new Vector3(variation, 0f, variation);
+
                 CurrentWayPoint++;
                 if(CurrentWayPoint >= WayPoints.Length)
                 {
@@ -83,15 +98,15 @@ namespace TGC.MonoGame.TP.Ships
         {
             var target = Position - ShipPlayer.Position;
 
-            Velocity = Lerp(Velocity, MaxVelocity, 0.001f);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), 0.005f * Velocity / MaxVelocity);
+            Velocity = Lerp(Velocity, 5f, VelocityLerp);
+            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
         }
         private void Shooting()
         {
             var target = Position - ShipPlayer.Position;
 
-            Velocity = Lerp(Velocity, 0f, 0.001f);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), 0.005f * Velocity / MaxVelocity);
+            Velocity = Lerp(Velocity, 0f, VelocityLerp);
+            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
         }
 
         private void MovementManagement()
