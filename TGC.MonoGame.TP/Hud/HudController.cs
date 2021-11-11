@@ -32,8 +32,6 @@ namespace TGC.MonoGame.TP.Hud
         // Weather alert
         private SpriteBatch WeatherAlertSprite;
         private SpriteFont WeatherSpriteFont;
-        private float WeatherAlertStart;
-        private float WeatherAlertDuration = 10f;
 
         public HudController(GraphicsDevice graphics, ContentManager content)
         {

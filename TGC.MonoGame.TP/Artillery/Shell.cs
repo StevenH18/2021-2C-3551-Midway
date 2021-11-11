@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP.Artillery
 
         private BoundingSphere BoundingSphere;
 
-        public float Damage = 65;
+        public float Damage = 20;
 
         public bool Active = false;
 
@@ -72,6 +72,8 @@ namespace TGC.MonoGame.TP.Artillery
         }
         public void CollisionCheck(GameTime gameTime)
         {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             // Check if collided with ship
             Ship[] ships = ShipsSystem.Ships;
             for(var i = 0; i < ships.Length; i++)
@@ -79,6 +81,10 @@ namespace TGC.MonoGame.TP.Artillery
                 if(ships[i].BoundingBox.Intersects(BoundingSphere))
                 {
                     ships[i].Damage(Damage);
+
+                    if(ships[i].Health > 0)
+                        EffectSystem.CreateHit(Position - Velocity * deltaTime);
+
                     Active = false;
                 }
             }

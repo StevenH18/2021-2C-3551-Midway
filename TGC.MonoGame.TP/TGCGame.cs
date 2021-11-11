@@ -223,7 +223,7 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
-            Gizmos.Draw();
+            //Gizmos.Draw();
 
             // base.Draw(gameTime);
         }

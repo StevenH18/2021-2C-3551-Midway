@@ -563,6 +563,18 @@
 /processorParam:TextureFormat=NoChange
 /build:Textures/SpriteSheets/explosion.png
 
+#begin Textures/SpriteSheets/hit.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=NoChange
+/build:Textures/SpriteSheets/hit.png
+
 #begin Textures/SpriteSheets/water_splash.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -23,13 +23,21 @@ namespace TGC.MonoGame.TP.Effects
         public Vector2 ExplosionSpriteSheetSize = new Vector2(9600, 9360);
         public int ExplosionSpriteCount = 375;
 
+        public Vector2 HitSize = new Vector2(640, 360);
+        public Vector2 HitSpritePixelSize = new Vector2(1280, 720);
+        public Vector2 HitSpriteSheetSize = new Vector2(7680, 13680);
+        public int HitSpriteCount = 112;
+
         public List<BillboardQuad> Sprites = new List<BillboardQuad>();
+
+        public List<BillboardQuad> WaterSplashSprites = new List<BillboardQuad>();
+        public int CurrentWaterSplash = 0;
 
         public List<BillboardQuad> ExplosionSprites = new List<BillboardQuad>();
         public int CurrentExplosion = 0;
 
-        public List<BillboardQuad> WaterSplashSprites = new List<BillboardQuad>();
-        public int CurrentWaterSplash = 0;
+        public List<BillboardQuad> HitSprites = new List<BillboardQuad>();
+        public int CurrentHit = 0;
 
         public EffectSystem(GraphicsDevice graphics, ContentManager content)
         {
@@ -43,6 +51,7 @@ namespace TGC.MonoGame.TP.Effects
             {
                 InitializeExplosion();
                 InitializeWaterSplash();
+                InitializeHit();
             }
         }
 
@@ -64,6 +73,16 @@ namespace TGC.MonoGame.TP.Effects
             BillboardQuad billboard = new BillboardQuad(Graphics, spriteSheet, effect, WaterSplashSize, WaterSplashSpritePixelSize, WaterSplashSpriteSheetSize, WaterSplashSpriteCount);
 
             WaterSplashSprites.Add(billboard);
+            Sprites.Add(billboard);
+        }
+        public void InitializeHit()
+        {
+            Texture2D spriteSheet = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "SpriteSheets/hit");
+            Effect effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "BillboardQuadShader");
+
+            BillboardQuad billboard = new BillboardQuad(Graphics, spriteSheet, effect, HitSize, HitSpritePixelSize, HitSpriteSheetSize, HitSpriteCount);
+
+            HitSprites.Add(billboard);
             Sprites.Add(billboard);
         }
 
@@ -88,6 +107,17 @@ namespace TGC.MonoGame.TP.Effects
             CurrentWaterSplash++;
             if (CurrentWaterSplash >= WaterSplashSprites.Count)
                 CurrentWaterSplash = 0;
+        }
+        public void CreateHit(Vector3 position)
+        {
+            BillboardQuad currenHit = HitSprites[CurrentHit];
+
+            currenHit.Position = position;
+            currenHit.Play();
+
+            CurrentHit++;
+            if (CurrentHit >= HitSprites.Count)
+                CurrentHit = 0;
         }
 
         public void Update(GameTime gameTime)
