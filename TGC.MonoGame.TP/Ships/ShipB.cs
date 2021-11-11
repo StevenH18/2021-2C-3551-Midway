@@ -4,12 +4,13 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.Samples.Viewer.Gizmos;
 
 namespace TGC.MonoGame.TP.Ships
 {
     public class ShipB : Ship
     {
-        public ShipB(ContentManager content, GraphicsDevice graphics) : base(content, graphics)
+        public ShipB(ContentManager content, GraphicsDevice graphics, Gizmos gizmos) : base(content, graphics, gizmos)
         {
             Scale = Matrix.CreateScale(0.2f);
             Rotation = Matrix.CreateRotationX(0) * Matrix.CreateRotationY(0) * Matrix.CreateRotationZ(0);

@@ -35,6 +35,7 @@ sampler2D RadarLineSampler = sampler_state
 float3 CameraPosition;
 float3 CameraForward;
 float3 ShipPositions[20];
+int ShipsDestroyed[20];
 
 float RadarRange;
 
@@ -84,7 +85,7 @@ float dotInRadar(VertexShaderOutput input, float2 rotation)
         
         float dotColor = step(distance(input.TextureCoordinates, float2(0.5, 0.5) + distance(cameraPosition, shipPosition) * radarOrientation / RadarRange), 0.01);
         
-        radarDot += lerp(0, dotColor, step(distance(input.TextureCoordinates, float2(0.5, 0.5)), 0.5));
+        radarDot += lerp(0, dotColor, step(distance(input.TextureCoordinates, float2(0.5, 0.5)), 0.5)) * (1 - ShipsDestroyed[i]);
     }
     return radarDot;
 }

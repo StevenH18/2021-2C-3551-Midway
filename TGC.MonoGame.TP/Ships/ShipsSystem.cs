@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TGC.MonoGame.Samples.Viewer.Gizmos;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -14,6 +15,8 @@ namespace TGC.MonoGame.TP.Ships
         private ContentManager Content;
         private GraphicsDevice Graphics;
         private MapEnvironment Environment;
+        private Gizmos Gizmos;
+
         public EffectSystem EffectSystem;
 
         public int ShipsCount = 20;
@@ -21,14 +24,15 @@ namespace TGC.MonoGame.TP.Ships
         public Ship[] Ships;
         public Ship ShipPlayer;
 
-        public ShipsSystem(ContentManager content, GraphicsDevice graphics)
+        public ShipsSystem(GraphicsDevice graphics, ContentManager content, Gizmos gizmos)
         {
             Content = content;
             Graphics = graphics;
+            Gizmos = gizmos;
 
             Ships = new Ship[ShipsCount];
 
-            Ships[0] = new ShipPlayer(Content, Graphics);
+            Ships[0] = new ShipPlayer(Content, Graphics, Gizmos);
             ShipPlayer = Ships[0];
 
             ShipPlayer.Position.X = 1;
@@ -38,7 +42,7 @@ namespace TGC.MonoGame.TP.Ships
             {
                 Random random = new Random();
 
-                Ships[i] = new ShipEnemy(Content, Graphics, (ShipPlayer)ShipPlayer);
+                Ships[i] = new ShipEnemy(Content, Graphics, (ShipPlayer)ShipPlayer, Gizmos);
 
                 Ships[i].Position.X = random.Next(-ShipsSeparation, ShipsSeparation);
                 Ships[i].Position.Z = random.Next(-ShipsSeparation, ShipsSeparation);

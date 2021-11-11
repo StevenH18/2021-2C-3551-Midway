@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Artillery;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
@@ -23,6 +25,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSounds = "Sounds/";
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
+
         private GraphicsDeviceManager Graphics { get; }
         private FreeCamera FreeCamera;
         private ShipCamera ShipCamera;
@@ -31,10 +34,13 @@ namespace TGC.MonoGame.TP
         private ShipsSystem ShipsSystem;
         private MapEnvironment Environment;
         private HudController Hud;
+        private WeaponSystem WeaponSystem;
         private EffectSystem EffectSystem;
 
         private SpriteBatch SpriteBatch;
         private SpriteFont Font;
+
+        private Gizmos Gizmos;
 
         public const int ST_MENU = 0;
         public const int ST_LEVEL_1 = 1;
@@ -75,10 +81,12 @@ namespace TGC.MonoGame.TP
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             ActiveCamera = ShipCamera;
 
-            ShipsSystem = new ShipsSystem(Content, GraphicsDevice);
+            Gizmos = new Gizmos();
+            ShipsSystem = new ShipsSystem(GraphicsDevice, Content, Gizmos);
             Environment = new MapEnvironment(GraphicsDevice, Content);
             Hud = new HudController(GraphicsDevice, Content);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
+            WeaponSystem = new WeaponSystem(GraphicsDevice, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
 
             base.Initialize();
         }
@@ -94,6 +102,7 @@ namespace TGC.MonoGame.TP
             Environment.Load();
             Hud.Load();
             EffectSystem.Load();
+            Gizmos.LoadContent(GraphicsDevice, Content);
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -121,18 +130,6 @@ namespace TGC.MonoGame.TP
                 Graphics.ApplyChanges();
             }
 
-            if (Inputs.isJustPressed(Keys.G))
-            {
-                if(ActiveCamera.Equals(ShipCamera))
-                {
-                    ActiveCamera = FreeCamera;
-                }
-                else
-                {
-                    ActiveCamera = ShipCamera;
-                }
-            }
-
             switch (MenuStatus)
             {
                 case ST_MENU:
@@ -141,10 +138,29 @@ namespace TGC.MonoGame.TP
                     break;
 
                 case ST_LEVEL_1:
+                    if (Inputs.isJustPressed(Keys.G))
+                    {
+                        if (ActiveCamera.Equals(ShipCamera))
+                        {
+                            ActiveCamera = FreeCamera;
+                        }
+                        else
+                        {
+                            ActiveCamera = ShipCamera;
+                        }
+                    }
+
+                    if (Inputs.mouseLeftJustPressed())
+                    {
+                        WeaponSystem.Fire(ActiveCamera.World.Translation, ActiveCamera.World.Forward * 2500);
+                    }
+
                     ShipsSystem.Update(gameTime, Environment, EffectSystem);
                     ActiveCamera.Update(gameTime, ShipsSystem.Ships[0]);
                     EffectSystem.Update(gameTime);
                     Environment.Update(gameTime, ShipsSystem.Ships);
+                    WeaponSystem.Update(gameTime);
+
                     Hud.Update(gameTime);
 
                     IsMouseVisible = false;
@@ -152,6 +168,7 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
+            Gizmos.UpdateViewProjection(ActiveCamera.View, ActiveCamera.Projection);
 
             base.Update(gameTime);
         }
@@ -198,12 +215,15 @@ namespace TGC.MonoGame.TP
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                     EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+                    WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);
 
                     break;
             }
+
+            Gizmos.Draw();
 
             // base.Draw(gameTime);
         }

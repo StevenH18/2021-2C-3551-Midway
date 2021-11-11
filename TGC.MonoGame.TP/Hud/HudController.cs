@@ -73,12 +73,14 @@ namespace TGC.MonoGame.TP.Hud
             ScreenQuad radar = new ScreenQuad(Graphics, radarPosition, radarSize);
 
             Vector3[] shipPositions = ships.Select(ship => ship.Position).ToArray();
+            int[] shipsDestroyed = ships.Select(ship => ship.Destroyed ? 1 : 0).ToArray();
 
             RadarEffect.Parameters["RadarTexture"]?.SetValue(RadarTexture);
             RadarEffect.Parameters["RadarLineTexture"]?.SetValue(RadarLineTexture);
             RadarEffect.Parameters["RadarMaskTexture"]?.SetValue(RadarMaskTexture);
             RadarEffect.Parameters["RadarRange"]?.SetValue(RadarRange);
             RadarEffect.Parameters["ShipPositions"]?.SetValue(shipPositions);
+            RadarEffect.Parameters["ShipsDestroyed"]?.SetValue(shipsDestroyed);
             RadarEffect.Parameters["CameraPosition"]?.SetValue(cameraMatrix.Translation);
             RadarEffect.Parameters["CameraForward"]?.SetValue(cameraMatrix.Forward);
 

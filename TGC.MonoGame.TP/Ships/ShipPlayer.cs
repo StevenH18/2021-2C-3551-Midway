@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using TGC.MonoGame.Samples.Collisions;
+using TGC.MonoGame.Samples.Viewer.Gizmos;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -13,9 +15,18 @@ namespace TGC.MonoGame.TP.Ships
 {
     public class ShipPlayer : ShipA
     {
-        public ShipPlayer(ContentManager content, GraphicsDevice graphics) : base(content, graphics)
+        public ShipPlayer(ContentManager content, GraphicsDevice graphics, Gizmos gizmos) : base(content, graphics, gizmos)
         {
+            Health = 200;
+        }
 
+        public override void Load()
+        {
+            base.Load();
+
+            var temporaryCubeAABB = BoundingVolumesExtensions.CreateAABBFrom(Model);
+            BoundingBox = OrientedBoundingBox.FromAABB(temporaryCubeAABB);
+            BoundingBox.Extents = new Vector3(20,50,200);
         }
 
         private void PlayerControl(GameTime gameTime)
@@ -68,20 +79,45 @@ namespace TGC.MonoGame.TP.Ships
 
         public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
         {
-            PlayerControl(gameTime);
-
-            Position += Rotation.Forward * Velocity;
-            Angle += AngularVelocity;
-
-            Position.Y = 0;
+            HealthController(gameTime, effectSystem);
 
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
 
             Vector3 normal = result.Item1;
             Vector3 position = result.Item2;
 
-            Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, Angle);
-            World = Scale * Rotation * Matrix.CreateTranslation(position);
+            OceanPosition = position;
+
+            if (!Destroyed)
+            {
+                PlayerControl(gameTime);
+                Position += Rotation.Forward * Velocity;
+                Angle += AngularVelocity;
+
+                Position.Y = 0;
+
+                Rotation = Matrix.CreateFromYawPitchRoll(0f, normal.Z, -normal.X) * Matrix.CreateFromAxisAngle(normal, Angle);
+            }
+
+            DestroyAnimation(gameTime);
+
+            World = Scale * Rotation * Matrix.CreateTranslation(OceanPosition);
+
+            BoundingBox.Center = OceanPosition;
+
+            BoundingBoxMatrix = Matrix.CreateScale(BoundingBox.Extents * 2f) *
+                 Rotation *
+                 Matrix.CreateTranslation(OceanPosition);
+
+        }
+
+        public override void Draw(Matrix view, Matrix proj)
+        {
+            if (!Active)
+                return;
+            Gizmos.DrawCube(BoundingBoxMatrix, Color.Green);
+
+            base.Draw(view, proj);
         }
     }
 }
