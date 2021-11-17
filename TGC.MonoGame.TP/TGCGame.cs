@@ -30,6 +30,7 @@ namespace TGC.MonoGame.TP
         private FreeCamera FreeCamera;
         private ShipCamera ShipCamera;
         private AimingCamera AimingCamera;
+        private DefeatedCamera DefeatedCamera;
         private Camera ActiveCamera;
         private Camera CurrentCamera;
         private Camera PreviousCamera;
@@ -88,6 +89,7 @@ namespace TGC.MonoGame.TP
 
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             AimingCamera = new AimingCamera(GraphicsDevice, this.Window);
+            DefeatedCamera = new DefeatedCamera(GraphicsDevice, this.Window);
             ActiveCamera = new Camera();
             CurrentCamera = ShipCamera;
             PreviousCamera = ShipCamera;
@@ -180,10 +182,11 @@ namespace TGC.MonoGame.TP
 
                     if (Inputs.isJustPressed(Keys.G))
                     {
+                        CameraTransitionDuration = 2f;
                         CameraTransition = 0f;
                         PreviousCamera = CurrentCamera;
 
-                        if (CurrentCamera.Equals(ShipCamera) || CurrentCamera.Equals(AimingCamera))
+                        if (CurrentCamera.Equals(ShipCamera) || CurrentCamera.Equals(AimingCamera) || CurrentCamera.Equals(DefeatedCamera))
                         {
                             FreeCamera.Position = CurrentCamera.World.Translation + new Vector3(0, 150, 0);
                             FreeCamera.Forward = CurrentCamera.World.Forward;
@@ -196,9 +199,9 @@ namespace TGC.MonoGame.TP
                     }
 
 
-                    if (Inputs.mouseRightJustPressed())
+                    if (Inputs.mouseRightJustPressed() && ShipsSystem.ShipPlayer.Health > 0)
                     {
-                        CameraTransitionDuration = 1f;
+                        CameraTransitionDuration = 0.5f;
 
                         CameraTransition = 0f;
                         PreviousCamera = CurrentCamera;
@@ -208,14 +211,22 @@ namespace TGC.MonoGame.TP
 
                         CurrentCamera = AimingCamera;
                     }
-                    if(Inputs.mouseRightJustReleased())
+                    if(Inputs.mouseRightJustReleased() && ShipsSystem.ShipPlayer.Health > 0)
                     {
-                        CameraTransitionDuration = 1f;
+                        CameraTransitionDuration = 0.5f;
 
                         CameraTransition = 0f;
                         PreviousCamera = CurrentCamera;
 
                         CurrentCamera = ShipCamera;
+                    }
+
+                    if(ShipsSystem.ShipPlayer.Health <= 0 && (CurrentCamera.Equals(AimingCamera) || CurrentCamera.Equals(ShipCamera)))
+                    {
+                        CameraTransitionDuration = 4f;
+                        CameraTransition = 0f;
+                        PreviousCamera = CurrentCamera;
+                        CurrentCamera = DefeatedCamera;
                     }
 
                     ShipsSystem.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera);
@@ -277,9 +288,9 @@ namespace TGC.MonoGame.TP
                 case ST_LEVEL_1:
                     ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
                     Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+                    WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     GraphicsDevice.DepthStencilState = DepthStencilState.Default;
                     EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-                    WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
 
                     base.Draw(gameTime);

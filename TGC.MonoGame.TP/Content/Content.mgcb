@@ -467,11 +467,17 @@
 /processorParam:Quality=Best
 /build:Sounds/Effects/fire3.mp3
 
-#begin Sounds/Effects/water_splash.mp3
+#begin Sounds/Effects/hit1.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/Effects/water_splash.mp3
+/build:Sounds/Effects/hit1.mp3
+
+#begin Sounds/Effects/water_splash1.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/water_splash1.mp3
 
 #begin Textures/background2.png
 /importer:TextureImporter

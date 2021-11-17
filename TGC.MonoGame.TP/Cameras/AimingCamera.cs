@@ -18,21 +18,30 @@ namespace TGC.MonoGame.TP.Cameras
         private Vector3 Offset = new Vector3(0, 100, 0);
         public float YawAngles = 0f;
         public float PitchAngles = 0f;
+
+        public float Zoom = 3f;
+        public float MaxZoom = 14f;
+        public float MinZoom = 3f;
+
         private MouseState PreviousMouseState;
+        private int PreviousScroll = 0;
 
         public AimingCamera(GraphicsDevice gfxDevice, GameWindow window)
         {
             Window = window;
             Graphics = gfxDevice;
 
-            float aspectRatio = gfxDevice.Viewport.AspectRatio;
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathF.PI / 12f, aspectRatio, 0.1f, 100000f);
+            RecreateProjection();
+        }
+        private void RecreateProjection()
+        {
+            float aspectRatio = Graphics.Viewport.AspectRatio;
+            Projection = Matrix.CreatePerspectiveFieldOfView(Zoom, aspectRatio, 0.1f, 100000f);
         }
         float Lerp(float firstFloat, float secondFloat, float by)
         {
             return firstFloat * (1 - by) + secondFloat * by;
         }
-
         private void Controls(GameTime gameTime, Ship ship)
         {
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -44,11 +53,21 @@ namespace TGC.MonoGame.TP.Cameras
 
             PitchAngles = (float)Math.Clamp(PitchAngles, -Math.PI / 2, Math.PI / 2);
 
-
             Mouse.SetPosition(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
             mouseState = Mouse.GetState();
 
+            var scrollDiff = PreviousScroll - Mouse.GetState().ScrollWheelValue;
+
+            if (MathF.Abs(scrollDiff) > 0)
+            {
+                Zoom += MathF.Sign(scrollDiff) / (MathF.PI * 2f);
+            }
+
+            Zoom = Math.Clamp(Zoom, MathF.PI / MaxZoom, MathF.PI / MinZoom);
+            RecreateProjection();
+
             PreviousMouseState = mouseState;
+            PreviousScroll = Mouse.GetState().ScrollWheelValue;
 
             World = Matrix.CreateFromYawPitchRoll(YawAngles, PitchAngles, 0f) * ship.Rotation * Matrix.CreateTranslation(ship.World.Translation + Offset);
         }

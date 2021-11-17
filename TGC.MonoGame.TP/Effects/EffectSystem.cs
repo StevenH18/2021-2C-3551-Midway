@@ -53,6 +53,7 @@ namespace TGC.MonoGame.TP.Effects
         public List<SoundEffect> ExplosionSounds;
         public List<SoundEffect> WaterSplashSounds;
         public List<SoundEffect> FireSounds;
+        public List<SoundEffect> HitSounds;
 
         public EffectSystem(GraphicsDevice graphics, ContentManager content)
         {
@@ -65,16 +66,19 @@ namespace TGC.MonoGame.TP.Effects
             ExplosionSounds = new List<SoundEffect>();
             WaterSplashSounds = new List<SoundEffect>();
             FireSounds = new List<SoundEffect>();
+            HitSounds = new List<SoundEffect>();
 
             ExplosionSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/explosion1"));
             ExplosionSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/explosion2"));
             ExplosionSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/explosion3"));
 
-            WaterSplashSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/water_splash"));
+            WaterSplashSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/water_splash1"));
 
             FireSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/fire1"));
             FireSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/fire2"));
             FireSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/fire3"));
+
+            HitSounds.Add(Content.Load<SoundEffect>(TGCGame.ContentFolderSounds + "/Effects/hit1"));
 
             for (var i = 0; i < 50; i++)
             {
@@ -143,9 +147,6 @@ namespace TGC.MonoGame.TP.Effects
             float volumeLeft = (float)Math.Clamp(MathF.Abs(angleDiff - 90) / 90, 0, 1) * volume;
             float volumeRight = (float)Math.Clamp(MathF.Abs(angleDiff + 90) / 90, 0, 1) * volume;
 
-            Debug.WriteLine("Left: " + volumeLeft);
-            Debug.WriteLine("Right: " + volumeRight);
-
             soundEffect.Play(volumeLeft, 0, 1);
             soundEffect.Play(volumeRight, 0, -1);
         }
@@ -188,6 +189,11 @@ namespace TGC.MonoGame.TP.Effects
 
             currenHit.Position = position;
             currenHit.Play();
+
+            var random = new Random();
+            var randomHitSound = random.Next(0, HitSounds.Count);
+
+            Play3DSound(HitSounds[randomHitSound], position);
 
             CurrentHit++;
             if (CurrentHit >= HitSprites.Count)

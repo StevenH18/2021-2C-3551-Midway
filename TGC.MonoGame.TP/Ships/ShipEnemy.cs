@@ -29,15 +29,15 @@ namespace TGC.MonoGame.TP.Ships
         private ShipPlayer ShipPlayer;
         private WeaponSystem WeaponSystem;
 
-        private float ShootingRange = 4000;
+        private float ShootingRange = 3000;
         private float ChaseRange = 5000;
 
         private float VelocityLerp = 0.01f;
-        private float AngleLerp = 0.008f;
+        private float AngleLerp = 0.005f;
 
         private float PreviousAngle = 0f;
 
-        private float FireRate = 2f;
+        private float FireRate = 3f;
         private float FireTime = 0f;
 
         public ShipEnemy(ContentManager content, GraphicsDevice graphics, ShipPlayer shipPlayer, Gizmos gizmos) : base(content, graphics, gizmos)
