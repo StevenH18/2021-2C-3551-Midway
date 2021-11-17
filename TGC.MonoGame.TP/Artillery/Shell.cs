@@ -26,13 +26,14 @@ namespace TGC.MonoGame.TP.Artillery
 
         private Vector3 Position;
         private Vector3 Velocity;
+        private Ship Ignore;
         private Vector3 Gravity = new Vector3(0, -500, 0);
 
         private Matrix World;
 
         private BoundingSphere BoundingSphere;
 
-        public float Damage = 20;
+        public float Damage = 65;
 
         public bool Active = false;
 
@@ -58,10 +59,11 @@ namespace TGC.MonoGame.TP.Artillery
 
             BoundingSphere = new BoundingSphere();
         }
-        public void Fire(Vector3 position, Vector3 velocity)
+        public void Fire(Vector3 position, Vector3 velocity, Ship ignore)
         {
             Position = position;
             Velocity = velocity;
+            Ignore = ignore;
             Active = true;
         }
         public void MRUV(GameTime gameTime)
@@ -78,7 +80,7 @@ namespace TGC.MonoGame.TP.Artillery
             Ship[] ships = ShipsSystem.Ships;
             for(var i = 0; i < ships.Length; i++)
             {
-                if(ships[i].BoundingBox.Intersects(BoundingSphere))
+                if(ships[i].BoundingBox.Intersects(BoundingSphere) && !ships[i].Equals(Ignore))
                 {
                     ships[i].Damage(Damage);
 

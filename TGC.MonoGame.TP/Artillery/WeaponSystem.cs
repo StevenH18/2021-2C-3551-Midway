@@ -41,9 +41,11 @@ namespace TGC.MonoGame.TP.Artillery
                 Shells[i] = new Shell(Graphics, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
             }
         }
-        public void Fire(Vector3 position, Vector3 velocity)
+        public void Fire(Vector3 position, Vector3 velocity, Ship ignore)
         {
-            Shells[CurrentShell].Fire(position, velocity);
+            EffectSystem.CreateFire(position);
+
+            Shells[CurrentShell].Fire(position, velocity, ignore);
 
             CurrentShell++;
             if (CurrentShell >= Shells.Length)

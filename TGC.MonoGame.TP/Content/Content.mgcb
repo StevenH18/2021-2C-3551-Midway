@@ -431,6 +431,48 @@
 /processorParam:Quality=Best
 /build:Sounds/Ambience/thunder5.wav
 
+#begin Sounds/Effects/explosion1.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/explosion1.mp3
+
+#begin Sounds/Effects/explosion2.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/explosion2.mp3
+
+#begin Sounds/Effects/explosion3.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/explosion3.mp3
+
+#begin Sounds/Effects/fire1.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/fire1.mp3
+
+#begin Sounds/Effects/fire2.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/fire2.mp3
+
+#begin Sounds/Effects/fire3.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/fire3.mp3
+
+#begin Sounds/Effects/water_splash.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Effects/water_splash.mp3
+
 #begin Textures/background2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -562,6 +604,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=NoChange
 /build:Textures/SpriteSheets/explosion.png
+
+#begin Textures/SpriteSheets/fire.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/SpriteSheets/fire.png
 
 #begin Textures/SpriteSheets/hit.png
 /importer:TextureImporter

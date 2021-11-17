@@ -29,7 +29,12 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private FreeCamera FreeCamera;
         private ShipCamera ShipCamera;
+        private AimingCamera AimingCamera;
         private Camera ActiveCamera;
+        private Camera CurrentCamera;
+        private Camera PreviousCamera;
+        private float CameraTransition = 1;
+        private float CameraTransitionDuration = 2;
 
         private ShipsSystem ShipsSystem;
         private MapEnvironment Environment;
@@ -78,8 +83,18 @@ namespace TGC.MonoGame.TP
             // GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
+
+            FreeCamera.Position = new Vector3(-200, 1000, 5000);
+
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
-            ActiveCamera = ShipCamera;
+            AimingCamera = new AimingCamera(GraphicsDevice, this.Window);
+            ActiveCamera = new Camera();
+            CurrentCamera = ShipCamera;
+            PreviousCamera = ShipCamera;
+
+            ActiveCamera.World = FreeCamera.World;
+            ActiveCamera.Projection = FreeCamera.Projection;
+            ActiveCamera.View = FreeCamera.View;
 
             Gizmos = new Gizmos();
             ShipsSystem = new ShipsSystem(GraphicsDevice, Content, Gizmos);
@@ -130,34 +145,83 @@ namespace TGC.MonoGame.TP
                 Graphics.ApplyChanges();
             }
 
+            float t = CameraTransition / CameraTransitionDuration;
+            t = t * t * (3f - 2f * t);
+
+            ActiveCamera.Projection = Matrix.Lerp(PreviousCamera.Projection, CurrentCamera.Projection, t);
+            ActiveCamera.View = Matrix.Lerp(PreviousCamera.View, CurrentCamera.View, t);
+            ActiveCamera.World = Matrix.Lerp(PreviousCamera.World, CurrentCamera.World, t);
+
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if(CameraTransition < CameraTransitionDuration)
+            {
+                CameraTransition += deltaTime;
+            }
+            else
+            {
+                CameraTransition = CameraTransitionDuration;
+            }
+
             switch (MenuStatus)
             {
                 case ST_MENU:
+
+                    CameraTransition = 0f;
+                    PreviousCamera = FreeCamera;
+                    CurrentCamera = ShipCamera;
+
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                         MenuStatus = ST_LEVEL_1;
+
                     break;
 
                 case ST_LEVEL_1:
+
                     if (Inputs.isJustPressed(Keys.G))
                     {
-                        if (ActiveCamera.Equals(ShipCamera))
+                        CameraTransition = 0f;
+                        PreviousCamera = CurrentCamera;
+
+                        if (CurrentCamera.Equals(ShipCamera) || CurrentCamera.Equals(AimingCamera))
                         {
-                            ActiveCamera = FreeCamera;
+                            FreeCamera.Position = CurrentCamera.World.Translation + new Vector3(0, 150, 0);
+                            FreeCamera.Forward = CurrentCamera.World.Forward;
+                            CurrentCamera = FreeCamera;
                         }
                         else
                         {
-                            ActiveCamera = ShipCamera;
+                            CurrentCamera = ShipCamera;
                         }
                     }
 
-                    if (Inputs.mouseLeftJustPressed())
+
+                    if (Inputs.mouseRightJustPressed())
                     {
-                        WeaponSystem.Fire(ActiveCamera.World.Translation, ActiveCamera.World.Forward * 2500);
+                        CameraTransitionDuration = 1f;
+
+                        CameraTransition = 0f;
+                        PreviousCamera = CurrentCamera;
+
+                        AimingCamera.YawAngles = 0;
+                        AimingCamera.PitchAngles = 0;
+
+                        CurrentCamera = AimingCamera;
+                    }
+                    if(Inputs.mouseRightJustReleased())
+                    {
+                        CameraTransitionDuration = 1f;
+
+                        CameraTransition = 0f;
+                        PreviousCamera = CurrentCamera;
+
+                        CurrentCamera = ShipCamera;
                     }
 
-                    ShipsSystem.Update(gameTime, Environment, EffectSystem);
-                    ActiveCamera.Update(gameTime, ShipsSystem.Ships[0]);
-                    EffectSystem.Update(gameTime);
+                    ShipsSystem.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera);
+                    CurrentCamera.Update(gameTime, ShipsSystem.Ships[0]);
+                    PreviousCamera.Update(gameTime, ShipsSystem.Ships[0]);
+                    EffectSystem.Update(gameTime, ActiveCamera);
                     Environment.Update(gameTime, ShipsSystem.Ships);
                     WeaponSystem.Update(gameTime);
 

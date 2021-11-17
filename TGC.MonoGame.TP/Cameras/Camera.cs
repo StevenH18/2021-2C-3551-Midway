@@ -8,12 +8,15 @@ using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP
 {
-    public abstract class Camera
+    public class Camera
     {
         public Matrix World = Matrix.Identity;
         public Matrix View = Matrix.Identity;
         public Matrix Projection = Matrix.Identity;
 
-        public abstract void Update(GameTime gameTime, Ship ship);
+        public virtual void Update(GameTime gameTime, Ship ship)
+        {
+
+        }
     }
 }

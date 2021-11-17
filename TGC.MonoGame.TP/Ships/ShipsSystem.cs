@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Artillery;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -20,7 +21,7 @@ namespace TGC.MonoGame.TP.Ships
         public EffectSystem EffectSystem;
 
         public int ShipsCount = 20;
-        public int ShipsSeparation = 15000;
+        public int ShipsSeparation = 20000;
         public Ship[] Ships;
         public Ship ShipPlayer;
 
@@ -56,14 +57,14 @@ namespace TGC.MonoGame.TP.Ships
                 Ships[i].Load();
             }
         }
-        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
+        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
         {
             Environment = environment;
             EffectSystem = effectSystem;
-            ShipPlayer.Update(gameTime, Environment, EffectSystem);
+            ShipPlayer.Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
             for (int i = 0; i < ShipsCount; i++)
             {
-                Ships[i].Update(gameTime, Environment, EffectSystem);
+                Ships[i].Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
             }
         }
         public void Draw(Matrix view, Matrix proj)

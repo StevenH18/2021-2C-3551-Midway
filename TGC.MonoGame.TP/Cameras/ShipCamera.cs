@@ -76,7 +76,7 @@ namespace TGC.MonoGame.TP.Cameras
 
                 // Cambio de 1 a 0.1 para que la camara no se quede pegada al barco
                 // asi se mueve mas lento todo el tiempo casi
-                BackVectorInterpolator = MathF.Min(BackVectorInterpolator, 0.1f);
+                BackVectorInterpolator = MathF.Min(BackVectorInterpolator, 0.5f);
 
                 // Calculo el vector Derecha a partir de la interpolacion
                 // Esto mueve el vector Derecha para igualar al vector Derecha que sigo

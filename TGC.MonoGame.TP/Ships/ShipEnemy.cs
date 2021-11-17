@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using TGC.MonoGame.Samples.Collisions;
 using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Artillery;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -25,12 +27,18 @@ namespace TGC.MonoGame.TP.Ships
         private int CurrentWayPoint;
         private EnemyState EnemyState;
         private ShipPlayer ShipPlayer;
+        private WeaponSystem WeaponSystem;
 
-        private float ShootingRange = 1000;
+        private float ShootingRange = 4000;
         private float ChaseRange = 5000;
 
         private float VelocityLerp = 0.01f;
-        private float AngleLerp = 0.02f;
+        private float AngleLerp = 0.008f;
+
+        private float PreviousAngle = 0f;
+
+        private float FireRate = 2f;
+        private float FireTime = 0f;
 
         public ShipEnemy(ContentManager content, GraphicsDevice graphics, ShipPlayer shipPlayer, Gizmos gizmos) : base(content, graphics, gizmos)
         {
@@ -70,11 +78,11 @@ namespace TGC.MonoGame.TP.Ships
         {
             var distanceToPlayer = Vector3.Distance(ShipPlayer.Position, Position);
 
-            if (distanceToPlayer < ShootingRange)
+            if (distanceToPlayer < ShootingRange && ShipPlayer.Health > 0)
             {
                 EnemyState = EnemyState.Shooting;
             }
-            else if (distanceToPlayer > ShootingRange && distanceToPlayer < ChaseRange)
+            else if (distanceToPlayer > ShootingRange && distanceToPlayer < ChaseRange && ShipPlayer.Health > 0)
             {
                 EnemyState = EnemyState.Chasing;
             }
@@ -84,13 +92,32 @@ namespace TGC.MonoGame.TP.Ships
             }
         }
 
-        private void Wandering()
+        private float RotateToTarget(Vector3 target)
+        {
+            var angleToFollow = MathF.Atan2(target.X, target.Z);
+
+            if (angleToFollow - PreviousAngle > MathF.PI)
+            {
+                angleToFollow -= MathF.PI * 2;
+            }
+            else if (angleToFollow - PreviousAngle < -MathF.PI)
+            {
+                angleToFollow += MathF.PI * 2;
+            }
+
+            PreviousAngle = angleToFollow;
+
+            return angleToFollow;
+        }
+
+        private void Wandering(GameTime gameTime)
         {
             var target = Position - (WayPoints[CurrentWayPoint] + WayPointVariation);
             var distanceToWayPoint = Vector3.Distance(Position, WayPoints[CurrentWayPoint] + WayPointVariation);
+            var angleToFollow = RotateToTarget(target);
 
-            Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
+            Velocity = Lerp(Velocity, 3f, VelocityLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp);
 
             if (distanceToWayPoint < 500f)
             {
@@ -105,42 +132,62 @@ namespace TGC.MonoGame.TP.Ships
                 }
             }
         }
-        private void Chasing()
+        private void Chasing(GameTime gameTime)
         {
             var target = Position - ShipPlayer.Position;
+            var angleToFollow = RotateToTarget(target);
 
             Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp);
         }
-        private void Shooting()
+        private void Shooting(GameTime gameTime)
         {
             var target = Position - ShipPlayer.Position;
+            var angleToFollow = RotateToTarget(target);
 
             Velocity = Lerp(Velocity, 0f, VelocityLerp);
-            Angle = Lerp(Angle, MathF.Atan2(target.X, target.Z), AngleLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
+
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            if(time - FireTime > FireRate)
+            {
+                var random = new Random();
+
+                FireTime = time;
+
+                var innacuracy = Vector3.One * ((float)random.NextDouble() * 0 - 0);
+                var offset = World.Forward * 200 + new Vector3(0, 50, 0);
+                var fireTarget = (ShipPlayer.World.Translation + new Vector3(0, 200, 0) + innacuracy) - World.Translation;
+
+                WeaponSystem.Fire(World.Translation + offset, fireTarget, this);
+            }
+
         }
 
-        private void MovementManagement()
+        private void MovementManagement(GameTime gameTime)
         {
             switch (EnemyState)
             {
                 case EnemyState.Patrolling:
-                    Wandering();
+                    Wandering(gameTime);
                     break;
 
                 case EnemyState.Chasing:
-                    Chasing();
+                    Chasing(gameTime);
                     break;
 
                 case EnemyState.Shooting:
-                    Shooting();
+                    Shooting(gameTime);
                     break;
                     
             }
         }
 
-        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
+        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
         {
+            WeaponSystem = weaponSystem;
+
             HealthController(gameTime, effectSystem);
 
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
@@ -153,7 +200,7 @@ namespace TGC.MonoGame.TP.Ships
             if (!Destroyed)
             {
                 StateManagement(gameTime, environment, effectSystem);
-                MovementManagement();
+                MovementManagement(gameTime);
 
                 Position += Rotation.Forward * Velocity;
                 Position.Y = 0;

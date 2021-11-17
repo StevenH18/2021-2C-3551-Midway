@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.Samples.Collisions;
 using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Artillery;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -115,7 +116,7 @@ namespace TGC.MonoGame.TP.Ships
                 }
             }
         }
-        public virtual void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
+        public virtual void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
         {
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }

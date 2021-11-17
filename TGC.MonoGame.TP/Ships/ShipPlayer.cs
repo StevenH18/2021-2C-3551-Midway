@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text;
 using TGC.MonoGame.Samples.Collisions;
 using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Artillery;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Environment;
 
@@ -15,6 +16,9 @@ namespace TGC.MonoGame.TP.Ships
 {
     public class ShipPlayer : ShipA
     {
+        private float FireRate = 1f;
+        private float FireTime = 0f;
+
         public ShipPlayer(ContentManager content, GraphicsDevice graphics, Gizmos gizmos) : base(content, graphics, gizmos)
         {
             Health = 200;
@@ -77,7 +81,7 @@ namespace TGC.MonoGame.TP.Ships
             AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity) * MathF.Pow(Math.Abs(Velocity / MaxVelocity), 0.2f);
         }
 
-        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem)
+        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
         {
             HealthController(gameTime, effectSystem);
 
@@ -90,6 +94,19 @@ namespace TGC.MonoGame.TP.Ships
 
             if (!Destroyed)
             {
+                // Fire
+                if (Inputs.mouseLeftJustPressed() && Mouse.GetState().RightButton == ButtonState.Pressed)
+                {
+                    float time = (float)gameTime.TotalGameTime.TotalSeconds;
+
+                    if (time - FireTime > FireRate)
+                    {
+                        FireTime = time;
+
+                        weaponSystem.Fire(activeCamera.World.Translation, activeCamera.World.Forward * 5000, this);
+                    }
+                }
+
                 PlayerControl(gameTime);
                 Position += Rotation.Forward * Velocity;
                 Angle += AngularVelocity;
