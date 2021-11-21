@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TGC.MonoGame.Samples.Viewer.Gizmos;
 using TGC.MonoGame.TP.Effects;
 using TGC.MonoGame.TP.Ships;
 
@@ -127,7 +128,7 @@ namespace TGC.MonoGame.TP.Environment
 
         private GameTime GameTime;
 
-        public MapEnvironment(GraphicsDevice graphics, ContentManager content)
+        public MapEnvironment(GraphicsDevice graphics, ContentManager content, Gizmos gizmos)
         {
             Graphics = graphics;
             Content = content;
@@ -141,7 +142,7 @@ namespace TGC.MonoGame.TP.Environment
             Ocean = new Ocean(Graphics, Content, this);
             SkyBox = new SkyBox(Graphics, Content, this);
             RainSystem = new RainSystem(Graphics, Content, this);
-            IslandSystem = new IslandSystem(Graphics, Content, this);
+            IslandSystem = new IslandSystem(Graphics, Content, this, gizmos);
             SoundSystem = new SoundSystem(Graphics, Content, this);
         }
 
@@ -157,7 +158,7 @@ namespace TGC.MonoGame.TP.Environment
             LerpWeatherValues(WeatherState, WeatherChangeTo, 0);
         }
 
-        public void Update(GameTime gameTime, Ship[] ships)
+        public void Update(GameTime gameTime, Ship[] ships, Camera camera)
         {
             GameTime = gameTime;
             if (Inputs.isJustPressed(Microsoft.Xna.Framework.Input.Keys.T))
@@ -182,6 +183,7 @@ namespace TGC.MonoGame.TP.Environment
 
             ThunderEffects();
             AnimateWeather();
+            IslandSystem.Update(gameTime, camera);
             Ocean.Update(gameTime, ships);
             SoundSystem.Initialize(gameTime);
             SoundSystem.Update(gameTime);

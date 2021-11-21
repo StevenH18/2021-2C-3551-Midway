@@ -79,7 +79,7 @@ namespace TGC.MonoGame.Samples.Viewer.Gizmos
             PolyLine = new PolyLineGizmoGeometry(GraphicsDevice);
             Disk = new DiskGizmoGeometry(GraphicsDevice, 20);
             Cylinder = new CylinderGizmoGeometry(GraphicsDevice, 20);
-            //AxisLines = new AxisLines(GraphicsDevice, Content.Load<Model>("3D/geometries/arrow"));
+            AxisLines = new AxisLines(GraphicsDevice, Content.Load<Model>(TGCGame.ContentFolder3D + "Geometries/arrow"));
 
             DrawInstances[LineSegment] = new Dictionary<Color, List<Matrix>>();
             DrawInstances[Sphere] = new Dictionary<Color, List<Matrix>>();
@@ -120,7 +120,7 @@ namespace TGC.MonoGame.Samples.Viewer.Gizmos
         public void DrawLine(Vector3 origin, Vector3 destination, Color color)
         {
             var world = LineSegmentGizmoGeometry.CalculateWorld(origin, destination);
-            AddDrawInstance(LineSegment, BaseColor, world);
+            AddDrawInstance(LineSegment, color, world);
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace TGC.MonoGame.Samples.Viewer.Gizmos
             View = view;
             Projection = projection;
             ViewProjection = View * Projection;
-            //AxisLines.SetMatrices(view, projection);
+            AxisLines.SetMatrices(view, projection);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace TGC.MonoGame.Samples.Viewer.Gizmos
             DrawBaseGizmosGeometries(ForegroundPass);
             DrawPolyLines(ForegroundPass);
 
-            //AxisLines.Draw();
+            AxisLines.Draw();
 
             CleanDrawInstances();
         }

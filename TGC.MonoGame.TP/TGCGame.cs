@@ -100,7 +100,7 @@ namespace TGC.MonoGame.TP
 
             Gizmos = new Gizmos();
             ShipsSystem = new ShipsSystem(GraphicsDevice, Content, Gizmos);
-            Environment = new MapEnvironment(GraphicsDevice, Content);
+            Environment = new MapEnvironment(GraphicsDevice, Content, Gizmos);
             Hud = new HudController(GraphicsDevice, Content);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
             WeaponSystem = new WeaponSystem(GraphicsDevice, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
@@ -233,7 +233,7 @@ namespace TGC.MonoGame.TP
                     CurrentCamera.Update(gameTime, ShipsSystem.Ships[0]);
                     PreviousCamera.Update(gameTime, ShipsSystem.Ships[0]);
                     EffectSystem.Update(gameTime, ActiveCamera);
-                    Environment.Update(gameTime, ShipsSystem.Ships);
+                    Environment.Update(gameTime, ShipsSystem.Ships, ActiveCamera);
                     WeaponSystem.Update(gameTime);
 
                     Hud.Update(gameTime);
@@ -297,6 +297,7 @@ namespace TGC.MonoGame.TP
 
                     break;
             }
+
 
             //Gizmos.Draw();
 

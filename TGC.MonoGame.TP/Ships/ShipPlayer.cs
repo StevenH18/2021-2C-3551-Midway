@@ -81,9 +81,23 @@ namespace TGC.MonoGame.TP.Ships
             AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity) * MathF.Pow(Math.Abs(Velocity / MaxVelocity), 0.2f);
         }
 
+        public void CollisionDetection(MapEnvironment environment)
+        {
+            for(int i = 0; i < environment.IslandSystem.IslandColliders.Count; i++)
+            {
+                var islandCollider = environment.IslandSystem.IslandColliders[i];
+
+                if(BoundingBox.Intersects(islandCollider))
+                {
+                    Health = 0;
+                }
+            }
+        }
+
         public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
         {
             HealthController(gameTime, effectSystem);
+            CollisionDetection(environment);
 
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
 

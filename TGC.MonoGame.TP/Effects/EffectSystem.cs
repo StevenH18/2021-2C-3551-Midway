@@ -223,7 +223,7 @@ namespace TGC.MonoGame.TP.Effects
             if (Inputs.isJustPressed(Keys.K))
             {
                 var random = new Random();
-                var position = new Vector3(0, 250f, 0);
+                var position = new Vector3(random.Next(-2000, 2000), 370f, random.Next(-2000, 2000));
                 CreateExplosion(position);
             }
 

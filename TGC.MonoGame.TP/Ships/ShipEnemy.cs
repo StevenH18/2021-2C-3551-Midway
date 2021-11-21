@@ -41,8 +41,14 @@ namespace TGC.MonoGame.TP.Ships
         private float FireRate = 3f;
         private float FireTime = 0f;
 
+        private Ray[] Rays = new Ray[10];
+        private bool[] RayCollides = new bool[10];
+        private float RayLength = 1500f;
+
         public ShipEnemy(ContentManager content, GraphicsDevice graphics, ShipPlayer shipPlayer, Gizmos gizmos) : base(content, graphics, gizmos)
         {
+            Random random = new Random();
+
             ShipPlayer = shipPlayer;
 
             WayPoints = new Vector3[]
@@ -58,7 +64,7 @@ namespace TGC.MonoGame.TP.Ships
                 new Vector3(0, 0, 8000),
                 new Vector3(6000, 0, 10000),
             };
-            CurrentWayPoint = 0;
+            CurrentWayPoint = random.Next(0, WayPoints.Length);
             Health = 100;
         }
         public override void Load()
@@ -68,6 +74,25 @@ namespace TGC.MonoGame.TP.Ships
             var temporaryCubeAABB = BoundingVolumesExtensions.CreateAABBFrom(Model);
             BoundingBox = OrientedBoundingBox.FromAABB(temporaryCubeAABB);
             BoundingBox.Extents = new Vector3(50, 50, 200);
+
+            SetRays();
+        }
+
+        private void SetRays()
+        {
+            for (int i = 0; i < Rays.Length; i++)
+            {
+                Rays[i] = new Ray();
+            }
+        }
+
+        private void UpdateRays()
+        {
+            for (int i = 0; i < Rays.Length; i++)
+            {
+                Rays[i].Position = World.Translation;
+                Rays[i].Direction = Matrix.CreateFromAxisAngle(Rotation.Up, MathF.PI * 2 * (float)i / (float)Rays.Length).Forward;
+            }
         }
 
         private float Lerp(float firstFloat, float secondFloat, float by)
@@ -111,11 +136,50 @@ namespace TGC.MonoGame.TP.Ships
             return angleToFollow;
         }
 
-        private void Wandering(GameTime gameTime)
+        public void CollisionDetection(MapEnvironment environment)
+        {
+            for (int i = 0; i < environment.IslandSystem.IslandColliders.Count; i++)
+            {
+                var islandCollider = environment.IslandSystem.IslandColliders[i];
+
+                if (BoundingBox.Intersects(islandCollider))
+                {
+                    Health = 0;
+                }
+            }
+        }
+
+        private float EvadeIslands(MapEnvironment environment, float angle)
+        {
+            var islandsColliders = environment.IslandSystem.IslandColliders;
+
+            for (var j = 0; j < Rays.Length; j++)
+            {
+                for (var i = 0; i < islandsColliders.Count; i++)
+                {
+                    if (Rays[j].Intersects(islandsColliders[i]) < RayLength)
+                    {
+                        float rayAngle = (float)j / (float)Rays.Length * MathF.PI * 2 - MathF.PI;
+                        angle += rayAngle;
+
+                        RayCollides[j] = true;
+                    }
+                    else
+                    {
+                        RayCollides[j] = false;
+                    }
+                }
+            }
+
+            return angle;
+        }
+
+        private void Wandering(GameTime gameTime, MapEnvironment environment)
         {
             var target = Position - (WayPoints[CurrentWayPoint] + WayPointVariation);
             var distanceToWayPoint = Vector3.Distance(Position, WayPoints[CurrentWayPoint] + WayPointVariation);
             var angleToFollow = RotateToTarget(target);
+            angleToFollow = EvadeIslands(environment, angleToFollow);
 
             Velocity = Lerp(Velocity, 3f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
@@ -126,25 +190,23 @@ namespace TGC.MonoGame.TP.Ships
                 float variation = (float)random.NextDouble() * 2000 - 1000;
                 WayPointVariation = new Vector3(variation, 0f, variation);
 
-                CurrentWayPoint++;
-                if(CurrentWayPoint >= WayPoints.Length)
-                {
-                    CurrentWayPoint = 0;
-                }
+                CurrentWayPoint = random.Next(0, WayPoints.Length);
             }
         }
-        private void Chasing(GameTime gameTime)
+        private void Chasing(GameTime gameTime, MapEnvironment environment)
         {
             var target = Position - ShipPlayer.Position;
             var angleToFollow = RotateToTarget(target);
+            angleToFollow = EvadeIslands(environment, angleToFollow);
 
             Velocity = Lerp(Velocity, 7f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
         }
-        private void Shooting(GameTime gameTime)
+        private void Shooting(GameTime gameTime, MapEnvironment environment)
         {
             var target = Position - ShipPlayer.Position;
             var angleToFollow = RotateToTarget(target);
+            angleToFollow = EvadeIslands(environment, angleToFollow);
 
             Velocity = Lerp(Velocity, 5f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
@@ -166,20 +228,20 @@ namespace TGC.MonoGame.TP.Ships
 
         }
 
-        private void MovementManagement(GameTime gameTime)
+        private void MovementManagement(GameTime gameTime, MapEnvironment environment)
         {
             switch (EnemyState)
             {
                 case EnemyState.Patrolling:
-                    Wandering(gameTime);
+                    Wandering(gameTime, environment);
                     break;
 
                 case EnemyState.Chasing:
-                    Chasing(gameTime);
+                    Chasing(gameTime, environment);
                     break;
 
                 case EnemyState.Shooting:
-                    Shooting(gameTime);
+                    Shooting(gameTime, environment);
                     break;
                     
             }
@@ -190,6 +252,8 @@ namespace TGC.MonoGame.TP.Ships
             WeaponSystem = weaponSystem;
 
             HealthController(gameTime, effectSystem);
+            UpdateRays();
+            CollisionDetection(environment);
 
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
 
@@ -201,7 +265,7 @@ namespace TGC.MonoGame.TP.Ships
             if (!Destroyed)
             {
                 StateManagement(gameTime, environment, effectSystem);
-                MovementManagement(gameTime);
+                MovementManagement(gameTime, environment);
 
                 Position += Rotation.Forward * Velocity;
                 Position.Y = 0;
@@ -225,6 +289,18 @@ namespace TGC.MonoGame.TP.Ships
             if (!Active)
                 return;
             Gizmos.DrawCube(BoundingBoxMatrix, Color.Blue);
+
+            for(int i = 0; i < Rays.Length; i++)
+            {
+                var color = Color.Red;
+
+                if(RayCollides[i])
+                {
+                    color = Color.Green;
+                }
+
+                Gizmos.DrawLine(Rays[i].Position, Rays[i].Position + Rays[i].Direction * RayLength, color);
+            }
 
             base.Draw(view, proj);
         }
