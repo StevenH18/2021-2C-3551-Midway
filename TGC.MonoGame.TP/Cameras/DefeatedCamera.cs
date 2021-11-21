@@ -9,9 +9,10 @@ namespace TGC.MonoGame.TP.Cameras
 {
     public class DefeatedCamera : Camera
     {
-
         private GameWindow Window;
         private GraphicsDevice Graphics;
+
+        private float Angle = 0f;
 
         public DefeatedCamera(GraphicsDevice gfxDevice, GameWindow window)
         {
@@ -27,9 +28,10 @@ namespace TGC.MonoGame.TP.Cameras
         }
         public override void Update(GameTime gameTime, Ship ship)
         {
-            var time = (float)gameTime.TotalGameTime.TotalSeconds;
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Angle += deltaTime * 0.2f;
 
-            var position = ship.Position + new Vector3(MathF.Cos(time * 0.1f) * 2000, 700, MathF.Sin(time * 0.1f) * 2000);
+            var position = ship.Position + new Vector3(MathF.Cos(Angle) * 2000, 700, MathF.Sin(Angle) * 2000);
 
             World = Matrix.CreateWorld(position, position + ship.World.Translation, Vector3.Up);
             View = Matrix.CreateLookAt(position, ship.World.Translation, Vector3.Up);

@@ -23,14 +23,15 @@ namespace TGC.MonoGame.TP.Ships
     {
         private Vector3[] WayPoints;
         private Vector3 WayPointVariation;
-
         private int CurrentWayPoint;
+        private float WayPointRadius = 1000;
+
         private EnemyState EnemyState;
         private ShipPlayer ShipPlayer;
         private WeaponSystem WeaponSystem;
 
-        private float ShootingRange = 3000;
-        private float ChaseRange = 5000;
+        private float ShootingRange = 4000;
+        private float ChaseRange = 6000;
 
         private float VelocityLerp = 0.01f;
         private float AngleLerp = 0.005f;
@@ -117,9 +118,9 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
 
             Velocity = Lerp(Velocity, 3f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
 
-            if (distanceToWayPoint < 500f)
+            if (distanceToWayPoint < WayPointRadius)
             {
                 Random random = new Random();
                 float variation = (float)random.NextDouble() * 2000 - 1000;
@@ -137,15 +138,15 @@ namespace TGC.MonoGame.TP.Ships
             var target = Position - ShipPlayer.Position;
             var angleToFollow = RotateToTarget(target);
 
-            Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp);
+            Velocity = Lerp(Velocity, 7f, VelocityLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
         }
         private void Shooting(GameTime gameTime)
         {
             var target = Position - ShipPlayer.Position;
             var angleToFollow = RotateToTarget(target);
 
-            Velocity = Lerp(Velocity, 0f, VelocityLerp);
+            Velocity = Lerp(Velocity, 5f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
 
             float time = (float)gameTime.TotalGameTime.TotalSeconds;
@@ -156,9 +157,9 @@ namespace TGC.MonoGame.TP.Ships
 
                 FireTime = time;
 
-                var innacuracy = Vector3.One * ((float)random.NextDouble() * 0 - 0);
+                var innacuracy = Vector3.One * ((float)random.NextDouble() * 200 - 100);
                 var offset = World.Forward * 200 + new Vector3(0, 50, 0);
-                var fireTarget = (ShipPlayer.World.Translation + new Vector3(0, 200, 0) + innacuracy) - World.Translation;
+                var fireTarget = (ShipPlayer.World.Translation + new Vector3(0, 200, 0) + innacuracy + ShipPlayer.Rotation.Forward * ShipPlayer.Velocity * 100f) - World.Translation;
 
                 WeaponSystem.Fire(World.Translation + offset, fireTarget, this);
             }
