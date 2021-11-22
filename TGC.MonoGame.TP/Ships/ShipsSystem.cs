@@ -36,8 +36,8 @@ namespace TGC.MonoGame.TP.Ships
             Ships[0] = new ShipPlayer(Content, Graphics, Gizmos);
             ShipPlayer = Ships[0];
 
-            ShipPlayer.Position.X = 20000;
-            ShipPlayer.Position.Z = 20000;
+            ShipPlayer.Position.X = 2000;
+            ShipPlayer.Position.Z = 2000;
 
             for (int i = 1; i < ShipsCount; i++)
             {

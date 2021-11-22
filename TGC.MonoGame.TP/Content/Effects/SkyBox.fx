@@ -86,7 +86,7 @@ technique Skybox
 
 float4 HeightMapPS(VertexShaderOutput input) : COLOR
 {
-    float height = normalize(input.TextureCoordinate).y * 20 + 0;
+    float height = normalize(input.TextureCoordinate).y * 10 + 0;
     return float4(height, height, height, 1);
 }
 

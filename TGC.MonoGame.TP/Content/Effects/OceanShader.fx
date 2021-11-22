@@ -241,7 +241,7 @@ float3 GetReflection(VertexShaderOutput input, float3 normal, float3 view)
     viewRotated.z = view.z * cos(angle) + view.x * sin(angle);
     
     float3 reflection = reflect(viewRotated, normal);
-    return texCUBE(EnvironmentMapSampler, reflection).rgb;
+    return pow(texCUBE(EnvironmentMapSampler, reflection).rgb, 1.2f);
 }
 
 float2 GetTrails(VertexShaderOutput input)
@@ -351,8 +351,8 @@ technique BasicColorDrawing
 
 float4 HeightMapPS(VertexShaderOutput input) : COLOR
 {
-    float height = (input.WorldPosition.y) / 2000;
-    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 20000), 2);
+    float height = (input.WorldPosition.y - 500) / 4000;
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 15000), 2);
     return float4(height, cameraDepth, height, 1);
 }
 

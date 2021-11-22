@@ -27,7 +27,7 @@ namespace TGC.MonoGame.TP.Environment
         public SoundSystem SoundSystem;
 
         public Vector3 SunPosition = new Vector3(-7500f, 30000f, -50000f);
-        public Vector3 SunColor = new Vector3(0.949f, 0.874f, 0.670f);
+        public Vector3 SunColor = new Vector3(0.949f, 0.949f, 0.949f);
         public float SunIntensity = 50000f;
         public float Gravity = 50f;
 
@@ -35,7 +35,7 @@ namespace TGC.MonoGame.TP.Environment
         public int OceanWidth = 100000;
         public int OceanHeight = 100000;
         public int OceanQuads = 512;
-        public int OceanTiling = 64;
+        public int OceanTiling = 128;
         public float ShoreWidth = 100;
         public float ShoreSmoothness = 100;
         public RenderTarget2D OceanDepth;
@@ -57,7 +57,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainParticleHeight = 50;
         public float RainParticleWidth = 1;
 
-        public int RainParticles = 500000;
+        public int RainParticles = 200000;
         public float RainParticleSeparation = 15000;
         public float RainParticleVerticalSeparation = 10000;
 
@@ -221,7 +221,7 @@ namespace TGC.MonoGame.TP.Environment
             Ocean.Draw(view, projection, world, gameTime, renderState);
             SkyBox.Draw(view, projection, world, renderState);
             Graphics.DepthStencilState = DepthStencilState.DepthRead;
-            RainSystem.Draw(view, projection, world, gameTime);
+            RainSystem.Draw(view, projection, world, gameTime, renderState);
 
             if (renderState == RenderState.Default)
             {

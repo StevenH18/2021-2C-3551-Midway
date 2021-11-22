@@ -122,9 +122,9 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["DiffuseColor"]?.SetValue(new Vector3(1f, 1f, 1f));
                 Effect.Parameters["SpecularColor"]?.SetValue(environment.SunColor);
 
-                Effect.Parameters["KAmbient"]?.SetValue(0.2f);
-                Effect.Parameters["KDiffuse"]?.SetValue(0.4f);
-                Effect.Parameters["KSpecular"]?.SetValue(1f);
+                Effect.Parameters["KAmbient"]?.SetValue(0.3f);
+                Effect.Parameters["KDiffuse"]?.SetValue(0.3f);
+                Effect.Parameters["KSpecular"]?.SetValue(0.2f);
 
                 Effect.Parameters["Shininess"]?.SetValue(128f);
                 Effect.Parameters["EyePosition"]?.SetValue(cameraWorld.Translation);

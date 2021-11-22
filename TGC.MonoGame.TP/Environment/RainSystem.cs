@@ -46,7 +46,7 @@ namespace TGC.MonoGame.TP
             // Load Shader
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "RainShader");
         }
-        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, GameTime gameTime, RenderState renderState)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
 
@@ -63,6 +63,7 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["HeightEnd"]?.SetValue(Environment.RainHeightEnd);
             Effect.Parameters["Speed"]?.SetValue(Environment.RainSpeed);
             Effect.Parameters["Progress"]?.SetValue(Environment.RainProgress);
+            Effect.Parameters["DrawInFog"]?.SetValue(renderState == RenderState.HeightMap);
 
             //UpdateInstances();
 

@@ -52,11 +52,12 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float heightMap = tex2D(HeightMapSampler, input.TextureCoordinate).r;
     float cameraDepth = tex2D(HeightMapSampler, input.TextureCoordinate).g;
     
-    float3 fogColor = float3(0.09, 0.09, 0.09);
+    float3 fogColor = float3(0.39, 0.39, 0.39);
     
     float heightMask = lerp(heightMap, 1, saturate(cameraDepth));
     float3 finalColor = lerp(fogColor, mainScene, saturate(heightMask));
     
+    //return float4(heightMap, heightMap, heightMap, 1);
     return float4(finalColor, 1);
 }
 

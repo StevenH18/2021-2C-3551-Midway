@@ -30,6 +30,8 @@ float HeightStart;
 float HeightEnd;
 float Progress;
 
+bool DrawInFog;
+
 
 struct VertexShaderInput
 {
@@ -98,6 +100,10 @@ VertexShaderOutput MainVS(in VertexShaderInput input, VertexInstanceInputSimple 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 color = 0.05;
+    
+    if (DrawInFog)
+        color = -1;
+    
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
     // Progress == 0.5 -> la mitad de las particulas se muestran
