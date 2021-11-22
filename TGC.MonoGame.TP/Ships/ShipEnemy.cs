@@ -284,7 +284,7 @@ namespace TGC.MonoGame.TP.Ships
                  Matrix.CreateTranslation(OceanPosition);
 
         }
-        public override void Draw(Matrix view, Matrix proj)
+        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
         {
             if (!Active)
                 return;
@@ -302,7 +302,7 @@ namespace TGC.MonoGame.TP.Ships
                 Gizmos.DrawLine(Rays[i].Position, Rays[i].Position + Rays[i].Direction * RayLength, color);
             }
 
-            base.Draw(view, proj);
+            base.Draw(view, proj, renderState);
         }
     }
 }

@@ -142,13 +142,13 @@ namespace TGC.MonoGame.TP.Ships
 
         }
 
-        public override void Draw(Matrix view, Matrix proj)
+        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
         {
             if (!Active)
                 return;
             Gizmos.DrawCube(BoundingBoxMatrix, Color.Green);
 
-            base.Draw(view, proj);
+            base.Draw(view, proj, renderState);
         }
     }
 }

@@ -52,10 +52,20 @@ namespace TGC.MonoGame.TP.Effects
                 SpriteIndex++;
             }
         }
-        public void Draw(GameTime gameTime, Matrix view, Matrix proj, Effect effect)
+        public void Draw(GameTime gameTime, Matrix view, Matrix proj, Effect effect, RenderState renderState)
         {
             if (SpriteIndex >= SpriteCount)
                 return;
+
+            switch (renderState)
+            {
+                case RenderState.Default:
+                    Effect.CurrentTechnique = Effect.Techniques["BasicColorDrawing"];
+                    break;
+                case RenderState.HeightMap:
+                    Effect.CurrentTechnique = Effect.Techniques["HeightMap"];
+                    break;
+            }
 
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
 

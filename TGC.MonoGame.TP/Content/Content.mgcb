@@ -49,6 +49,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/OceanShader.fx
 
+#begin Effects/PostProcess.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/PostProcess.fx
+
 #begin Effects/RadarShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor

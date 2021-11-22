@@ -42,6 +42,9 @@ struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
     float2 UV : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD2;
+    float4 Normal : TEXCOORD3;
+    float4 ScreenPosition : TEXCOORD4;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -54,6 +57,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);	
 	// View space to Projection space
     output.Position = mul(viewPosition, Projection);
+    output.WorldPosition = worldPosition;
+    output.ScreenPosition = output.Position;
     output.UV = input.UV;
 
     return output;
@@ -75,4 +80,20 @@ technique BasicColorDrawing
 		VertexShader = compile VS_SHADERMODEL MainVS();
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
+};
+
+float4 HeightMapPS(VertexShaderOutput input) : COLOR
+{
+    float height = (input.WorldPosition.y) / 2000;
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 20000), 2);
+    return float4(height, cameraDepth, height, 1);
+}
+
+technique HeightMap
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL HeightMapPS();
+    }
 };

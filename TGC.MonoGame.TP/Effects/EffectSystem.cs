@@ -132,6 +132,9 @@ namespace TGC.MonoGame.TP.Effects
 
         private void Play3DSound(SoundEffect soundEffect, Vector3 position)
         {
+            if (ActiveCamera == null)
+                return;
+
             var target = position - ActiveCamera.World.Translation;
             var camera = ActiveCamera.World.Forward;
 
@@ -240,7 +243,7 @@ namespace TGC.MonoGame.TP.Effects
             }
         }
 
-        public void Draw(GameTime gameTime, Matrix view, Matrix proj, Matrix cameraWorld)
+        public void Draw(GameTime gameTime, Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState)
         {
             Vector3 cameraPosition = cameraWorld.Translation;
 
@@ -254,7 +257,7 @@ namespace TGC.MonoGame.TP.Effects
 
                 Sprites[i].Effect.Parameters["SpriteSheet"]?.SetValue(Sprites[i].SpriteSheet);
 
-                Sprites[i].Draw(gameTime, view, proj, Sprites[i].Effect);
+                Sprites[i].Draw(gameTime, view, proj, Sprites[i].Effect, renderState);
             }
 
         }

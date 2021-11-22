@@ -46,7 +46,8 @@ struct VertexShaderOutput
 {
     float4 Position : POSITION0;
     float4 Normal : TEXCOORD0;
-    float3 TextureCoordinate : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD1;
+    float3 TextureCoordinate : TEXCOORD2;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -56,6 +57,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 worldPosition = mul(input.Position, World);
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
+    output.WorldPosition = mul(viewPosition, Projection);
     
     output.Normal = input.Normal;
 
@@ -75,9 +77,24 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 technique Skybox
 {
-    pass Pass1
+    pass P0
     {
         VertexShader = compile VS_SHADERMODEL VertexShaderFunction();
         PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
     }
 }
+
+float4 HeightMapPS(VertexShaderOutput input) : COLOR
+{
+    float height = normalize(input.TextureCoordinate).y * 20 + 0;
+    return float4(height, height, height, 1);
+}
+
+technique HeightMap
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL VertexShaderFunction();
+        PixelShader = compile PS_SHADERMODEL HeightMapPS();
+    }
+};

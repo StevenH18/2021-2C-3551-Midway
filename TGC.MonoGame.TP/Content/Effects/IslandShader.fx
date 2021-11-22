@@ -106,6 +106,7 @@ struct VertexShaderOutput
     float2 TextureCoordinates : TEXCOORD0;
     float3 WorldPosition : TEXCOORD1;
     float4 Normal : TEXCOORD2;
+    float4 ScreenPosition : TEXCOORD3;
 };
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
@@ -121,6 +122,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     output.Position = mul(viewPosition, Projection);
     output.TextureCoordinates = input.TextureCoordinates;
     output.WorldPosition = worldPosition;
+    output.ScreenPosition = output.Position;
     output.Normal = input.Normal;
 
 	return output;
@@ -322,6 +324,7 @@ technique BasicColorDrawing
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
 };
+
 float ShoreWidth;
 float ShoreSmoothness;
 
@@ -376,3 +379,19 @@ technique DepthPass
         PixelShader = compile PS_SHADERMODEL DepthPS();
     }
 }
+
+float4 HeightMapPS(VertexShaderOutput input) : COLOR
+{
+    float height = (input.WorldPosition.y) / 2000;
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 20000), 2);
+    return float4(height, cameraDepth, height, 1);
+}
+
+technique HeightMap
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL HeightMapPS();
+    }
+};

@@ -39,8 +39,18 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="view">The view matrix for the effect</param>
         /// <param name="projection">The projection matrix for the effect</param>
         /// <param name="cameraPosition">The position of the camera</param>
-        public void Draw(Matrix view, Matrix projection, Matrix world)
+        public void Draw(Matrix view, Matrix projection, Matrix world, RenderState renderState)
         {
+            switch (renderState)
+            {
+                case RenderState.Default:
+                    Effect.CurrentTechnique = Effect.Techniques["Skybox"];
+                    break;
+                case RenderState.HeightMap:
+                    Effect.CurrentTechnique = Effect.Techniques["HeightMap"];
+                    break;
+            }
+
             // Go through each pass in the effect, but we know there is only one...
             foreach (var pass in Effect.CurrentTechnique.Passes)
             {

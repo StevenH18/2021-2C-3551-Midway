@@ -17,6 +17,12 @@ namespace TGC.MonoGame.TP
     ///     Inicialmente puede ser renombrado o copiado para hacer más ejemplos chicos, en el caso de copiar para que se
     ///     ejecute el nuevo ejemplo deben cambiar la clase que ejecuta Program <see cref="Program.Main()" /> linea 10.
     /// </summary>
+    /// 
+    public enum RenderState
+    {
+        Default,
+        HeightMap
+    }
     public class TGCGame : Game
     {
         public const string ContentFolder3D = "Models/";
@@ -42,6 +48,10 @@ namespace TGC.MonoGame.TP
         private HudController Hud;
         private WeaponSystem WeaponSystem;
         private EffectSystem EffectSystem;
+
+        private RenderState RenderState;
+        private RenderTarget2D MainSceneRender;
+        private RenderTarget2D HeightMapRender;
 
         private SpriteBatch SpriteBatch;
         private SpriteFont Font;
@@ -104,6 +114,10 @@ namespace TGC.MonoGame.TP
             Hud = new HudController(GraphicsDevice, Content);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
             WeaponSystem = new WeaponSystem(GraphicsDevice, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
+
+            RenderState = RenderState.Default;
+            MainSceneRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            HeightMapRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
             base.Initialize();
         }
@@ -258,46 +272,62 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
-            Environment.DrawPreTextures(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+            Environment.DrawPreTextures(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
 
-            GraphicsDevice.SetRenderTarget(null);
-
-            // Aca deberiamos poner toda la logia de renderizado del juego.
+            // SECOND PASS MAIN SCENE RENDER
+            RenderState = RenderState.Default;
+            GraphicsDevice.SetRenderTarget(MainSceneRender);
             GraphicsDevice.Clear(Color.Black);
-            // SpriteBatch = new SpriteBatch(GraphicsDevice);
+
+            Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            switch (MenuStatus)
+            {
+                case ST_LEVEL_1:
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, RenderState);
+                    break;
+            }
+            WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+            EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
+
+            // THIRD PASS HEIGHT MAP RENDER
+            RenderState = RenderState.HeightMap;
+            GraphicsDevice.SetRenderTarget(HeightMapRender);
+            GraphicsDevice.Clear(Color.Black);
+
+            Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            switch (MenuStatus)
+            {
+                case ST_LEVEL_1:
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, RenderState);
+                    break;
+            }
+            WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
+            EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
+
+            // FINAL PASS DRAW POST PROCESS
+            RenderState = RenderState.Default;
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Black);
+
+            Environment.DrawFog(gameTime, MainSceneRender, HeightMapRender);
 
             switch (MenuStatus)
             {
                 case ST_MENU:
-
-
                     //PARA AGREGAR OTRAS TEXTURAS
                     SpriteBatch.Begin();
-                    Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-
-                    //SpriteBatch.Draw(EsferaTex, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                     SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
-
                     SpriteBatch.DrawString(Font, "Presione ESPACIO para comenzar", new Vector2(100, 200), Color.White);
-
                     SpriteBatch.DrawString(Font, "W S A D para controlar", new Vector2(100, 300), Color.White);
-
                     SpriteBatch.End();
 
                     break;
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection);
-                    Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-                    WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
-                    GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-                    EffectSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
-
-                    base.Draw(gameTime);
-
                     break;
             }
-
 
             //Gizmos.Draw();
 

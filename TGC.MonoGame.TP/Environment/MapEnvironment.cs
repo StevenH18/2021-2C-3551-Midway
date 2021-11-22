@@ -77,6 +77,10 @@ namespace TGC.MonoGame.TP.Environment
         private bool DrawThunder = false;
         private bool OverrideWeatherStorm = false;
 
+        // Fog config
+        private Effect PostProcessEffect;
+        private FullScreenQuad FullScreenQuad;
+
         // Ambience config
         public float OceanAmbienceVolume = 0f;
         public float StormAmbienceVolume = 0f;
@@ -144,6 +148,8 @@ namespace TGC.MonoGame.TP.Environment
             RainSystem = new RainSystem(Graphics, Content, this);
             IslandSystem = new IslandSystem(Graphics, Content, this, gizmos);
             SoundSystem = new SoundSystem(Graphics, Content, this);
+
+            FullScreenQuad = new FullScreenQuad(Graphics);
         }
 
         public void Load()
@@ -152,6 +158,8 @@ namespace TGC.MonoGame.TP.Environment
             RainSystem.Load();
             IslandSystem.Load();
             SoundSystem.Load();
+
+            PostProcessEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "PostProcess");
 
             // Initialize all values to the default Weather
             WeatherChangeTo = WeatherState;
@@ -189,7 +197,7 @@ namespace TGC.MonoGame.TP.Environment
             SoundSystem.Update(gameTime);
         }
 
-        public void DrawPreTextures(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
+        public void DrawPreTextures(GameTime gameTime, Matrix view, Matrix projection, Matrix world, RenderState renderState)
         {
             Graphics.SetRenderTarget(OceanDepth);
             Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
@@ -197,7 +205,7 @@ namespace TGC.MonoGame.TP.Environment
 
             Graphics.SetRenderTarget(OceanDepthColor);
             Graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
-            IslandSystem.Draw(view, projection, world);
+            IslandSystem.Draw(view, projection, world, renderState);
         }
 
         /// <summary>
@@ -207,20 +215,31 @@ namespace TGC.MonoGame.TP.Environment
         /// <param name="projection"></param>
         /// <param name="view"></param>
         /// <param name="world"></param>
-        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world)
+        public void Draw(GameTime gameTime, Matrix view, Matrix projection, Matrix world, RenderState renderState)
         {
-            IslandSystem.Draw(view, projection, world);
-            Ocean.Draw(view, projection, world, gameTime);
-            SkyBox.Draw(view, projection, world);
+            IslandSystem.Draw(view, projection, world, renderState);
+            Ocean.Draw(view, projection, world, gameTime, renderState);
+            SkyBox.Draw(view, projection, world, renderState);
             Graphics.DepthStencilState = DepthStencilState.DepthRead;
             RainSystem.Draw(view, projection, world, gameTime);
 
-            if (DrawThunder)
+            if (renderState == RenderState.Default)
             {
-                SpriteBatch.Begin();
-                SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);
-                SpriteBatch.End();
+                if (DrawThunder)
+                {
+                    SpriteBatch.Begin();
+                    SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);
+                    SpriteBatch.End();
+                }
             }
+        }
+
+        public void DrawFog(GameTime gameTime, RenderTarget2D mainSceneRender, RenderTarget2D heightMapRender)
+        {
+            PostProcessEffect.Parameters["MainScene"]?.SetValue(mainSceneRender);
+            PostProcessEffect.Parameters["HeightMap"]?.SetValue(heightMapRender);
+
+            FullScreenQuad.Draw(PostProcessEffect);
         }
 
         /// <summary>

@@ -347,3 +347,19 @@ technique BasicColorDrawing
 		PixelShader = compile PS_SHADERMODEL MainPS();
 	}
 };
+
+float4 HeightMapPS(VertexShaderOutput input) : COLOR
+{
+    float height = (input.WorldPosition.y) / 2000;
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 20000), 2);
+    return float4(height, cameraDepth, height, 1);
+}
+
+technique HeightMap
+{
+    pass P0
+    {
+        VertexShader = compile VS_SHADERMODEL MainVS();
+        PixelShader = compile PS_SHADERMODEL HeightMapPS();
+    }
+};

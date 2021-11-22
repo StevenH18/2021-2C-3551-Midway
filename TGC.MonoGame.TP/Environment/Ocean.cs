@@ -56,11 +56,21 @@ namespace TGC.MonoGame.TP
         {
             UpdateTrails(gameTime, ships);
         }
-        public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime)
+        public void Draw(Matrix view, Matrix proj, Matrix world, GameTime gameTime, RenderState renderState)
         {
             var time = (float)gameTime.TotalGameTime.TotalSeconds;
             Graphics.Indices = IndexBuffer;
             Graphics.SetVertexBuffer(VertexBuffer);
+
+            switch (renderState)
+            {
+                case RenderState.Default:
+                    Effect.CurrentTechnique = Effect.Techniques["BasicColorDrawing"];
+                    break;
+                case RenderState.HeightMap:
+                    Effect.CurrentTechnique = Effect.Techniques["HeightMap"];
+                    break;
+            }
 
             Effect.Parameters["World"].SetValue(Matrix.Identity);
             Effect.Parameters["View"].SetValue(view);

@@ -36,11 +36,21 @@ namespace TGC.MonoGame.TP
 
             base.Load();
         }
-        public override void Draw(Matrix view, Matrix proj)
+        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
         {
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
             Effect.Parameters["DiffuseColor"].SetValue(Color.Gray.ToVector3());
+
+            switch (renderState)
+            {
+                case RenderState.Default:
+                    Effect.CurrentTechnique = Effect.Techniques["BasicColorDrawing"];
+                    break;
+                case RenderState.HeightMap:
+                    Effect.CurrentTechnique = Effect.Techniques["HeightMap"];
+                    break;
+            }
 
             var textureIndex = 0;
             foreach (var mesh in Model.Meshes)
@@ -58,7 +68,7 @@ namespace TGC.MonoGame.TP
                 mesh.Draw();
             }
 
-            base.Draw(view, proj);
+            base.Draw(view, proj, renderState);
         }
 
 

@@ -277,14 +277,22 @@ namespace TGC.MonoGame.TP
                 }
             }
         }
-        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState)
         {
             foreach (Island island in Islands)
             {
                 if (island.Model == null)
                     continue;
 
-                island.Effect.CurrentTechnique = island.Effect.Techniques["BasicColorDrawing"];
+                switch (renderState)
+                {
+                    case RenderState.Default:
+                        island.Effect.CurrentTechnique = island.Effect.Techniques["BasicColorDrawing"];
+                        break;
+                    case RenderState.HeightMap:
+                        island.Effect.CurrentTechnique = island.Effect.Techniques["HeightMap"];
+                        break;
+                }
 
                 island.Effect.Parameters["View"]?.SetValue(view);
                 island.Effect.Parameters["Projection"]?.SetValue(proj);
