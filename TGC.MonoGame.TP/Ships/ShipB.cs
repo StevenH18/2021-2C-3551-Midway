@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TGC.MonoGame.Samples.Viewer.Gizmos;
+using TGC.MonoGame.TP.Environment;
 
 namespace TGC.MonoGame.TP.Ships
 {
@@ -35,11 +36,11 @@ namespace TGC.MonoGame.TP.Ships
 
             base.Load();
         }
-        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
+        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
         {
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.Black.ToVector3());
+            Effect.Parameters["DiffuseColor"]?.SetValue(Color.Black.ToVector3());
 
             switch (renderState)
             {
@@ -58,16 +59,34 @@ namespace TGC.MonoGame.TP.Ships
 
                 if (textureIndex <= Ship.TexturesB.Albedos.Count)
                 {
-                    Effect.Parameters["DiffuseMap"].SetValue(Ship.TexturesB.Albedos[textureIndex]);
+                    Effect.Parameters["AlbedoTexture"]?.SetValue(Ship.TexturesB.Albedos[textureIndex]);
                 }
                 textureIndex++;
+
+                Effect.Parameters["InverseTransposeWorld"]?.SetValue(Matrix.Invert(Matrix.Transpose(World)));
+
+                Effect.Parameters["TexturedNormals"].SetValue(false);
+
+                Effect.Parameters["AmbientColor"]?.SetValue(new Vector3(0.2f, 0.2f, 0.2f));
+                Effect.Parameters["DiffuseColor"]?.SetValue(environment.SunColor);
+                Effect.Parameters["SpecularColor"]?.SetValue(environment.SunColor);
+
+                Effect.Parameters["KAmbient"]?.SetValue(0.2f);
+                Effect.Parameters["KDiffuse"]?.SetValue(0.2f);
+                Effect.Parameters["KSpecular"]?.SetValue(0f);
+
+                Effect.Parameters["Shininess"]?.SetValue(128f);
+                Effect.Parameters["EyePosition"]?.SetValue(cameraWorld.Translation);
+
+                // Iluminacion
+                Effect.Parameters["LightPosition"]?.SetValue(environment.SunPosition);
 
                 var w = mesh.ParentBone.Transform * World;
                 Effect.Parameters["World"].SetValue(w);
                 mesh.Draw();
             }
 
-            base.Draw(view, proj, renderState);
+            base.Draw(view, proj, cameraWorld, renderState, environment);
         }
 
     }

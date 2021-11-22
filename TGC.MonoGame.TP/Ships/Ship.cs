@@ -26,6 +26,9 @@ namespace TGC.MonoGame.TP.Ships
         protected struct TexturesShipA
         {
             public List<Texture2D> Albedos;
+            public List<Texture2D> Normals;
+            public List<Texture2D> Metallics;
+            public List<Texture2D> Roughness;
         }
         protected struct TexturesShipB
         {
@@ -63,6 +66,15 @@ namespace TGC.MonoGame.TP.Ships
 
             if (Ship.TexturesA.Albedos == null)
                 Ship.TexturesA.Albedos = new List<Texture2D>();
+
+            if (Ship.TexturesA.Metallics == null)
+                Ship.TexturesA.Metallics = new List<Texture2D>();
+
+            if (Ship.TexturesA.Normals == null)
+                Ship.TexturesA.Normals = new List<Texture2D>();
+
+            if (Ship.TexturesA.Roughness == null)
+                Ship.TexturesA.Roughness = new List<Texture2D>();
 
             if (Ship.TexturesB.Albedos == null)
                 Ship.TexturesB.Albedos = new List<Texture2D>();
@@ -121,7 +133,7 @@ namespace TGC.MonoGame.TP.Ships
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public virtual void Draw(Matrix view, Matrix proj, RenderState renderState)
+        public virtual void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
         {
 
         }

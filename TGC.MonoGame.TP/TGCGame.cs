@@ -284,7 +284,7 @@ namespace TGC.MonoGame.TP
             switch (MenuStatus)
             {
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, RenderState);
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
                     break;
             }
             WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
@@ -300,7 +300,7 @@ namespace TGC.MonoGame.TP
             switch (MenuStatus)
             {
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, RenderState);
+                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
                     break;
             }
             WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);

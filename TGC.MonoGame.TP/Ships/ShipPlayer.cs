@@ -142,13 +142,13 @@ namespace TGC.MonoGame.TP.Ships
 
         }
 
-        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
+        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
         {
             if (!Active)
                 return;
             Gizmos.DrawCube(BoundingBoxMatrix, Color.Green);
 
-            base.Draw(view, proj, renderState);
+            base.Draw(view, proj, cameraWorld, renderState, environment);
         }
     }
 }

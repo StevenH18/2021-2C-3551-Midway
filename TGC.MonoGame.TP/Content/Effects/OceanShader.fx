@@ -300,6 +300,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     // agregamos foam al color final
     finalColor = finalColor + foam1 * innerTrail + saturate(saturate(pow(outerTrail + foam2 * outerTrail, 20)) - trailMask);
   
+    //return float4(normal, 1);
     return float4(finalColor, 1);
 }
 

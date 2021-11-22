@@ -311,7 +311,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     color = color / (color + float3(1, 1, 1));
 	// gamma correct
     color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
-
+    
+    //return float4(N, 1);
     return float4(color, 1.0);
 }
 

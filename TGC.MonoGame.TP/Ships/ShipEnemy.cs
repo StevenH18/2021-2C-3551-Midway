@@ -19,7 +19,7 @@ namespace TGC.MonoGame.TP.Ships
         Chasing,
         Shooting
     }
-    class ShipEnemy : ShipB
+    class ShipEnemy : ShipA
     {
         private Vector3[] WayPoints;
         private Vector3 WayPointVariation;
@@ -284,7 +284,7 @@ namespace TGC.MonoGame.TP.Ships
                  Matrix.CreateTranslation(OceanPosition);
 
         }
-        public override void Draw(Matrix view, Matrix proj, RenderState renderState)
+        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
         {
             if (!Active)
                 return;
@@ -302,7 +302,7 @@ namespace TGC.MonoGame.TP.Ships
                 Gizmos.DrawLine(Rays[i].Position, Rays[i].Position + Rays[i].Direction * RayLength, color);
             }
 
-            base.Draw(view, proj, renderState);
+            base.Draw(view, proj, cameraWorld, renderState, environment);
         }
     }
 }

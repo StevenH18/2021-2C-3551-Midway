@@ -207,7 +207,7 @@ namespace TGC.MonoGame.TP
                 }
             }
         }
-        public void Update(GameTime gameTime, Camera camera) 
+        public void Update(GameTime gameTime, Camera camera)
         {
             /*
             float miliseconds = (float)gameTime.TotalGameTime.Milliseconds;

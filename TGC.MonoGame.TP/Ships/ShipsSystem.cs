@@ -36,8 +36,8 @@ namespace TGC.MonoGame.TP.Ships
             Ships[0] = new ShipPlayer(Content, Graphics, Gizmos);
             ShipPlayer = Ships[0];
 
-            ShipPlayer.Position.X = 1;
-            ShipPlayer.Position.Z = 1;
+            ShipPlayer.Position.X = 20000;
+            ShipPlayer.Position.Z = 20000;
 
             for (int i = 1; i < ShipsCount; i++)
             {
@@ -67,12 +67,12 @@ namespace TGC.MonoGame.TP.Ships
                 Ships[i].Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
             }
         }
-        public void Draw(Matrix view, Matrix proj, RenderState renderState)
+        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
         {
-            ShipPlayer.Draw(view, proj, renderState);
+            ShipPlayer.Draw(view, proj, cameraWorld, renderState, environment);
             for (int i = 0; i < ShipsCount; i++)
             {
-                Ships[i].Draw(view, proj, renderState);
+                Ships[i].Draw(view, proj, cameraWorld, renderState, environment);
             }
         }
     }

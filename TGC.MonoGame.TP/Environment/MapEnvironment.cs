@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP.Environment
         public IslandSystem IslandSystem;
         public SoundSystem SoundSystem;
 
-        public Vector3 SunPosition = new Vector3(-7500f, 14000f, -50000f);
+        public Vector3 SunPosition = new Vector3(-7500f, 30000f, -50000f);
         public Vector3 SunColor = new Vector3(0.949f, 0.874f, 0.670f);
         public float SunIntensity = 50000f;
         public float Gravity = 50f;
