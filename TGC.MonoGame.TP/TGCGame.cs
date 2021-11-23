@@ -118,8 +118,8 @@ namespace TGC.MonoGame.TP
             WeaponSystem = new WeaponSystem(GraphicsDevice, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
 
             RenderState = RenderState.Default;
-            MainSceneRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
-            HeightMapRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
+            MainSceneRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Vector4, DepthFormat.Depth24Stencil8);
+            HeightMapRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Vector4, DepthFormat.Depth24Stencil8);
 
             // Menu Scene
             MenuShip = new ShipPlayer(Content, GraphicsDevice, Gizmos);
@@ -329,7 +329,7 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.Black);
 
-            Environment.DrawFog(gameTime, MainSceneRender, HeightMapRender);
+            Environment.DrawPostProcess(gameTime, MainSceneRender, HeightMapRender, ActiveCamera);
 
             switch (MenuStatus)
             {

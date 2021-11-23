@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP
         public float MovementMultiplier { get; set; } = 8f;
         public float RotationRadiansPerSecond { get; set; } = 5;
 
-        public float fieldOfViewDegrees = 80f;
+        public float fieldOfViewDegrees = 70f;
         public float nearClipPlane = .05f;
         public float farClipPlane = 100000f;
         private bool mouseLookIsUsed = true;

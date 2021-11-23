@@ -77,9 +77,10 @@ namespace TGC.MonoGame.TP.Environment
         private bool DrawThunder = false;
         private bool OverrideWeatherStorm = false;
 
-        // Fog config
+        // Post process config
         private Effect PostProcessEffect;
         private FullScreenQuad FullScreenQuad;
+        private Texture2D UnderwaterNormals;
 
         // Ambience config
         public float OceanAmbienceVolume = 0f;
@@ -160,6 +161,7 @@ namespace TGC.MonoGame.TP.Environment
             SoundSystem.Load();
 
             PostProcessEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "PostProcess");
+            UnderwaterNormals = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_normal");
 
             // Initialize all values to the default Weather
             WeatherChangeTo = WeatherState;
@@ -249,10 +251,22 @@ namespace TGC.MonoGame.TP.Environment
             }
         }
 
-        public void DrawFog(GameTime gameTime, RenderTarget2D mainSceneRender, RenderTarget2D heightMapRender)
+        public void DrawPostProcess(GameTime gameTime, RenderTarget2D mainSceneRender, RenderTarget2D heightMapRender, Camera activeCamera)
         {
+            float time = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            bool underwater = false;
+
+            float oceanHeight = Ocean.GetHeight(activeCamera.World.Translation, gameTime);
+
+            if (activeCamera.World.Translation.Y <= oceanHeight)
+                underwater = true;
+
             PostProcessEffect.Parameters["MainScene"]?.SetValue(mainSceneRender);
             PostProcessEffect.Parameters["HeightMap"]?.SetValue(heightMapRender);
+            PostProcessEffect.Parameters["UnderwaterNormals"]?.SetValue(UnderwaterNormals);
+            PostProcessEffect.Parameters["Underwater"]?.SetValue(underwater);
+            PostProcessEffect.Parameters["Time"]?.SetValue(time);
 
             FullScreenQuad.Draw(PostProcessEffect);
         }

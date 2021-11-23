@@ -48,6 +48,7 @@ struct VertexShaderOutput
     float4 Normal : TEXCOORD0;
     float4 WorldPosition : TEXCOORD1;
     float3 TextureCoordinate : TEXCOORD2;
+    float4 ScreenPosition : TEXCOORD3;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -58,6 +59,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     float4 viewPosition = mul(worldPosition, View);
     output.Position = mul(viewPosition, Projection);
     output.WorldPosition = mul(viewPosition, Projection);
+    output.ScreenPosition = output.Position;
     
     output.Normal = input.Normal;
 
@@ -86,8 +88,9 @@ technique Skybox
 
 float4 HeightMapPS(VertexShaderOutput input) : COLOR
 {
-    float height = normalize(input.TextureCoordinate).y * 10 + 0;
-    return float4(height, height, height, 1);
+    float height = input.TextureCoordinate.y + 1;
+    float cameraDepth = input.ScreenPosition.w;
+    return float4(height, cameraDepth, 0, 1);
 }
 
 technique HeightMap

@@ -383,9 +383,9 @@ technique DepthPass
 
 float4 HeightMapPS(VertexShaderOutput input) : COLOR
 {
-    float height = (input.WorldPosition.y) / 4000;
-    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 15000), 2);
-    return float4(height, cameraDepth, height, 1);
+    float height = input.WorldPosition.y;
+    float cameraDepth = input.ScreenPosition.w;
+    return float4(height, cameraDepth, 0, 1);
 }
 
 technique HeightMap

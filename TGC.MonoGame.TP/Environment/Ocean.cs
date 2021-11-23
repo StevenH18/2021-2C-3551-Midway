@@ -106,6 +106,10 @@ namespace TGC.MonoGame.TP
             Effect.Parameters["TrailLifeTimes"]?.SetValue(Trail.Select(trail => trail.LifeTime).ToArray());
             Effect.Parameters["TrailFadeout"]?.SetValue(TrailFadeout);
 
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            Graphics.RasterizerState = rasterizerState;
+
             foreach (EffectPass pass in Effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -113,6 +117,10 @@ namespace TGC.MonoGame.TP
                 var triangles = Environment.OceanQuads * Environment.OceanQuads * 2;
                 Graphics.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, triangles);
             }
+
+            rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
+            Graphics.RasterizerState = rasterizerState;
         }
         void UpdateTrails(GameTime gameTime, Ship[] ships)
         {
@@ -205,6 +213,20 @@ namespace TGC.MonoGame.TP
             Vector3 normal = Vector3.Normalize(Vector3.Cross(binormal, tangent));
 
             return (normal, position);
+        }
+
+        public float GetHeight(Vector3 position, GameTime gameTime)
+        {
+            position.Y = 0;
+            // Se calcula derivando p
+            Vector3 tangent = new Vector3(1, 0, 0);
+            Vector3 binormal = new Vector3(0, 0, 1);
+
+            position.Y += CalculateWave(Environment.WaveA, position, ref tangent, ref binormal, gameTime).Y;
+            position.Y += CalculateWave(Environment.WaveB, position, ref tangent, ref binormal, gameTime).Y;
+            position.Y += CalculateWave(Environment.WaveC, position, ref tangent, ref binormal, gameTime).Y;
+
+            return position.Y;
         }
 
         public void GenerateMesh()

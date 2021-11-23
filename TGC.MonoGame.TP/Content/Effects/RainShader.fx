@@ -102,7 +102,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float4 color = 0.05;
     
     if (DrawInFog)
-        color = -1;
+        color = 0;
     
     // Controlar cuantas particulas de lluvia se muestran.
     // Progress == 0   -> ninguna particula
