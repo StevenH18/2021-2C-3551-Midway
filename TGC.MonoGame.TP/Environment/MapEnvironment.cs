@@ -189,6 +189,21 @@ namespace TGC.MonoGame.TP.Environment
                 }
             }
 
+            float seconds = (float)gameTime.TotalGameTime.Seconds;
+
+            if(seconds % 120 == 0)
+            {
+                Random random = new Random();
+                Weather[] possibleWeathers = new Weather[]
+                {
+                    Weather.Calm,
+                    Weather.Rain,
+                    Weather.Storm
+                };
+
+                ChangeWeather(possibleWeathers[random.Next(0, possibleWeathers.Length)]);
+            }
+
             ThunderEffects();
             AnimateWeather();
             IslandSystem.Update(gameTime, camera);

@@ -22,7 +22,7 @@ namespace TGC.MonoGame.TP.Cameras
 
         private const float AngleThreshold = 0f;
 
-        private Vector3 CurrentBackVector { get; set; } = Vector3.Backward;
+        private Vector3 CurrentBackVector { get; set; } = Vector3.Right;
 
         private float BackVectorInterpolator { get; set; } = 0f;
 

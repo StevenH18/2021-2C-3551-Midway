@@ -34,16 +34,16 @@ namespace TGC.MonoGame.TP.Ships
         private float ChaseRange = 6000;
 
         private float VelocityLerp = 0.01f;
-        private float AngleLerp = 0.005f;
+        private float AngleLerp = 0.002f;
 
         private float PreviousAngle = 0f;
 
         private float FireRate = 3f;
         private float FireTime = 0f;
 
-        private Ray[] Rays = new Ray[10];
-        private bool[] RayCollides = new bool[10];
-        private float RayLength = 1500f;
+        private Ray[] Rays = new Ray[20];
+        private bool[] RayCollides = new bool[20];
+        private float RayLength = 500f;
 
         public ShipEnemy(ContentManager content, GraphicsDevice graphics, ShipPlayer shipPlayer, Gizmos gizmos) : base(content, graphics, gizmos)
         {
@@ -91,7 +91,10 @@ namespace TGC.MonoGame.TP.Ships
             for (int i = 0; i < Rays.Length; i++)
             {
                 Rays[i].Position = World.Translation;
-                Rays[i].Direction = Matrix.CreateFromAxisAngle(Rotation.Up, MathF.PI * 2 * (float)i / (float)Rays.Length).Forward;
+
+                Matrix ray = Matrix.CreateFromAxisAngle(Rotation.Up, MathF.PI * 2 * (float)i / (float)Rays.Length) * Rotation;
+
+                Rays[i].Direction = ray.Forward;
             }
         }
 
@@ -160,7 +163,7 @@ namespace TGC.MonoGame.TP.Ships
                     if (Rays[j].Intersects(islandsColliders[i]) < RayLength)
                     {
                         float rayAngle = (float)j / (float)Rays.Length * MathF.PI * 2 - MathF.PI;
-                        angle += rayAngle;
+                        angle += MathF.Sign(rayAngle) * (MathF.Abs(rayAngle));
 
                         RayCollides[j] = true;
                     }
@@ -294,7 +297,7 @@ namespace TGC.MonoGame.TP.Ships
             {
                 var color = Color.Red;
 
-                if(RayCollides[i])
+                if(RayCollides[i] == true)
                 {
                     color = Color.Green;
                 }

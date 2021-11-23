@@ -55,6 +55,7 @@ namespace TGC.MonoGame.TP
 
         private SpriteBatch SpriteBatch;
         private SpriteFont Font;
+        private ShipA MenuShip;
 
         private Gizmos Gizmos;
 
@@ -95,7 +96,8 @@ namespace TGC.MonoGame.TP
 
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
 
-            FreeCamera.Position = new Vector3(-200, 1000, 5000);
+            FreeCamera.Position = new Vector3(16000, 50, 0);
+            FreeCamera.Forward = new Vector3(-0.8f, 0.1f, 0);
 
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             AimingCamera = new AimingCamera(GraphicsDevice, this.Window);
@@ -119,6 +121,13 @@ namespace TGC.MonoGame.TP
             MainSceneRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
             HeightMapRender = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
+            // Menu Scene
+            MenuShip = new ShipPlayer(Content, GraphicsDevice, Gizmos);
+            MenuShip.Position.X = 15600f;
+            MenuShip.Position.Z = 200f;
+            MenuShip.Angle = -1f;
+            MenuShip.Acceleration = 0f;
+
             base.Initialize();
         }
 
@@ -134,6 +143,7 @@ namespace TGC.MonoGame.TP
             Hud.Load();
             EffectSystem.Load();
             Gizmos.LoadContent(GraphicsDevice, Content);
+            MenuShip.Load();
 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -186,6 +196,8 @@ namespace TGC.MonoGame.TP
                     CameraTransition = 0f;
                     PreviousCamera = FreeCamera;
                     CurrentCamera = ShipCamera;
+
+                    MenuShip.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera);
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                         MenuStatus = ST_LEVEL_1;
@@ -283,6 +295,9 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             switch (MenuStatus)
             {
+                case ST_MENU:
+                    MenuShip.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    break;
                 case ST_LEVEL_1:
                     ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
                     break;
@@ -299,6 +314,9 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             switch (MenuStatus)
             {
+                case ST_MENU:
+                    MenuShip.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    break;
                 case ST_LEVEL_1:
                     ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
                     break;

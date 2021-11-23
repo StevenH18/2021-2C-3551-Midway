@@ -269,7 +269,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     float fresnel = saturate((1.0 - dot(normal, view)));
     
-    float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
+    float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 10 + normal.xz);
     float3 foam2 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
     float outerTrail = saturate(sin(min(GetTrails(input).x, PI)));
     float innerTrail = saturate(GetTrails(input).x / 25);
@@ -285,7 +285,6 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     
     // waterColor es el color con los efectos de reflejos en el agua
     float3 waterColor = lerp(albedo, reflectionColor, saturate(fresnel - 0.25));
-    
     
     // Agregamos reflejos al oleaje dependiendo del fresnel
     underwaterColor = lerp(underwaterColor, waterColor, saturate(fresnel - 0.25));

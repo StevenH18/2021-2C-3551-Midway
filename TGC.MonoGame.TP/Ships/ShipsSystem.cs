@@ -37,7 +37,8 @@ namespace TGC.MonoGame.TP.Ships
             ShipPlayer = Ships[0];
 
             ShipPlayer.Position.X = 2000;
-            ShipPlayer.Position.Z = 2000;
+            ShipPlayer.Position.Z = 0;
+            ShipPlayer.Angle = MathF.PI * 0.5f;
 
             for (int i = 1; i < ShipsCount; i++)
             {

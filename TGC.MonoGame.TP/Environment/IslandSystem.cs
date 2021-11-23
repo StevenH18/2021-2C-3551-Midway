@@ -165,6 +165,11 @@ namespace TGC.MonoGame.TP
 
         public void Load()
         {
+            for(var i = 0; i < IslandColliders.Count; i++)
+            {
+                IslandColliders[i] = new BoundingSphere(IslandColliders[i].Center, IslandColliders[i].Radius * 0.9f);
+            }
+
             Noise = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Ocean/ocean_noise");
             Islands = new Island[Environment.IslandsPositions.Length];
 
