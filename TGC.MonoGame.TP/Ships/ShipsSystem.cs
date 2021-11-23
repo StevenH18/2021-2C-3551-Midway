@@ -68,12 +68,12 @@ namespace TGC.MonoGame.TP.Ships
                 Ships[i].Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
             }
         }
-        public void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
+        public void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)
         {
-            ShipPlayer.Draw(view, proj, cameraWorld, renderState, environment);
+            ShipPlayer.Draw(activeCamera, renderState, environment);
             for (int i = 0; i < ShipsCount; i++)
             {
-                Ships[i].Draw(view, proj, cameraWorld, renderState, environment);
+                Ships[i].Draw(activeCamera, renderState, environment);
             }
         }
     }

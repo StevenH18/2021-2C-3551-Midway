@@ -81,8 +81,12 @@ namespace TGC.MonoGame.TP
 
             base.Load();
         }
-        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
+        public override void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)
         {
+            Matrix view = activeCamera.View;
+            Matrix proj = activeCamera.Projection;
+            Matrix cameraWorld = activeCamera.World;
+
             Effect.Parameters["View"].SetValue(view);
             Effect.Parameters["Projection"].SetValue(proj);
             Effect.Parameters["DiffuseColor"]?.SetValue(Color.Gray.ToVector3());
@@ -137,7 +141,7 @@ namespace TGC.MonoGame.TP
                 mesh.Draw();
             }
 
-            base.Draw(view, proj, cameraWorld, renderState, environment);
+            base.Draw(activeCamera, renderState, environment);
         }
 
 

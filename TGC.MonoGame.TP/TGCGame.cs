@@ -296,10 +296,10 @@ namespace TGC.MonoGame.TP
             switch (MenuStatus)
             {
                 case ST_MENU:
-                    MenuShip.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    MenuShip.Draw(ActiveCamera, RenderState, Environment);
                     break;
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    ShipsSystem.Draw(ActiveCamera, RenderState, Environment);
                     break;
             }
             WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
@@ -315,10 +315,10 @@ namespace TGC.MonoGame.TP
             switch (MenuStatus)
             {
                 case ST_MENU:
-                    MenuShip.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    MenuShip.Draw(ActiveCamera, RenderState, Environment);
                     break;
                 case ST_LEVEL_1:
-                    ShipsSystem.Draw(ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState, Environment);
+                    ShipsSystem.Draw(ActiveCamera, RenderState, Environment);
                     break;
             }
             WeaponSystem.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World);
@@ -346,6 +346,8 @@ namespace TGC.MonoGame.TP
                     Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
                     break;
             }
+
+            //Gizmos.DrawFrustum(PreviousCamera.View * PreviousCamera.Projection);
 
             //Gizmos.Draw();
 

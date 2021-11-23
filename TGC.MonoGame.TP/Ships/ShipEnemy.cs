@@ -287,10 +287,16 @@ namespace TGC.MonoGame.TP.Ships
                  Matrix.CreateTranslation(OceanPosition);
 
         }
-        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
+        public override void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)
         {
+            BoundingFrustum cameraFrustum = new BoundingFrustum(activeCamera.View * activeCamera.Projection);
+
+            if (!BoundingBox.Intersects(cameraFrustum))
+                return;
+
             if (!Active)
                 return;
+
             Gizmos.DrawCube(BoundingBoxMatrix, Color.Blue);
 
             for(int i = 0; i < Rays.Length; i++)
@@ -305,7 +311,7 @@ namespace TGC.MonoGame.TP.Ships
                 Gizmos.DrawLine(Rays[i].Position, Rays[i].Position + Rays[i].Direction * RayLength, color);
             }
 
-            base.Draw(view, proj, cameraWorld, renderState, environment);
+            base.Draw(activeCamera, renderState, environment);
         }
     }
 }

@@ -133,7 +133,7 @@ namespace TGC.MonoGame.TP.Ships
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }
 
-        public virtual void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
+        public virtual void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)
         {
 
         }

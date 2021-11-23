@@ -142,13 +142,18 @@ namespace TGC.MonoGame.TP.Ships
 
         }
 
-        public override void Draw(Matrix view, Matrix proj, Matrix cameraWorld, RenderState renderState, MapEnvironment environment)
+        public override void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)
         {
+            BoundingFrustum cameraFrustum = new BoundingFrustum(activeCamera.View * activeCamera.Projection);
+
+            if (!BoundingBox.Intersects(cameraFrustum))
+                return;
+
             if (!Active)
                 return;
             Gizmos.DrawCube(BoundingBoxMatrix, Color.Green);
 
-            base.Draw(view, proj, cameraWorld, renderState, environment);
+            base.Draw(activeCamera, renderState, environment);
         }
     }
 }
