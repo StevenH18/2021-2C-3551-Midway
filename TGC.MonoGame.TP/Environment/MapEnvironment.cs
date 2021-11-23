@@ -88,7 +88,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainAmbienceVolume = 0f;
 
         // Weather config
-        public Weather WeatherState = Weather.Rain;
+        public Weather WeatherState = Weather.Storm;
 
         private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
         {
@@ -239,16 +239,6 @@ namespace TGC.MonoGame.TP.Environment
             SkyBox.Draw(view, projection, world, renderState);
             Graphics.DepthStencilState = DepthStencilState.DepthRead;
             RainSystem.Draw(view, projection, world, gameTime, renderState);
-
-            if (renderState == RenderState.Default)
-            {
-                if (DrawThunder)
-                {
-                    SpriteBatch.Begin();
-                    SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);
-                    SpriteBatch.End();
-                }
-            }
         }
 
         public void DrawPostProcess(GameTime gameTime, RenderTarget2D mainSceneRender, RenderTarget2D heightMapRender, Camera activeCamera)
@@ -269,6 +259,13 @@ namespace TGC.MonoGame.TP.Environment
             PostProcessEffect.Parameters["Time"]?.SetValue(time);
 
             FullScreenQuad.Draw(PostProcessEffect);
+
+            if (DrawThunder)
+            {
+                SpriteBatch.Begin();
+                SpriteBatch.Draw(WhiteScreen, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.White);
+                SpriteBatch.End();
+            }
         }
 
         /// <summary>

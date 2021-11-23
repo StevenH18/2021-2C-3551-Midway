@@ -67,8 +67,15 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float4 waterSplash = tex2D(SpriteSheetSampler, (input.TextureCoordinates * SpritePixelSize + SpriteOffset) / SpriteSheetSize);
     
     waterSplash.rgb = pow(waterSplash.rgb, 2.2);
+    float3 fogColor = float3(0.39, 0.39, 0.39);
     
-    return waterSplash;
+    float height = input.WorldPosition.y / 3000;
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 15000), 2);
+    float heightMask = lerp(height, 1, saturate(cameraDepth));
+    
+    float4 finalColor = float4(lerp(fogColor, waterSplash.rgb, saturate(heightMask)), 1) * waterSplash.a;
+    
+    return finalColor;
 }
 
 technique BasicColorDrawing
@@ -86,7 +93,7 @@ float4 HeightMapPS(VertexShaderOutput input) : COLOR
     
     float height = input.WorldPosition.y;
     float cameraDepth = input.ScreenPosition.w;
-    return float4(height, cameraDepth, 0, 1) * step(0.5, waterSplash.a);
+    return float4(height, cameraDepth, 1, 1) * waterSplash.a;
 }
 
 technique HeightMap

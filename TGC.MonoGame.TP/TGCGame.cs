@@ -97,7 +97,7 @@ namespace TGC.MonoGame.TP
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
 
             FreeCamera.Position = new Vector3(16000, 50, 0);
-            FreeCamera.Forward = new Vector3(-0.8f, 0.1f, 0);
+            FreeCamera.Forward = new Vector3(-0.8f, 0.2f, 0);
 
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             AimingCamera = new AimingCamera(GraphicsDevice, this.Window);
@@ -211,6 +211,8 @@ namespace TGC.MonoGame.TP
                         CameraTransitionDuration = 2f;
                         CameraTransition = 0f;
                         PreviousCamera = CurrentCamera;
+
+                        Environment.ChangeWeather(Weather.Storm);
 
                         if (CurrentCamera.Equals(ShipCamera) || CurrentCamera.Equals(AimingCamera) || CurrentCamera.Equals(DefeatedCamera))
                         {

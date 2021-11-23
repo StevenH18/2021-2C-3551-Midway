@@ -62,7 +62,7 @@ float3 abovewater(VertexShaderOutput input)
     float3 mainScene = tex2D(MainSceneSampler, input.TextureCoordinate).rgb;
     float heightMap = tex2D(HeightMapSampler, input.TextureCoordinate).r;
     float cameraDepth = tex2D(HeightMapSampler, input.TextureCoordinate).g;
-    float alpha = tex2D(HeightMapSampler, input.TextureCoordinate).a;
+    float billboardAlpha = tex2D(HeightMapSampler, input.TextureCoordinate).b;
     
     heightMap = (heightMap) / 3000;
     cameraDepth = pow(1 - saturate(cameraDepth / 15000), 2);
@@ -70,7 +70,7 @@ float3 abovewater(VertexShaderOutput input)
     float3 fogColor = float3(0.39, 0.39, 0.39);
     
     float heightMask = lerp(heightMap, 1, saturate(cameraDepth));
-    float3 finalColor = lerp(fogColor, mainScene, saturate(heightMask));
+    float3 finalColor = lerp(fogColor, mainScene, saturate(saturate(heightMask) + billboardAlpha));
     
     return finalColor;
 }
