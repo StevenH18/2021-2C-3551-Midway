@@ -33,16 +33,16 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
 
-        private GraphicsDeviceManager Graphics { get; }
-        private FreeCamera FreeCamera;
-        private ShipCamera ShipCamera;
-        private AimingCamera AimingCamera;
-        private DefeatedCamera DefeatedCamera;
-        private MenuCamera MenuCamera;
-        private Camera ActiveCamera;
-        private Camera CurrentCamera;
-        private Camera PreviousCamera;
-        private float CameraTransition = 1;
+        public GraphicsDeviceManager Graphics { get; }
+        public FreeCamera FreeCamera;
+        public ShipCamera ShipCamera;
+        public AimingCamera AimingCamera;
+        public DefeatedCamera DefeatedCamera;
+        public MenuCamera MenuCamera;
+        public Camera ActiveCamera;
+        public Camera CurrentCamera;
+        public Camera PreviousCamera;
+        private float CameraTransition = 0;
         private float CameraTransitionDuration = 2;
 
         private ShipsSystem ShipsSystem;
@@ -60,6 +60,7 @@ namespace TGC.MonoGame.TP
         private ShipA MenuShip;
 
         private Gizmos Gizmos;
+        private bool DrawGizmos;
 
         private bool Crosshair;
 
@@ -311,6 +312,8 @@ namespace TGC.MonoGame.TP
                 CameraTransition = CameraTransitionDuration;
             }
 
+            Menu.Update(gameTime);
+
             switch (GameStatus)
             {
                 case GameState.Menu:
@@ -380,7 +383,6 @@ namespace TGC.MonoGame.TP
 
                     ShipsSystem.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera, Crosshair);
                     EffectSystem.Update(gameTime, ActiveCamera);
-                    Environment.Update(gameTime, ShipsSystem.Ships, ActiveCamera);
                     WeaponSystem.Update(gameTime);
 
                     Hud.Update(gameTime);
@@ -388,11 +390,40 @@ namespace TGC.MonoGame.TP
                     break;
             }
 
+            Environment.Update(gameTime, ShipsSystem.Ships, ActiveCamera);
             CurrentCamera.Update(gameTime, ShipsSystem.Ships[0], this);
             PreviousCamera.Update(gameTime, ShipsSystem.Ships[0], this);
 
-            Menu.Update(gameTime);
             Gizmos.UpdateViewProjection(ActiveCamera.View, ActiveCamera.Projection);
+
+
+            if(Inputs.isJustPressed(Keys.E))
+            {
+                DrawGizmos = !DrawGizmos;
+            }
+
+            if (Menu.Restart())
+            {
+                GameStatus = GameState.Playing;
+                ShipsSystem.ResetShips();
+                CameraTransition = 0f;
+                PreviousCamera = DefeatedCamera;
+                CurrentCamera = ShipCamera;
+                Crosshair = false;
+                Environment.ChangeWeather(Weather.Calm);
+            }
+            else if(Menu.GoToMainMenu())
+            {
+                GameStatus = GameState.Playing;
+                ShipsSystem.ResetShips();
+                CameraTransition = 0f;
+                PreviousCamera = DefeatedCamera;
+                CurrentCamera = MenuCamera;
+                Crosshair = false;
+                Environment.ChangeWeather(Weather.Calm);
+
+                GameStatus = GameState.Menu;
+            }
 
             base.Update(gameTime);
         }
@@ -468,7 +499,8 @@ namespace TGC.MonoGame.TP
 
             //Gizmos.DrawFrustum(PreviousCamera.View * PreviousCamera.Projection);
 
-            //Gizmos.Draw();
+            if(DrawGizmos)
+                Gizmos.Draw();
 
             // base.Draw(gameTime);
         }

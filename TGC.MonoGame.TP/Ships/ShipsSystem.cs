@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Ships
         public EffectSystem EffectSystem;
 
         public int ShipsCount = 20;
-        public int ShipsSeparation = 1000;
+        public int ShipsSeparation = 2500;
         public Ship[] Ships;
         public Ship ShipPlayer;
 
@@ -29,7 +29,7 @@ namespace TGC.MonoGame.TP.Ships
         {
             new Vector3(-12000, 0, 12000),
             new Vector3(12000, 0, -12000),
-            new Vector3(12000, 0, 12000),
+            new Vector3(0, 0, -8000),
             new Vector3(-12000, 0, -12000),
         };
 
@@ -61,11 +61,14 @@ namespace TGC.MonoGame.TP.Ships
         }
         public void ResetShips()
         {
-            ShipPlayer.Position.X = 2000;
-            ShipPlayer.Position.Z = 0;
-            ShipPlayer.Angle = MathF.PI * 0.5f;
+            ShipPlayer.Position.X = 4000;
+            ShipPlayer.Position.Z = 4000;
+            ShipPlayer.Angle = MathF.PI * 0.25f;
+            ShipPlayer.Health = ShipPlayer.MaxHealth;
+            ShipPlayer.Destroyed = false;
+            ShipPlayer.Active = true;
 
-            for(int i = 1; i < ShipsCount; i++)
+            for (int i = 1; i < ShipsCount; i++)
             {
                 Random random = new Random();
 
@@ -73,6 +76,10 @@ namespace TGC.MonoGame.TP.Ships
 
                 Ships[i].Position.X += random.Next(-ShipsSeparation, ShipsSeparation);
                 Ships[i].Position.Z += random.Next(-ShipsSeparation, ShipsSeparation);
+
+                Ships[i].Health = Ships[i].MaxHealth;
+                Ships[i].Destroyed = false;
+                Ships[i].Active = true;
             }
         }
         public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)

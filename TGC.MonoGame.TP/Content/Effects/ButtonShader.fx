@@ -10,6 +10,7 @@
 float AspectRatio;
 float4 Color;
 bool Hover;
+bool Pressed;
 float HoverProgress;
 float Time;
 
@@ -39,17 +40,18 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 {
     float4 borderColor = Color;
     float4 hoverColor = Color / 2;
+    float4 pressedColor = Color / 4;
     float4 transparent = float4(0, 0, 0, 0);
     
     float2 borderMask = float2(0, 0);
     
-    borderMask.x = step(0.03, input.TextureCoordinates.x * AspectRatio) * step(input.TextureCoordinates.x * AspectRatio, AspectRatio - 0.03);
-    borderMask.y = step(0.03, input.TextureCoordinates.y) * step(input.TextureCoordinates.y, 1 - 0.03);
+    borderMask.x = step(0.05, input.TextureCoordinates.x * AspectRatio) * step(input.TextureCoordinates.x * AspectRatio, AspectRatio - 0.05);
+    borderMask.y = step(0.05, input.TextureCoordinates.y) * step(input.TextureCoordinates.y, 1 - 0.05);
 	
     float4 border = lerp(borderColor, transparent, borderMask.x * borderMask.y);
     float4 background = lerp(hoverColor, transparent, step(HoverProgress, input.TextureCoordinates.x));
 	
-    return border + background;
+    return border + background + pressedColor * Pressed;
 }
 
 technique BasicColorDrawing

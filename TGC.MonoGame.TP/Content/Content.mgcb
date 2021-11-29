@@ -98,6 +98,20 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Basic.spritefont
 
+#begin Fonts/Outfit.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Outfit.spritefont
+
+#begin Fonts/OutfitBig.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/OutfitBig.spritefont
+
 #begin Fonts/WeatherHud.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

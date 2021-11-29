@@ -69,12 +69,12 @@ namespace TGC.MonoGame.TP
 
             if (mstate.LeftButton == ButtonState.Released && !mouse[2])
             {
-                mouse[0] = true;
+                mouse[2] = true;
                 return true;
             }
             if (mstate.LeftButton == ButtonState.Pressed && mouse[2])
             {
-                mouse[0] = false;
+                mouse[2] = false;
                 return false;
             }
 

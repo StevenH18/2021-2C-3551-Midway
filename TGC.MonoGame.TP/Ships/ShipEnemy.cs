@@ -31,7 +31,7 @@ namespace TGC.MonoGame.TP.Ships
         private WeaponSystem WeaponSystem;
 
         private float ShootingRange = 4000;
-        private float ChaseRange = 6000;
+        private float ChaseRange = 7000;
 
         private float VelocityLerp = 0.01f;
         private float AngleLerp = 0.002f;
@@ -66,6 +66,7 @@ namespace TGC.MonoGame.TP.Ships
             };
             CurrentWayPoint = random.Next(0, WayPoints.Length);
             Health = 100;
+            MaxHealth = 100;
         }
         public override void Load()
         {
@@ -184,7 +185,7 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
-            Velocity = Lerp(Velocity, 3f, VelocityLerp);
+            Velocity = Lerp(Velocity, 5f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
 
             if (distanceToWayPoint < WayPointRadius)
@@ -202,7 +203,7 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
-            Velocity = Lerp(Velocity, 7f, VelocityLerp);
+            Velocity = Lerp(Velocity, 8f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
         }
         private void Shooting(GameTime gameTime, MapEnvironment environment)
@@ -254,10 +255,6 @@ namespace TGC.MonoGame.TP.Ships
         {
             WeaponSystem = weaponSystem;
 
-            HealthController(gameTime, effectSystem);
-            UpdateRays();
-            CollisionDetection(environment);
-
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
 
             Vector3 normal = result.Item1;
@@ -285,6 +282,10 @@ namespace TGC.MonoGame.TP.Ships
             BoundingBoxMatrix = Matrix.CreateScale(BoundingBox.Extents * 2f) *
                  Rotation *
                  Matrix.CreateTranslation(OceanPosition);
+
+            HealthController(gameTime, effectSystem);
+            UpdateRays();
+            CollisionDetection(environment);
 
         }
         public override void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)

@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP
 
         public float fieldOfViewDegrees = 70f;
         public float nearClipPlane = 0.1f;
-        public float farClipPlane = 100000f;
+        public float farClipPlane = 25000f;
         private bool mouseLookIsUsed = true;
 
         private int fpsKeyboardLayout = 1;
@@ -321,7 +321,7 @@ namespace TGC.MonoGame.TP
                 if (diff.Y != 0f)
                     RotateUpOrDown(gameTime, diff.Y);
 
-                if(Game != null && Game.IsActive && Game.GameStatus == TGCGame.GameState.Playing)
+                if(Game != null && Game.IsActive && Game.CurrentCamera.Equals(Game.FreeCamera))
                     Mouse.SetPosition(gameWindow.ClientBounds.Width / 2, gameWindow.ClientBounds.Height / 2);
                 state = Mouse.GetState();
             }

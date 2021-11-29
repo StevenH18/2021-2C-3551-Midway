@@ -27,7 +27,7 @@ namespace TGC.MonoGame.TP.Environment
             Model = Content.Load<Model>(TGCGame.ContentFolder3D + "SkyBox/cube");
             Environment = environment;
             Effect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "SkyBox"); ;
-            Size = 50000;
+            Size = 25000;
         }
 
         /// <summary>

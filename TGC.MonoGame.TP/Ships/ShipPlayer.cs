@@ -103,9 +103,6 @@ namespace TGC.MonoGame.TP.Ships
 
         public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)
         {
-            HealthController(gameTime, effectSystem);
-            CollisionDetection(environment);
-
             (Vector3, Vector3) result = environment.Ocean.WaveNormalPosition(Position, gameTime);
 
             Vector3 normal = result.Item1;
@@ -147,6 +144,9 @@ namespace TGC.MonoGame.TP.Ships
                  Rotation *
                  Matrix.CreateTranslation(OceanPosition);
 
+
+            HealthController(gameTime, effectSystem);
+            CollisionDetection(environment);
         }
 
         public override void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)

@@ -40,7 +40,7 @@ namespace TGC.MonoGame.TP.Hud
             Color = color;
 
             SpriteBatch = new SpriteBatch(Graphics);
-            Font = Content.Load<SpriteFont>("Fonts/Basic");
+            Font = Content.Load<SpriteFont>("Fonts/Outfit");
 
             CalculateButtonSize();
 
@@ -59,6 +59,7 @@ namespace TGC.MonoGame.TP.Hud
             ButtonEffect.Parameters["AspectRatio"]?.SetValue(Size.X / Size.Y);
             ButtonEffect.Parameters["Color"]?.SetValue(Color.ToVector4());
             ButtonEffect.Parameters["Hover"]?.SetValue(Hover());
+            ButtonEffect.Parameters["Pressed"]?.SetValue(Pressed());
             ButtonEffect.Parameters["HoverProgress"]?.SetValue(HoverProgress);
             ButtonEffect.Parameters["Time"]?.SetValue(time);
 
@@ -80,11 +81,11 @@ namespace TGC.MonoGame.TP.Hud
         }
         public bool Pressed()
         {
-            return Hover() && Inputs.mouseLeftJustPressed();
+            return Hover() && Mouse.GetState().LeftButton == ButtonState.Pressed;
         }
         public bool Click()
         {
-            return Hover() && Mouse.GetState().LeftButton == ButtonState.Pressed;
+            return Hover() && Inputs.mouseLeftJustReleased();
         }
         private void CalculateButtonSize()
         {

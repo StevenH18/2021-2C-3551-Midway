@@ -8,10 +8,11 @@ using TGC.MonoGame.TP.Ships;
 
 namespace TGC.MonoGame.TP.Cameras
 {
-    class AimingCamera : Camera
+    public class AimingCamera : Camera
     {
         private GameWindow Window;
         private GraphicsDevice Graphics;
+        private TGCGame Game;
 
         public float MouseSensitivity = 0.4f;
 
@@ -36,7 +37,7 @@ namespace TGC.MonoGame.TP.Cameras
         private void RecreateProjection()
         {
             float aspectRatio = Graphics.Viewport.AspectRatio;
-            Projection = Matrix.CreatePerspectiveFieldOfView(Zoom, aspectRatio, 0.1f, 100000f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(Zoom, aspectRatio, 0.1f, 25000f);
         }
         float Lerp(float firstFloat, float secondFloat, float by)
         {
@@ -53,7 +54,9 @@ namespace TGC.MonoGame.TP.Cameras
 
             PitchAngles = (float)Math.Clamp(PitchAngles, -Math.PI / 2, Math.PI / 2);
 
-            Mouse.SetPosition(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
+
+            if (Game != null && Game.IsActive && Game.CurrentCamera.Equals(Game.AimingCamera))
+                Mouse.SetPosition(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
             mouseState = Mouse.GetState();
 
             var scrollDiff = PreviousScroll - Mouse.GetState().ScrollWheelValue;
@@ -76,6 +79,7 @@ namespace TGC.MonoGame.TP.Cameras
         {
             Controls(gameTime, ship);
 
+            Game = game;
             World = Matrix.CreateWorld(World.Translation, World.Forward, Vector3.Up);
             View = Matrix.CreateLookAt(World.Translation, World.Forward + World.Translation, Vector3.Up);
         }
