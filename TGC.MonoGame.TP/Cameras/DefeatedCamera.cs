@@ -33,7 +33,7 @@ namespace TGC.MonoGame.TP.Cameras
 
             var position = ship.Position + new Vector3(MathF.Cos(Angle) * 2000, 700, MathF.Sin(Angle) * 2000);
 
-            World = Matrix.CreateWorld(position, position + ship.World.Translation, Vector3.Up);
+            World = Matrix.CreateWorld(position, Vector3.Normalize(ship.World.Translation - position), Vector3.Up);
             View = Matrix.CreateLookAt(position, ship.World.Translation, Vector3.Up);
         }
     }

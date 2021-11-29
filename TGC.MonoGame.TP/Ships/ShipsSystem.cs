@@ -29,7 +29,7 @@ namespace TGC.MonoGame.TP.Ships
         {
             new Vector3(-12000, 0, 12000),
             new Vector3(12000, 0, -12000),
-            new Vector3(0, 0, -8000),
+            new Vector3(0, 0, -13000),
             new Vector3(-12000, 0, -12000),
         };
 
@@ -62,8 +62,8 @@ namespace TGC.MonoGame.TP.Ships
         public void ResetShips()
         {
             ShipPlayer.Velocity = 0;
-            ShipPlayer.Position.X = 2500;
-            ShipPlayer.Position.Z = 2800;
+            ShipPlayer.Position.X = 7000;
+            ShipPlayer.Position.Z = 2500;
             ShipPlayer.Angle = MathF.PI * 0.25f;
             ShipPlayer.Health = ShipPlayer.MaxHealth;
             ShipPlayer.Destroyed = false;

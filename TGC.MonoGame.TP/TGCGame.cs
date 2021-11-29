@@ -245,10 +245,6 @@ namespace TGC.MonoGame.TP
             Vector3 translationViewLerp = Vector3.Lerp(preCamViewTrans, currCamViewTrans, t);
             */
 
-            ActiveCamera.View = Matrix.Lerp(PreviousCamera.View, CurrentCamera.View, t);
-            //ActiveCamera.View = Matrix.CreateFromQuaternion(rotationViewSlerp) * Matrix.CreateTranslation(translationViewLerp);
-
-            /*
             Vector3 preCamWorldTrans = PreviousCamera.World.Translation;
             Quaternion preCamWorldQuat = Quaternion.CreateFromRotationMatrix(RotationFromMatrix(PreviousCamera.World));
 
@@ -257,10 +253,15 @@ namespace TGC.MonoGame.TP
 
             Quaternion rotationWorldSlerp = Quaternion.Slerp(preCamWorldQuat, currCamWorldQuat, t);
             Vector3 translationWorldLerp = Vector3.Lerp(preCamWorldTrans, currCamWorldTrans, t);
-            */
 
-            ActiveCamera.World = Matrix.Lerp(PreviousCamera.World, CurrentCamera.World, t);
-            //ActiveCamera.World = Matrix.CreateFromQuaternion(rotationWorldSlerp) * Matrix.CreateTranslation(translationWorldLerp);
+            //ActiveCamera.View = Matrix.Lerp(PreviousCamera.View, CurrentCamera.View, t);
+            //ActiveCamera.View = Matrix.CreateTranslation(translationViewLerp);
+            //ActiveCamera.View = Matrix.CreateFromQuaternion(rotationViewSlerp) * Matrix.CreateTranslation(translationViewLerp);
+            ActiveCamera.View = Matrix.CreateLookAt(translationWorldLerp, translationWorldLerp + Matrix.CreateFromQuaternion(rotationWorldSlerp).Forward, Vector3.Up);
+
+            //ActiveCamera.World = Matrix.Lerp(PreviousCamera.World, CurrentCamera.World, t
+            //ActiveCamera.World = Matrix.CreateTranslation(translationWorldLerp);
+            ActiveCamera.World = Matrix.CreateFromQuaternion(rotationWorldSlerp) * Matrix.CreateTranslation(translationWorldLerp);
 
             float time = (float)gameTime.TotalGameTime.Milliseconds;
 
@@ -406,6 +407,7 @@ namespace TGC.MonoGame.TP
             {
                 GameStatus = GameState.Playing;
                 ShipsSystem.ResetShips();
+                ShipCamera.CurrentBackVector = Vector3.Right;
                 CameraTransition = 0f;
                 PreviousCamera = DefeatedCamera;
                 CurrentCamera = ShipCamera;
@@ -416,6 +418,7 @@ namespace TGC.MonoGame.TP
             {
                 GameStatus = GameState.Playing;
                 ShipsSystem.ResetShips();
+                ShipCamera.CurrentBackVector = Vector3.Right;
                 CameraTransition = 0f;
                 PreviousCamera = DefeatedCamera;
                 CurrentCamera = MenuCamera;
