@@ -175,6 +175,14 @@ namespace TGC.MonoGame.TP
 
             for(var i = 0; i < Environment.IslandsPositions.Length; i++)
             {
+                /*
+                if(i == 1)
+                {
+                    Islands[i].Model = null;
+                    continue;
+                }
+                */
+
                 try
                 {
                     string islandContent = "Environment/Island" + (i + 1) + "/Island" + (i + 1);
@@ -331,14 +339,17 @@ namespace TGC.MonoGame.TP
                 }
             }
 
+
             foreach(BoundingSphere collider in IslandColliders)
             {
                 Gizmos.DrawSphere(collider.Center, Vector3.One * collider.Radius, Color.Yellow);
             }
+            /*
             foreach(BoundingSphere collider in CollidersDebug)
             {
                 Gizmos.DrawSphere(collider.Center, Vector3.One * collider.Radius, Color.Purple);
             }
+            */
         }
     }
 }

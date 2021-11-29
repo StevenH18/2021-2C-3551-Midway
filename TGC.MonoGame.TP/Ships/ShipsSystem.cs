@@ -61,8 +61,9 @@ namespace TGC.MonoGame.TP.Ships
         }
         public void ResetShips()
         {
-            ShipPlayer.Position.X = 4000;
-            ShipPlayer.Position.Z = 4000;
+            ShipPlayer.Velocity = 0;
+            ShipPlayer.Position.X = 2500;
+            ShipPlayer.Position.Z = 2800;
             ShipPlayer.Angle = MathF.PI * 0.25f;
             ShipPlayer.Health = ShipPlayer.MaxHealth;
             ShipPlayer.Destroyed = false;

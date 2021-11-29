@@ -70,7 +70,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 fogColor = float3(0.39, 0.39, 0.39);
     
     float height = input.WorldPosition.y / 3000;
-    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 15000), 2);
+    float cameraDepth = pow(1 - saturate(input.ScreenPosition.w / 20000), 2);
     float heightMask = lerp(height, 1, saturate(cameraDepth));
     
     float4 finalColor = float4(lerp(fogColor, waterSplash.rgb, saturate(heightMask)), 1) * waterSplash.a;

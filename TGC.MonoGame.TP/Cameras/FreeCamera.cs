@@ -302,17 +302,6 @@ namespace TGC.MonoGame.TP
                 if (cameraTypeOption == CAM_TYPE_OPTION_FREE)
                     MoveDown(gameTime);
             }
-
-            if (Inputs.isJustPressed(Keys.Add))
-            {
-                farClipPlane += 1000;
-                ReCreateThePerspectiveProjectionMatrix();
-            }
-            if (Inputs.isJustPressed(Keys.Subtract))
-            {
-                farClipPlane = Math.Max(farClipPlane - 1000, 100);
-                ReCreateThePerspectiveProjectionMatrix();
-            }
             if (mouseLookIsUsed)
             {
                 Vector2 diff = state.Position.ToVector2() - mState.Position.ToVector2();

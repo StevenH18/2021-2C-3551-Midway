@@ -150,10 +150,9 @@ namespace TGC.MonoGame.TP.Hud
             SpriteBatch.DrawString(FontRegular, "Mouse para apuntar y disparar", new Vector2(50, 190), ButtonColor);
             SpriteBatch.DrawString(FontRegular, "Debug:", new Vector2(50, 250), ButtonColor);
             SpriteBatch.DrawString(FontRegular, "G para god camera", new Vector2(50, 270), ButtonColor);
-            SpriteBatch.DrawString(FontRegular, "P para cambiar clima", new Vector2(50, 290), ButtonColor);
-            SpriteBatch.DrawString(FontRegular, "T para hacer un trueno", new Vector2(50, 310), ButtonColor);
-            SpriteBatch.DrawString(FontRegular, "K, J para probar explosiones", new Vector2(50, 330), ButtonColor);
-            SpriteBatch.DrawString(FontRegular, "E para mostrar/ocultar gizmos", new Vector2(50, 350), ButtonColor);
+            SpriteBatch.DrawString(FontRegular, "P, T para cambiar clima y activar efectos de trueno", new Vector2(50, 290), ButtonColor);
+            SpriteBatch.DrawString(FontRegular, "K, J para probar explosiones", new Vector2(50, 310), ButtonColor);
+            SpriteBatch.DrawString(FontRegular, "C para mostrar/ocultar gizmos", new Vector2(50, 330), ButtonColor);
             SpriteBatch.End();
             PlayButton.Draw(gameTime);
             MusicButton.Draw(gameTime);

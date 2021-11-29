@@ -397,7 +397,7 @@ namespace TGC.MonoGame.TP
             Gizmos.UpdateViewProjection(ActiveCamera.View, ActiveCamera.Projection);
 
 
-            if(Inputs.isJustPressed(Keys.E))
+            if(Inputs.isJustPressed(Keys.C))
             {
                 DrawGizmos = !DrawGizmos;
             }

@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP.Ships
         private float ChaseRange = 7000;
 
         private float VelocityLerp = 0.01f;
-        private float AngleLerp = 0.002f;
+        private float AngleLerp = 0.005f;
 
         private float PreviousAngle = 0f;
 
@@ -185,8 +185,8 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
-            Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
+            Velocity = Lerp(Velocity, 4f, VelocityLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 7f);
 
             if (distanceToWayPoint < WayPointRadius)
             {
@@ -203,8 +203,8 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
-            Velocity = Lerp(Velocity, 8f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
+            Velocity = Lerp(Velocity, 7f, VelocityLerp);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 7f);
         }
         private void Shooting(GameTime gameTime, MapEnvironment environment)
         {
@@ -213,7 +213,7 @@ namespace TGC.MonoGame.TP.Ships
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
             Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 5f);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 7f);
 
             float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
