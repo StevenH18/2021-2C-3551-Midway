@@ -54,6 +54,7 @@ namespace TGC.MonoGame.TP.Ships
         public float AngularAcceleration = 0.02f;
 
         public float Health;
+        public float MaxHealth;
         public bool Destroyed;
         public float DestroyedTime;
         public bool Active = true;
@@ -128,7 +129,7 @@ namespace TGC.MonoGame.TP.Ships
                 }
             }
         }
-        public virtual void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
+        public virtual void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)
         {
             World = Scale * Rotation * Matrix.CreateTranslation(Position);
         }

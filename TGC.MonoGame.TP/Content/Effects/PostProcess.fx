@@ -65,7 +65,7 @@ float3 abovewater(VertexShaderOutput input)
     float billboardAlpha = tex2D(HeightMapSampler, input.TextureCoordinate).b;
     
     heightMap = (heightMap) / 3000;
-    cameraDepth = pow(1 - saturate(cameraDepth / 15000), 2);
+    cameraDepth = pow(1 - saturate(cameraDepth / 20000), 2);
     
     float3 fogColor = float3(0.39, 0.39, 0.39);
     

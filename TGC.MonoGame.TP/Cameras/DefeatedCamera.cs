@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP.Cameras
             float aspectRatio = Graphics.Viewport.AspectRatio;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathF.PI / 3f, aspectRatio, 0.1f, 100000f);
         }
-        public override void Update(GameTime gameTime, Ship ship)
+        public override void Update(GameTime gameTime, Ship ship, TGCGame game)
         {
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             Angle += deltaTime * 0.2f;

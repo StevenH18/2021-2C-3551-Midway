@@ -212,7 +212,7 @@ namespace TGC.MonoGame.TP.Ships
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
             Velocity = Lerp(Velocity, 5f, VelocityLerp);
-            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 10f);
+            Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 5f);
 
             float time = (float)gameTime.TotalGameTime.TotalSeconds;
 
@@ -250,7 +250,7 @@ namespace TGC.MonoGame.TP.Ships
             }
         }
 
-        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
+        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)
         {
             WeaponSystem = weaponSystem;
 

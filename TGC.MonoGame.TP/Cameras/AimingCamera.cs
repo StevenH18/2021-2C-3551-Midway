@@ -72,7 +72,7 @@ namespace TGC.MonoGame.TP.Cameras
             World = Matrix.CreateFromYawPitchRoll(YawAngles, PitchAngles, 0f) * ship.Rotation * Matrix.CreateTranslation(ship.World.Translation + Offset);
         }
 
-        public override void Update(GameTime gameTime, Ship ship)
+        public override void Update(GameTime gameTime, Ship ship, TGCGame game)
         {
             Controls(gameTime, ship);
 

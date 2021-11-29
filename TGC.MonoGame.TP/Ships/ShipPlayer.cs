@@ -18,10 +18,12 @@ namespace TGC.MonoGame.TP.Ships
     {
         private float FireRate = 1f;
         private float FireTime = 0f;
+        public bool FreeCamera = false;
 
         public ShipPlayer(ContentManager content, GraphicsDevice graphics, Gizmos gizmos) : base(content, graphics, gizmos)
         {
             Health = 300;
+            MaxHealth = 300;
         }
 
         public override void Load()
@@ -37,24 +39,32 @@ namespace TGC.MonoGame.TP.Ships
         {
             var time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                Velocity += Acceleration * time;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                Velocity -= Acceleration * time;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                AngularVelocity -= AngularAcceleration * time;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                AngularVelocity += AngularAcceleration * time;
+            bool control = !FreeCamera || Keyboard.GetState().IsKeyDown(Keys.Space) || Mouse.GetState().MiddleButton == ButtonState.Pressed;
+
+            Velocity = Math.Clamp(Velocity, -MaxVelocity, MaxVelocity);
+            AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity) * MathF.Pow(Math.Abs(Velocity / MaxVelocity), 0.2f);
+
+            if (control) 
+            { 
+                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                {
+                    Velocity += Acceleration * time;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                {
+                    Velocity -= Acceleration * time;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                {
+                    AngularVelocity -= AngularAcceleration * time;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                {
+                    AngularVelocity += AngularAcceleration * time;
+                }
             }
 
-            if (!Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.S))
+            if (!Keyboard.GetState().IsKeyDown(Keys.W) && !Keyboard.GetState().IsKeyDown(Keys.S) || !control)
             {
                 if (Math.Abs(Velocity) > 0.003f)
                 {
@@ -65,7 +75,7 @@ namespace TGC.MonoGame.TP.Ships
                     Velocity = 0;
                 }
             }
-            if (!Keyboard.GetState().IsKeyDown(Keys.D) && !Keyboard.GetState().IsKeyDown(Keys.A)) 
+            if (!Keyboard.GetState().IsKeyDown(Keys.D) && !Keyboard.GetState().IsKeyDown(Keys.A) || !control) 
             { 
                 if (Math.Abs(AngularVelocity) > 0.0003f)
                 {
@@ -76,9 +86,6 @@ namespace TGC.MonoGame.TP.Ships
                     AngularVelocity = 0;
                 }
             }
-
-            Velocity = Math.Clamp(Velocity, -MaxVelocity, MaxVelocity);
-            AngularVelocity = Math.Clamp(AngularVelocity, -MaxAngularVelocity, MaxAngularVelocity) * MathF.Pow(Math.Abs(Velocity / MaxVelocity), 0.2f);
         }
 
         public void CollisionDetection(MapEnvironment environment)
@@ -94,7 +101,7 @@ namespace TGC.MonoGame.TP.Ships
             }
         }
 
-        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
+        public override void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)
         {
             HealthController(gameTime, effectSystem);
             CollisionDetection(environment);
@@ -109,7 +116,7 @@ namespace TGC.MonoGame.TP.Ships
             if (!Destroyed)
             {
                 // Fire
-                if (Inputs.mouseLeftJustPressed() && Mouse.GetState().RightButton == ButtonState.Pressed)
+                if (crosshair && Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
                     float time = (float)gameTime.TotalGameTime.TotalSeconds;
 

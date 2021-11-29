@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Environment;
 using TGC.MonoGame.TP.Ships;
 
@@ -33,6 +34,12 @@ namespace TGC.MonoGame.TP.Hud
         private SpriteBatch WeatherAlertSprite;
         private SpriteFont WeatherSpriteFont;
 
+        // Ship Health config
+        private Texture2D HealthTexture;
+        private Effect HealthEffect;
+        private int HealthSize = 250;
+        private int HealthPadding = 30;
+
         public HudController(GraphicsDevice graphics, ContentManager content)
         {
             Graphics = graphics;
@@ -50,16 +57,23 @@ namespace TGC.MonoGame.TP.Hud
 
             WeatherAlertSprite = new SpriteBatch(Graphics);
             WeatherSpriteFont = Content.Load<SpriteFont>("Fonts/WeatherHud");
+
+            HealthTexture = Content.Load<Texture2D>(TGCGame.ContentFolderTextures + "Hud/ship_health");
+            HealthEffect = Content.Load<Effect>(TGCGame.ContentFolderEffects + "ShipHealthShader");
         }
         public void Update(GameTime gameTime)
         {
             
         }
-        public void Draw(GameTime gameTime, Ship[] ships, Matrix cameraMatrix, MapEnvironment environment)
+        public void Draw(GameTime gameTime, Ship[] ships, Camera activeCamera, MapEnvironment environment, bool drawCrosshair)
         {
-            DrawRadar(gameTime, ships, cameraMatrix);
-            DrawCrosshair();
+            if (ships[0].Health <= 0)
+                return;
+
+            DrawRadar(gameTime, ships, activeCamera.World);
+            DrawCrosshair(drawCrosshair);
             DrawWeatherAlert(gameTime, environment);
+            DrawShipHealth((ShipPlayer)ships[0]);
         }
         private void DrawRadar(GameTime gameTime, Ship[] ships, Matrix cameraMatrix)
         {
@@ -86,7 +100,7 @@ namespace TGC.MonoGame.TP.Hud
 
             radar.Draw(RadarEffect);
         }
-        private void DrawCrosshair()
+        private void DrawCrosshair(bool drawCrosshair)
         {
             Vector3 crosshairPosition = new Vector3(0, (Graphics.Viewport.Height - 400) / 2, 0);
             Vector3 crosshairSize = new Vector3(Graphics.Viewport.Width, 400, 0);
@@ -94,10 +108,9 @@ namespace TGC.MonoGame.TP.Hud
             ScreenQuad crosshair = new ScreenQuad(Graphics, crosshairPosition, crosshairSize);
             CrosshairEffect.Parameters["CrosshairTexture"]?.SetValue(CrosshairTexture);
 
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            if (drawCrosshair)
                 crosshair.Draw(CrosshairEffect);
         }
-
         private void DrawWeatherAlert(GameTime gameTime, MapEnvironment environment)
         {
             string alerta = "ALERTA DE TORMENTA";
@@ -110,6 +123,19 @@ namespace TGC.MonoGame.TP.Hud
                 WeatherAlertSprite.DrawString(WeatherSpriteFont, alerta, weatherAlertPosition, Color.OrangeRed);
                 WeatherAlertSprite.End();
             }
+        }
+        private void DrawShipHealth(ShipPlayer shipPlayer)
+        {
+            HealthEffect.Parameters["PlayerHealth"]?.SetValue(shipPlayer.Health);
+            HealthEffect.Parameters["PlayerMaxHealth"]?.SetValue(shipPlayer.MaxHealth);
+            HealthEffect.Parameters["HealthTexture"]?.SetValue(HealthTexture);
+
+            Vector3 healthPosition = new Vector3(HealthPadding, 250, 0);
+            Vector3 healthSize = new Vector3(HealthSize, HealthSize, 0);
+
+            ScreenQuad health = new ScreenQuad(Graphics, healthPosition, healthSize);
+
+            health.Draw(HealthEffect);
         }
     }
 }

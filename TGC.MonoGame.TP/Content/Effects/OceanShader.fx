@@ -210,7 +210,9 @@ float3 GetNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
 {
     float3 tangentNormal1 = tex2D(NormalSampler, textureCoordinates * 0.8 + float2(-Time * 0.02, -Time * 0.02) + 500).xyz * 2.0 - 1.0;
     float3 tangentNormal2 = tex2D(NormalSampler, textureCoordinates + float2(Time * 0.02, Time * 0.02)).xyz * 2.0 - 1.0;
-    float3 tangentNormal = tangentNormal1 * 0.5 + tangentNormal2 * 0.5;
+    float3 tangentNormal3 = tex2D(NormalSampler, textureCoordinates * 0.1 + float2(-Time * 0.01, -Time * 0.01) + 1000).xyz * 2.0 - 1.0;
+    float3 tangentNormal4 = tex2D(NormalSampler, textureCoordinates * 0.1+ float2(Time * 0.01, Time * 0.01)).xyz * 2.0 - 1.0;
+    float3 tangentNormal = tangentNormal1 * 0.25 + tangentNormal2 * 0.25 + tangentNormal3 * 0.25 + tangentNormal4 * 0.25;
 
     float3 Q1 = ddx(worldPosition);
     float3 Q2 = ddy(worldPosition);
@@ -229,7 +231,8 @@ float3 GetNormals(VertexShaderOutput input)
 {
     float3 worldNormal = input.Normal;
     float3 normal = GetNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, worldNormal);
-    return lerp(worldNormal, normal, min(saturate(NormalIntensity), 1.1 - saturate(ClosenessToIsland(input.WorldPosition.xyz))));
+    //return normal;
+    return lerp(worldNormal, normal, min(saturate(NormalIntensity), 1.3 - saturate(ClosenessToIsland(input.WorldPosition.xyz))));
 }
 
 float3 GetReflection(VertexShaderOutput input, float3 normal, float3 view)
@@ -255,7 +258,6 @@ float2 GetTrails(VertexShaderOutput input)
         
         trail.x += (1 - smoothstep(0, maxSize, distanceFromWorld));
         trail.y += (1 - smoothstep(0, maxSize + 10, distanceFromWorld)) * (saturate(Time - TrailLifeTimes[i] - 2));
-
     }
     
     return trail;
@@ -272,7 +274,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 10 + normal.xz);
     float3 foam2 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
     float outerTrail = saturate(sin(min(GetTrails(input).x, PI)));
-    float innerTrail = saturate(GetTrails(input).x / 25);
+    float innerTrail = saturate(GetTrails(input).x / 10);
     float trailMask = GetTrails(input).y;
     
     normal = lerp(normal, normal * 2, saturate(outerTrail - trailMask));
@@ -350,7 +352,7 @@ technique BasicColorDrawing
 
 float4 HeightMapPS(VertexShaderOutput input) : COLOR
 {
-    float height = input.WorldPosition.y - 500;
+    float height = input.WorldPosition.y;
     float cameraDepth = input.ScreenPosition.w;
     
     return float4(height, cameraDepth, 0, 1);

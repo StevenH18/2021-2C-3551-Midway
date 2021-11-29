@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -37,6 +38,7 @@ namespace TGC.MonoGame.TP
         private ShipCamera ShipCamera;
         private AimingCamera AimingCamera;
         private DefeatedCamera DefeatedCamera;
+        private MenuCamera MenuCamera;
         private Camera ActiveCamera;
         private Camera CurrentCamera;
         private Camera PreviousCamera;
@@ -59,10 +61,16 @@ namespace TGC.MonoGame.TP
 
         private Gizmos Gizmos;
 
-        public const int ST_MENU = 0;
-        public const int ST_LEVEL_1 = 1;
-        public int MenuStatus = ST_MENU;
+        private bool Crosshair;
 
+        private Menu Menu;
+        public GameState GameStatus;
+        public enum GameState
+        {
+            Menu,
+            Playing,
+            Dead
+        }
 
         /// <summary>
         ///     Constructor del juego.
@@ -95,25 +103,26 @@ namespace TGC.MonoGame.TP
             // GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             FreeCamera = new FreeCamera(GraphicsDevice, this.Window);
-
-            FreeCamera.Position = new Vector3(16000, 50, 0);
-            FreeCamera.Forward = new Vector3(-0.8f, 0.2f, 0);
-
             ShipCamera = new ShipCamera(GraphicsDevice, this.Window);
             AimingCamera = new AimingCamera(GraphicsDevice, this.Window);
             DefeatedCamera = new DefeatedCamera(GraphicsDevice, this.Window);
+            MenuCamera = new MenuCamera(GraphicsDevice, this.Window);
             ActiveCamera = new Camera();
-            CurrentCamera = ShipCamera;
-            PreviousCamera = ShipCamera;
+            CurrentCamera = MenuCamera;
+            PreviousCamera = MenuCamera;
 
-            ActiveCamera.World = FreeCamera.World;
-            ActiveCamera.Projection = FreeCamera.Projection;
-            ActiveCamera.View = FreeCamera.View;
+            MenuCamera.Position = new Vector3(16000, 50, 0);
+            MenuCamera.Forward = new Vector3(-1f, 0f, 0);
+
+            ActiveCamera.World = MenuCamera.World;
+            ActiveCamera.Projection = MenuCamera.Projection;
+            ActiveCamera.View = MenuCamera.View;
 
             Gizmos = new Gizmos();
             ShipsSystem = new ShipsSystem(GraphicsDevice, Content, Gizmos);
             Environment = new MapEnvironment(GraphicsDevice, Content, Gizmos);
             Hud = new HudController(GraphicsDevice, Content);
+            Menu = new Menu(GraphicsDevice, Content, this);
             EffectSystem = new EffectSystem(GraphicsDevice, Content);
             WeaponSystem = new WeaponSystem(GraphicsDevice, Content, EffectSystem, Environment, ShipsSystem, Gizmos);
 
@@ -123,8 +132,8 @@ namespace TGC.MonoGame.TP
 
             // Menu Scene
             MenuShip = new ShipPlayer(Content, GraphicsDevice, Gizmos);
-            MenuShip.Position.X = 15600f;
-            MenuShip.Position.Z = 200f;
+            MenuShip.Position.X = 13700f;
+            MenuShip.Position.Z = 150f;
             MenuShip.Angle = -1f;
             MenuShip.Acceleration = 0f;
 
@@ -152,6 +161,49 @@ namespace TGC.MonoGame.TP
             base.LoadContent();
         }
 
+        private Matrix RotationFromMatrix(Matrix view)
+        {
+            //Vector3 translation = view.Translation;
+
+            view.Translation = Vector3.Zero;
+
+            Vector3 scale = new Vector3();
+            scale.X = view.Right.Length();
+            scale.Y = view.Up.Length();
+            scale.Z = view.Forward.Length();
+
+            view.Right /= scale.X;
+            view.Up /= scale.Y;
+            view.Forward /= scale.Z;
+
+            return view;
+        }
+
+        public void WriteMatrix(Matrix matrix)
+        {
+            string m11 = matrix.M11.ToString("0000.0");
+            string m12 = matrix.M12.ToString("0000.0");
+            string m13 = matrix.M13.ToString("0000.0");
+            string m14 = matrix.M14.ToString("0000.0");
+            string m21 = matrix.M21.ToString("0000.0");
+            string m22 = matrix.M22.ToString("0000.0");
+            string m23 = matrix.M23.ToString("0000.0");
+            string m24 = matrix.M24.ToString("0000.0");
+            string m31 = matrix.M31.ToString("0000.0");
+            string m32 = matrix.M32.ToString("0000.0");
+            string m33 = matrix.M33.ToString("0000.0");
+            string m34 = matrix.M34.ToString("0000.0");
+            string m41 = matrix.M41.ToString("0000.0");
+            string m42 = matrix.M42.ToString("0000.0");
+            string m43 = matrix.M43.ToString("0000.0");
+            string m44 = matrix.M44.ToString("0000.0");
+
+            Debug.WriteLine("|" + m11 + "|" + m12 + "|" + m13 + "|" + m14 + "|");
+            Debug.WriteLine("|" + m21 + "|" + m22 + "|" + m23 + "|" + m24 + "|");
+            Debug.WriteLine("|" + m31 + "|" + m32 + "|" + m33 + "|" + m34 + "|");
+            Debug.WriteLine("|" + m41 + "|" + m42 + "|" + m43 + "|" + m44 + "|");
+        }
+
         /// <summary>
         ///     Se llama en cada frame.
         ///     Se debe escribir toda la logica de computo del modelo, asi como tambien verificar entradas del usuario y reacciones
@@ -171,12 +223,82 @@ namespace TGC.MonoGame.TP
                 Graphics.ApplyChanges();
             }
 
+            if(ShipsSystem.Ships[0].Health <= 0)
+            {
+                GameStatus = GameState.Dead;
+            }
+
             float t = CameraTransition / CameraTransitionDuration;
             t = t * t * (3f - 2f * t);
 
             ActiveCamera.Projection = Matrix.Lerp(PreviousCamera.Projection, CurrentCamera.Projection, t);
+
+            /*
+            Vector3 preCamViewTrans = PreviousCamera.View.Translation;
+            Quaternion preCamViewQuat = Quaternion.CreateFromRotationMatrix(RotationFromMatrix(PreviousCamera.View));
+
+            Vector3 currCamViewTrans = CurrentCamera.View.Translation;
+            Quaternion currCamViewQuat = Quaternion.CreateFromRotationMatrix(RotationFromMatrix(CurrentCamera.View));
+
+            Quaternion rotationViewSlerp = Quaternion.Slerp(preCamViewQuat, currCamViewQuat, t);
+            Vector3 translationViewLerp = Vector3.Lerp(preCamViewTrans, currCamViewTrans, t);
+            */
+
             ActiveCamera.View = Matrix.Lerp(PreviousCamera.View, CurrentCamera.View, t);
+            //ActiveCamera.View = Matrix.CreateFromQuaternion(rotationViewSlerp) * Matrix.CreateTranslation(translationViewLerp);
+
+            /*
+            Vector3 preCamWorldTrans = PreviousCamera.World.Translation;
+            Quaternion preCamWorldQuat = Quaternion.CreateFromRotationMatrix(RotationFromMatrix(PreviousCamera.World));
+
+            Vector3 currCamWorldTrans = CurrentCamera.World.Translation;
+            Quaternion currCamWorldQuat = Quaternion.CreateFromRotationMatrix(RotationFromMatrix(CurrentCamera.World));
+
+            Quaternion rotationWorldSlerp = Quaternion.Slerp(preCamWorldQuat, currCamWorldQuat, t);
+            Vector3 translationWorldLerp = Vector3.Lerp(preCamWorldTrans, currCamWorldTrans, t);
+            */
+
             ActiveCamera.World = Matrix.Lerp(PreviousCamera.World, CurrentCamera.World, t);
+            //ActiveCamera.World = Matrix.CreateFromQuaternion(rotationWorldSlerp) * Matrix.CreateTranslation(translationWorldLerp);
+
+            float time = (float)gameTime.TotalGameTime.Milliseconds;
+
+            /*
+            if(time % 2000 == 0)
+            {
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                Debug.WriteLine("");
+                /*
+                Debug.WriteLine("Translation: ");
+                WriteMatrix(Matrix.CreateTranslation(translationWorldLerp));
+                Debug.WriteLine("Rotation: ");
+                WriteMatrix(Matrix.CreateFromQuaternion(rotationWorldSlerp));
+                Debug.WriteLine("Result: ");
+                WriteMatrix(ShipsSystem.Ships[0].World);
+            }
+            */
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -189,22 +311,20 @@ namespace TGC.MonoGame.TP
                 CameraTransition = CameraTransitionDuration;
             }
 
-            switch (MenuStatus)
+            switch (GameStatus)
             {
-                case ST_MENU:
-
+                case GameState.Menu:
+                    CameraTransitionDuration = 5f;
                     CameraTransition = 0f;
-                    PreviousCamera = FreeCamera;
+                    PreviousCamera = MenuCamera;
                     CurrentCamera = ShipCamera;
 
-                    MenuShip.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera);
-
-                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                        MenuStatus = ST_LEVEL_1;
+                    MenuShip.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera, Crosshair);
 
                     break;
 
-                case ST_LEVEL_1:
+                case GameState.Playing:
+                case GameState.Dead:
 
                     if (Inputs.isJustPressed(Keys.G))
                     {
@@ -230,26 +350,27 @@ namespace TGC.MonoGame.TP
                     if (Inputs.mouseRightJustPressed() && ShipsSystem.ShipPlayer.Health > 0)
                     {
                         CameraTransitionDuration = 0.5f;
-
                         CameraTransition = 0f;
                         PreviousCamera = CurrentCamera;
 
-                        AimingCamera.YawAngles = 0;
-                        AimingCamera.PitchAngles = 0;
+                        if(CurrentCamera.Equals(AimingCamera))
+                        {
+                            CurrentCamera = ShipCamera;
+                            Crosshair = false;
+                        }
+                        else
+                        {
+                            AimingCamera.YawAngles = 0;
+                            AimingCamera.PitchAngles = 0;
 
-                        CurrentCamera = AimingCamera;
+                            CurrentCamera = AimingCamera;
+                            Crosshair = true;
+                        }
                     }
-                    if(Inputs.mouseRightJustReleased() && ShipsSystem.ShipPlayer.Health > 0)
-                    {
-                        CameraTransitionDuration = 0.5f;
 
-                        CameraTransition = 0f;
-                        PreviousCamera = CurrentCamera;
+                    ((ShipPlayer)ShipsSystem.ShipPlayer).FreeCamera = CurrentCamera.Equals(FreeCamera);
 
-                        CurrentCamera = ShipCamera;
-                    }
-
-                    if(ShipsSystem.ShipPlayer.Health <= 0 && (CurrentCamera.Equals(AimingCamera) || CurrentCamera.Equals(ShipCamera)))
+                    if (ShipsSystem.ShipPlayer.Health <= 0 && (CurrentCamera.Equals(AimingCamera) || CurrentCamera.Equals(ShipCamera)))
                     {
                         CameraTransitionDuration = 4f;
                         CameraTransition = 0f;
@@ -257,20 +378,20 @@ namespace TGC.MonoGame.TP
                         CurrentCamera = DefeatedCamera;
                     }
 
-                    ShipsSystem.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera);
-                    CurrentCamera.Update(gameTime, ShipsSystem.Ships[0]);
-                    PreviousCamera.Update(gameTime, ShipsSystem.Ships[0]);
+                    ShipsSystem.Update(gameTime, Environment, EffectSystem, WeaponSystem, ActiveCamera, Crosshair);
                     EffectSystem.Update(gameTime, ActiveCamera);
                     Environment.Update(gameTime, ShipsSystem.Ships, ActiveCamera);
                     WeaponSystem.Update(gameTime);
 
                     Hud.Update(gameTime);
 
-                    IsMouseVisible = false;
-
                     break;
             }
 
+            CurrentCamera.Update(gameTime, ShipsSystem.Ships[0], this);
+            PreviousCamera.Update(gameTime, ShipsSystem.Ships[0], this);
+
+            Menu.Update(gameTime);
             Gizmos.UpdateViewProjection(ActiveCamera.View, ActiveCamera.Projection);
 
             base.Update(gameTime);
@@ -295,12 +416,13 @@ namespace TGC.MonoGame.TP
 
             Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            switch (MenuStatus)
+            switch (GameStatus)
             {
-                case ST_MENU:
+                case GameState.Menu:
                     MenuShip.Draw(ActiveCamera, RenderState, Environment);
                     break;
-                case ST_LEVEL_1:
+                case GameState.Playing:
+                case GameState.Dead:
                     ShipsSystem.Draw(ActiveCamera, RenderState, Environment);
                     break;
             }
@@ -314,12 +436,13 @@ namespace TGC.MonoGame.TP
 
             Environment.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection, ActiveCamera.World, RenderState);
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            switch (MenuStatus)
+            switch (GameStatus)
             {
-                case ST_MENU:
+                case GameState.Menu:
                     MenuShip.Draw(ActiveCamera, RenderState, Environment);
                     break;
-                case ST_LEVEL_1:
+                case GameState.Playing:
+                case GameState.Dead:
                     ShipsSystem.Draw(ActiveCamera, RenderState, Environment);
                     break;
             }
@@ -333,21 +456,15 @@ namespace TGC.MonoGame.TP
 
             Environment.DrawPostProcess(gameTime, MainSceneRender, HeightMapRender, ActiveCamera);
 
-            switch (MenuStatus)
+            switch (GameStatus)
             {
-                case ST_MENU:
-                    //PARA AGREGAR OTRAS TEXTURAS
-                    SpriteBatch.Begin();
-                    SpriteBatch.DrawString(Font, "MIDWAY TP TGC ", new Vector2(100, 100), Color.White);
-                    SpriteBatch.DrawString(Font, "Presione ESPACIO para comenzar", new Vector2(100, 200), Color.White);
-                    SpriteBatch.DrawString(Font, "W S A D para controlar", new Vector2(100, 300), Color.White);
-                    SpriteBatch.End();
-
-                    break;
-                case ST_LEVEL_1:
-                    Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera.World, Environment);
+                case GameState.Playing:
+                case GameState.Dead:
+                    Hud.Draw(gameTime, ShipsSystem.Ships, ActiveCamera, Environment, Crosshair);
                     break;
             }
+
+            Menu.Draw(gameTime);
 
             //Gizmos.DrawFrustum(PreviousCamera.View * PreviousCamera.Projection);
 

@@ -14,7 +14,12 @@ namespace TGC.MonoGame.TP
         public Matrix View = Matrix.Identity;
         public Matrix Projection = Matrix.Identity;
 
-        public virtual void Update(GameTime gameTime, Ship ship)
+        public Matrix WorldTranslation = Matrix.Identity;
+        public Matrix WorldRotation = Matrix.Identity;
+        public Matrix ViewTranslation = Matrix.Identity;
+        public Matrix ViewRotation = Matrix.Identity;
+
+        public virtual void Update(GameTime gameTime, Ship ship, TGCGame game)
         {
 
         }

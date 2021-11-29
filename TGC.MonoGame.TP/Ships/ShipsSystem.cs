@@ -21,9 +21,17 @@ namespace TGC.MonoGame.TP.Ships
         public EffectSystem EffectSystem;
 
         public int ShipsCount = 20;
-        public int ShipsSeparation = 20000;
+        public int ShipsSeparation = 1000;
         public Ship[] Ships;
         public Ship ShipPlayer;
+
+        public Vector3[] SpawnPoints = new Vector3[]
+        {
+            new Vector3(-12000, 0, 12000),
+            new Vector3(12000, 0, -12000),
+            new Vector3(12000, 0, 12000),
+            new Vector3(-12000, 0, -12000),
+        };
 
         public ShipsSystem(GraphicsDevice graphics, ContentManager content, Gizmos gizmos)
         {
@@ -36,19 +44,12 @@ namespace TGC.MonoGame.TP.Ships
             Ships[0] = new ShipPlayer(Content, Graphics, Gizmos);
             ShipPlayer = Ships[0];
 
-            ShipPlayer.Position.X = 2000;
-            ShipPlayer.Position.Z = 0;
-            ShipPlayer.Angle = MathF.PI * 0.5f;
-
             for (int i = 1; i < ShipsCount; i++)
             {
-                Random random = new Random();
-
                 Ships[i] = new ShipEnemy(Content, Graphics, (ShipPlayer)ShipPlayer, Gizmos);
-
-                Ships[i].Position.X = random.Next(-ShipsSeparation, ShipsSeparation);
-                Ships[i].Position.Z = random.Next(-ShipsSeparation, ShipsSeparation);
             }
+
+            ResetShips();
         }
         public void Load()
         {
@@ -58,14 +59,30 @@ namespace TGC.MonoGame.TP.Ships
                 Ships[i].Load();
             }
         }
-        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera)
+        public void ResetShips()
+        {
+            ShipPlayer.Position.X = 2000;
+            ShipPlayer.Position.Z = 0;
+            ShipPlayer.Angle = MathF.PI * 0.5f;
+
+            for(int i = 1; i < ShipsCount; i++)
+            {
+                Random random = new Random();
+
+                Ships[i].Position = SpawnPoints[random.Next(0, SpawnPoints.Length)];
+
+                Ships[i].Position.X += random.Next(-ShipsSeparation, ShipsSeparation);
+                Ships[i].Position.Z += random.Next(-ShipsSeparation, ShipsSeparation);
+            }
+        }
+        public void Update(GameTime gameTime, MapEnvironment environment, EffectSystem effectSystem, WeaponSystem weaponSystem, Camera activeCamera, bool crosshair)
         {
             Environment = environment;
             EffectSystem = effectSystem;
-            ShipPlayer.Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
+            ShipPlayer.Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera, crosshair);
             for (int i = 0; i < ShipsCount; i++)
             {
-                Ships[i].Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera);
+                Ships[i].Update(gameTime, Environment, EffectSystem, weaponSystem, activeCamera, crosshair);
             }
         }
         public void Draw(Camera activeCamera, RenderState renderState, MapEnvironment environment)

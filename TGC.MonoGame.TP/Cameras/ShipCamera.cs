@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP.Cameras
         /// <param name="gameTime">The Game Time to calculate framerate-independent movement</param>
         /// <param name="followedWorld">The World matrix to follow</param>
        
-        public override void Update(GameTime gameTime, Ship ship) //agregue speed para poder hacer un efecto de que la camara se mueve mas lento mientras el barco arranca
+        public override void Update(GameTime gameTime, Ship ship, TGCGame game) //agregue speed para poder hacer un efecto de que la camara se mueve mas lento mientras el barco arranca
         {
             Matrix followedRotation = ship.Rotation;
             Matrix followedWorld = ship.World;

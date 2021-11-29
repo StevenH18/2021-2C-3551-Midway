@@ -35,7 +35,7 @@ namespace TGC.MonoGame.TP.Environment
         public int OceanWidth = 100000;
         public int OceanHeight = 100000;
         public int OceanQuads = 512;
-        public int OceanTiling = 128;
+        public int OceanTiling = 256;
         public float ShoreWidth = 100;
         public float ShoreSmoothness = 100;
         public RenderTarget2D OceanDepth;
@@ -57,8 +57,8 @@ namespace TGC.MonoGame.TP.Environment
         public float RainParticleHeight = 50;
         public float RainParticleWidth = 1;
 
-        public int RainParticles = 200000;
-        public float RainParticleSeparation = 15000;
+        public int RainParticles = 100000;
+        public float RainParticleSeparation = 10000;
         public float RainParticleVerticalSeparation = 10000;
 
         public float RainHeightStart = 5000;
@@ -88,7 +88,7 @@ namespace TGC.MonoGame.TP.Environment
         public float RainAmbienceVolume = 0f;
 
         // Weather config
-        public Weather WeatherState = Weather.Storm;
+        public Weather WeatherState = Weather.Calm;
 
         private Dictionary<(Weather, String), Object> WeatherValues = new Dictionary<(Weather, String), object>
         {
@@ -193,7 +193,7 @@ namespace TGC.MonoGame.TP.Environment
 
             float seconds = (float)gameTime.TotalGameTime.Seconds;
 
-            if(seconds % 120 == 0)
+            if(seconds % 120 == 0 && seconds > 60)
             {
                 Random random = new Random();
                 Weather[] possibleWeathers = new Weather[]

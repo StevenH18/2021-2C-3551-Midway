@@ -12,6 +12,7 @@ namespace TGC.MonoGame.TP
     {
         private GraphicsDevice graphicsDevice = null;
         private GameWindow gameWindow = null;
+        private TGCGame Game;
 
         private MouseState mState = default(MouseState);
         private KeyboardState kbState = default(KeyboardState);
@@ -22,7 +23,7 @@ namespace TGC.MonoGame.TP
         public float RotationRadiansPerSecond { get; set; } = 5;
 
         public float fieldOfViewDegrees = 70f;
-        public float nearClipPlane = .05f;
+        public float nearClipPlane = 0.1f;
         public float farClipPlane = 100000f;
         private bool mouseLookIsUsed = true;
 
@@ -217,9 +218,10 @@ namespace TGC.MonoGame.TP
         /// <summary>
         /// update the camera.
         /// </summary>
-        public override void Update(GameTime gameTime, Ship ship)
+        public override void Update(GameTime gameTime, Ship ship, TGCGame game)
         {
             FpsUiControlsLayout(gameTime);
+            Game = game;
         }
 
         /// <summary>
@@ -319,7 +321,8 @@ namespace TGC.MonoGame.TP
                 if (diff.Y != 0f)
                     RotateUpOrDown(gameTime, diff.Y);
 
-                Mouse.SetPosition(gameWindow.ClientBounds.Width / 2, gameWindow.ClientBounds.Height / 2);
+                if(Game != null && Game.IsActive && Game.GameStatus == TGCGame.GameState.Playing)
+                    Mouse.SetPosition(gameWindow.ClientBounds.Width / 2, gameWindow.ClientBounds.Height / 2);
                 state = Mouse.GetState();
             }
             mState = state;

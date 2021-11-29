@@ -25,6 +25,12 @@
 /processorParam:DebugMode=Auto
 /build:Effects/BillboardQuadShader.fx
 
+#begin Effects/ButtonShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ButtonShader.fx
+
 #begin Effects/CrosshairShader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -72,6 +78,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Effects/ShellShader.fx
+
+#begin Effects/ShipHealthShader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ShipHealthShader.fx
 
 #begin Effects/SkyBox.fx
 /importer:EffectImporter
@@ -1267,6 +1279,24 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/Weapons/Shell.fbx
 
+#begin Music/erika.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/erika.mp3
+
+#begin Music/over_there.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/over_there.mp3
+
+#begin Music/sacred_war.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/sacred_war.mp3
+
 #begin Sounds/Ambience/ocean_ambience.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
@@ -1434,6 +1464,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/Hud/radar_mask.png
+
+#begin Textures/Hud/ship_health.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Hud/ship_health.png
 
 #begin Textures/Ocean/ocean_albedo.jpg
 /importer:TextureImporter
