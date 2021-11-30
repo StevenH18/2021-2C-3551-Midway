@@ -61,11 +61,13 @@ namespace TGC.MonoGame.TP.Hud
             MainMenuButton = new Button(Content, Graphics, "IR A MENU", new Vector2(0, Graphics.Viewport.Height / 2 - PlayButton.Size.Y + 2), true, ButtonPadding, MinButtonSize, ButtonColor);
 
             Random random = new Random();
+            int playSong = random.Next(Songs.Length);
 
             MediaPlayer.IsShuffled = true;
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f;
-            MediaPlayer.Play(Songs[random.Next(Songs.Length)]);
-            MediaPlayer.MoveNext();
+            MediaPlayer.Play(Songs[playSong]);
+            CurrentSong = playSong;
         }
         public void Update(GameTime gameTime)
         {

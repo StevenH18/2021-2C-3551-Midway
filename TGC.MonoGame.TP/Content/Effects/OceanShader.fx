@@ -271,7 +271,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 view = normalize(EyePosition - input.WorldPosition.xyz);
     float fresnel = saturate((1.0 - dot(normal, view)));
     
-    float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 10 + normal.xz);
+    float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 5 + normal.xz);
     float3 foam2 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
     float outerTrail = saturate(sin(min(GetTrails(input).x, PI)));
     float innerTrail = saturate(GetTrails(input).x / 10);
