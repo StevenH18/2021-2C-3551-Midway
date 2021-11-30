@@ -257,7 +257,7 @@ float2 GetTrails(VertexShaderOutput input)
         float maxSize = TrailPositions[i].w * (Time + 1 - TrailLifeTimes[i]);
         
         trail.x += (1 - smoothstep(0, maxSize, distanceFromWorld));
-        trail.y += (1 - smoothstep(0, maxSize + 10, distanceFromWorld)) * (saturate(Time - TrailLifeTimes[i] - 2));
+        trail.y += (1 - smoothstep(0, maxSize + 10, distanceFromWorld)) * (saturate(Time - TrailLifeTimes[i] - 1));
     }
     
     return trail;
@@ -274,7 +274,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
     float3 foam1 = tex2D(NoiseSampler, input.TextureCoordinates * 5 + normal.xz);
     float3 foam2 = tex2D(NoiseSampler, input.TextureCoordinates * 10);
     float outerTrail = saturate(sin(min(GetTrails(input).x, PI)));
-    float innerTrail = saturate(GetTrails(input).x / 10);
+    float innerTrail = saturate(GetTrails(input).x / 25);
     float trailMask = GetTrails(input).y;
     
     normal = lerp(normal, normal * 2, saturate(outerTrail - trailMask));

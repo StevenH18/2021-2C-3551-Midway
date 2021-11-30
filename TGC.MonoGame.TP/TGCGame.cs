@@ -34,6 +34,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderTextures = "Textures/";
 
         public GraphicsDeviceManager Graphics { get; }
+
         public FreeCamera FreeCamera;
         public ShipCamera ShipCamera;
         public AimingCamera AimingCamera;
@@ -55,8 +56,6 @@ namespace TGC.MonoGame.TP
         private RenderTarget2D MainSceneRender;
         private RenderTarget2D HeightMapRender;
 
-        private SpriteBatch SpriteBatch;
-        private SpriteFont Font;
         private ShipA MenuShip;
 
         private Gizmos Gizmos;
@@ -155,10 +154,6 @@ namespace TGC.MonoGame.TP
             Gizmos.LoadContent(GraphicsDevice, Content);
             MenuShip.Load();
 
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-
-            Font = Content.Load<SpriteFont>("Fonts/Basic");
-
             base.LoadContent();
         }
 
@@ -178,31 +173,6 @@ namespace TGC.MonoGame.TP
             view.Forward /= scale.Z;
 
             return view;
-        }
-
-        public void WriteMatrix(Matrix matrix)
-        {
-            string m11 = matrix.M11.ToString("0000.0");
-            string m12 = matrix.M12.ToString("0000.0");
-            string m13 = matrix.M13.ToString("0000.0");
-            string m14 = matrix.M14.ToString("0000.0");
-            string m21 = matrix.M21.ToString("0000.0");
-            string m22 = matrix.M22.ToString("0000.0");
-            string m23 = matrix.M23.ToString("0000.0");
-            string m24 = matrix.M24.ToString("0000.0");
-            string m31 = matrix.M31.ToString("0000.0");
-            string m32 = matrix.M32.ToString("0000.0");
-            string m33 = matrix.M33.ToString("0000.0");
-            string m34 = matrix.M34.ToString("0000.0");
-            string m41 = matrix.M41.ToString("0000.0");
-            string m42 = matrix.M42.ToString("0000.0");
-            string m43 = matrix.M43.ToString("0000.0");
-            string m44 = matrix.M44.ToString("0000.0");
-
-            Debug.WriteLine("|" + m11 + "|" + m12 + "|" + m13 + "|" + m14 + "|");
-            Debug.WriteLine("|" + m21 + "|" + m22 + "|" + m23 + "|" + m24 + "|");
-            Debug.WriteLine("|" + m31 + "|" + m32 + "|" + m33 + "|" + m34 + "|");
-            Debug.WriteLine("|" + m41 + "|" + m42 + "|" + m43 + "|" + m44 + "|");
         }
 
         /// <summary>
@@ -262,45 +232,6 @@ namespace TGC.MonoGame.TP
             //ActiveCamera.World = Matrix.Lerp(PreviousCamera.World, CurrentCamera.World, t
             //ActiveCamera.World = Matrix.CreateTranslation(translationWorldLerp);
             ActiveCamera.World = Matrix.CreateFromQuaternion(rotationWorldSlerp) * Matrix.CreateTranslation(translationWorldLerp);
-
-            float time = (float)gameTime.TotalGameTime.Milliseconds;
-
-            /*
-            if(time % 2000 == 0)
-            {
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                Debug.WriteLine("");
-                /*
-                Debug.WriteLine("Translation: ");
-                WriteMatrix(Matrix.CreateTranslation(translationWorldLerp));
-                Debug.WriteLine("Rotation: ");
-                WriteMatrix(Matrix.CreateFromQuaternion(rotationWorldSlerp));
-                Debug.WriteLine("Result: ");
-                WriteMatrix(ShipsSystem.Ships[0].World);
-            }
-            */
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 

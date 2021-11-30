@@ -125,24 +125,20 @@ namespace TGC.MonoGame.TP
         void UpdateTrails(GameTime gameTime, Ship[] ships)
         {
             float seconds = (float)gameTime.TotalGameTime.TotalSeconds;
-            float miliseconds = (float)gameTime.TotalGameTime.Milliseconds;
-            float delay = 10;
+            float miliseconds = (float)gameTime.TotalGameTime.TotalMilliseconds;
 
             if(MathF.Abs(ships[0].Velocity) > 0)
                 TrailFadeout = seconds + 1;
 
-            if(miliseconds % delay == 0)
-            {
-                Vector3 trailPosition = ships[0].World.Translation + ships[0].Rotation.Forward * MathF.Sign(ships[0].Velocity) * 100;
-                float trailSize = 50 * MathF.Abs(ships[0].Velocity / ships[0].MaxVelocity);
+            Vector3 trailPosition = ships[0].World.Translation + ships[0].Rotation.Forward * MathF.Sign(ships[0].Velocity) * 100;
+            float trailSize = 50 * MathF.Abs(ships[0].Velocity / ships[0].MaxVelocity);
 
-                Trail[CurrentTrail].Position = new Vector4(trailPosition.X, trailPosition.Y, trailPosition.Z, trailSize);
-                Trail[CurrentTrail].LifeTime = seconds;
+            Trail[CurrentTrail].Position = new Vector4(trailPosition.X, trailPosition.Y, trailPosition.Z, trailSize);
+            Trail[CurrentTrail].LifeTime = seconds;
 
-                CurrentTrail++;
-                if (CurrentTrail >= Trail.Length)
-                    CurrentTrail = 0;
-            }
+            CurrentTrail++;
+            if (CurrentTrail >= Trail.Length)
+                CurrentTrail = 0;
         }
         float ClosenessToIsland(Vector3 position)
         {
