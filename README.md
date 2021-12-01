@@ -36,6 +36,10 @@ Más información sobre [.NET Core CLI Tools telemetry](https://aka.ms/dotnet-cl
 ![screenshot3](https://drive.google.com/uc?export=view&id=1YvJf3dFNa2BkBredt8ICvsJNoCZjQDET)
 ![screenshot4](https://drive.google.com/uc?export=view&id=12Y9ZpJEBpnIGeLUg1JNEwvf2GQs1kvC8)
 ![screenshot5](https://drive.google.com/uc?export=view&id=135wUEogZxYhRXCbt1qvHGWSRE30u99bH)
+![screenshot6](https://drive.google.com/uc?export=view&id=1HNe2UTVUhuKFlD12E4XqaeYS6eRxrWdL)
+![screenshot7](https://drive.google.com/uc?export=view&id=1ga89BGw68fAMWN12ThFicB0qXGp3XIhb)
+![screenshot8](https://drive.google.com/uc?export=view&id=1tkUTFrtdyGWeS_G5wwL21RVri2XGUpf_)
+![screenshot9](https://drive.google.com/uc?export=view&id=1bwpsCEVsHUskgbOHBq6Qgho85EtoZz0i)
 
 ## Game Play
 
