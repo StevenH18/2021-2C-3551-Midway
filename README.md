@@ -1,4 +1,4 @@
-# TGC - MonoGame - TP
+# TGC - TP Midway | Grupo 1
 
 [![BCH compliance](https://bettercodehub.com/edge/badge/tgc-utn/tgc-monogame-tp?branch=master)](https://bettercodehub.com/)
 [![GitHub license](https://img.shields.io/github/license/tgc-utn/tgc-monogame-tp.svg)](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/LICENSE)
@@ -7,11 +7,7 @@
 
 ## Descripción
 
-Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técnicas de Gráficos por Computadora](http://tgc-utn.github.io/) (TGC) en la carrera de Ingeniería en Sistemas de Información. Universidad Tecnológica Nacional, Facultad Regional Buenos Aires (UTN-FRBA).
-
-## Controles
-
-Al iniciar el juego se puede precionar P para cambiar el clima y T para hacer que suenen truenos
+Trabajo práctico del Grupo 1 de la materia electiva [Técnicas de Gráficos por Computadora](http://tgc-utn.github.io/) (TGC) en la carrera de Ingeniería en Sistemas de Información. Universidad Tecnológica Nacional, Facultad Regional Buenos Aires (UTN-FRBA).
 
 ## Requisitos
 
@@ -27,22 +23,7 @@ Al iniciar el juego se puede precionar P para cambiar el clima y T para hacer qu
 
 Más información sobre [.NET Core CLI Tools telemetry](https://aka.ms/dotnet-cli-telemetry) y [Visual Studio Code telemetry](https://code.visualstudio.com/docs/getstarted/telemetry) ya que vienen activas por defecto.
 
-## Configuración del entorno de desarrollo
-
-- [Windows 10](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_windows.html)
-  - Se puede usar Visual Studio Code o Rider. La documentación oficial solo explica Visual Studio, pero cada uno puede configurar el que les sea más cómodo.
-- [Linux (probado en Ubuntu 20.04)](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_ubuntu.html)
-- [Mac (probado en macOS Big Sur)](https://docs.monogame.net/articles/getting_started/1_setting_up_your_development_environment_macos.html)
-
-Afuera del mundo Windows, vas a necesitar la ayudar de [Wine](https://www.winehq.org) para los shaders, por lo menos por [ahora](https://github.com/MonoGame/MonoGame/issues/2167).
-
-Los recursos usados se almacenan utilizando [Git LFS](https://git-lfs.github.com), con lo cual antes de clonar el repositorio les conviene tenerlo instalado así es automático el pull o si ya lo tienen pueden hacer `git lfs pull`.
-
 ## Integrantes
-
-| Goncalves, Pablo Manuel                                                                              | Huang, Steven Eric                                                                                    |
-| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/robotgc.png" height="500"> | <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="500"> |
 
 | Robles, Lautaro Oscar                                                                                | Villarreal, Juan Pablo                                                                                |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -50,12 +31,12 @@ Los recursos usados se almacenan utilizando [Git LFS](https://git-lfs.github.com
 
 ## Capturas
 
-![screenshot1](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
-![screenshot2](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
-![screenshot3](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
-![screenshot4](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
-![screenshot5](https://github.com/tgc-utn/tgc-monogame-tp/blob/master/TGC.MonoGame.TP/Icon.bmp)
+![screenshot1](https://drive.google.com/uc?export=view&id=1Hz4zn5PpkWKNO1zYmG3c1C4lw5mMyfaj)
+![screenshot2](https://drive.google.com/uc?export=view&id=18AxiVLPrEjwuK8yNngIsyhXN02klnuPy)
+![screenshot3](https://drive.google.com/uc?export=view&id=1YvJf3dFNa2BkBredt8ICvsJNoCZjQDET)
+![screenshot4](https://drive.google.com/uc?export=view&id=12Y9ZpJEBpnIGeLUg1JNEwvf2GQs1kvC8)
+![screenshot5](https://drive.google.com/uc?export=view&id=135wUEogZxYhRXCbt1qvHGWSRE30u99bH)
 
 ## Game Play
 
-[![Watch the video](https://img.youtube.com/vi/pgEwUC0jvH4/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
+[![Demo](https://img.youtube.com/vi/EsYz3chMKfo/0.jpg)](https://www.youtube.com/watch?v=EsYz3chMKfo)
