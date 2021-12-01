@@ -27,7 +27,7 @@ Más información sobre [.NET Core CLI Tools telemetry](https://aka.ms/dotnet-cl
 
 | Robles, Lautaro Oscar                                                                                | Villarreal, Juan Pablo                                                                                |
 | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| <img src="https://lh3.googleusercontent.com/a-/AOh14Gi4-dT5kOJpFWCWe4N181U8O9re40z68WFM37xX=s288-p-rw-no" height="400"> | <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="400"> |
+| <img src="https://lh3.googleusercontent.com/a-/AOh14Gi4-dT5kOJpFWCWe4N181U8O9re40z68WFM37xX=s288-p-rw-no" height="400"> | <img src="https://drive.google.com/uc?export=view&id=1l-Zasbo56CkIiEdf6rVBI3Ij_SHXtRdw" height="400"> |
 
 ## Capturas
 
