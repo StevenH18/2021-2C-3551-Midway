@@ -124,6 +124,7 @@ namespace TGC.MonoGame.TP.Ships
 
         private float RotateToTarget(Vector3 target)
         {
+            /*
             var angleToFollow = MathF.Atan2(target.X, target.Z);
 
             if (angleToFollow - PreviousAngle > MathF.PI)
@@ -136,8 +137,15 @@ namespace TGC.MonoGame.TP.Ships
             }
 
             PreviousAngle = angleToFollow;
+            */
 
-            return angleToFollow;
+            var right = World.Right;
+            
+            float dotProduct = Vector3.Dot(target, right) / (target.Length() * right.Length()) * MathF.PI;
+
+            return dotProduct;
+
+            //Debug.WriteLine(dotProduct.ToString("0.00")+" | "+angleToFollow.ToString("0.00"));
         }
 
         public void CollisionDetection(MapEnvironment environment)
@@ -146,9 +154,16 @@ namespace TGC.MonoGame.TP.Ships
             {
                 var islandCollider = environment.IslandSystem.IslandColliders[i];
 
-                if (BoundingBox.Intersects(islandCollider))
+                if (BoundingBox.Intersects(islandCollider.ParentCollider))
                 {
-                    Health = 0;
+                    for (int j = 0; j < islandCollider.ChildrenColliders.Count; j++)
+                    {
+                        var childrenCollider = islandCollider.ChildrenColliders[j];
+                        if (BoundingBox.Intersects(childrenCollider.ParentCollider))
+                        {
+                            Health = 0;
+                        }
+                    }
                 }
             }
         }
@@ -161,16 +176,23 @@ namespace TGC.MonoGame.TP.Ships
             {
                 for (var i = 0; i < islandsColliders.Count; i++)
                 {
-                    if (Rays[j].Intersects(islandsColliders[i]) < RayLength)
+                    if (Rays[j].Intersects(islandsColliders[i].ParentCollider) < RayLength)
                     {
-                        float rayAngle = (float)j / (float)Rays.Length * MathF.PI * 2 - MathF.PI;
-                        angle += MathF.Sign(rayAngle) * (MathF.Abs(rayAngle));
+                        var childrensColliders = islandsColliders[i].ChildrenColliders;
+                        for (var h = 0; h < childrensColliders.Count; h++)
+                        {
+                            if (Rays[j].Intersects(childrensColliders[h].ParentCollider) < RayLength)
+                            {
+                                float rayAngle = (float)j / (float)Rays.Length * MathF.PI * 2 - MathF.PI;
+                                angle += MathF.Sign(rayAngle) * (MathF.Abs(rayAngle));
 
-                        RayCollides[j] = true;
-                    }
-                    else
-                    {
-                        RayCollides[j] = false;
+                                RayCollides[j] = true;
+                            }
+                            else
+                            {
+                                RayCollides[j] = false;
+                            }
+                        }
                     }
                 }
             }
@@ -185,7 +207,7 @@ namespace TGC.MonoGame.TP.Ships
             var angleToFollow = RotateToTarget(target);
             angleToFollow = EvadeIslands(environment, angleToFollow);
 
-            Velocity = Lerp(Velocity, 4f, VelocityLerp);
+            Velocity = Lerp(Velocity, 5f, VelocityLerp);
             Angle = Lerp(Angle, angleToFollow, AngleLerp * Velocity / 7f);
 
             if (distanceToWayPoint < WayPointRadius)

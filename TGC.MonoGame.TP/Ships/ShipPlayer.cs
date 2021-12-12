@@ -94,9 +94,16 @@ namespace TGC.MonoGame.TP.Ships
             {
                 var islandCollider = environment.IslandSystem.IslandColliders[i];
 
-                if(BoundingBox.Intersects(islandCollider))
+                if(BoundingBox.Intersects(islandCollider.ParentCollider))
                 {
-                    Health = 0;
+                    for (int j = 0; j < islandCollider.ChildrenColliders.Count; j++)
+                    {
+                        var childrenCollider = islandCollider.ChildrenColliders[j];
+                        if (BoundingBox.Intersects(childrenCollider.ParentCollider))
+                        {
+                            Health = 0;
+                        }
+                    }
                 }
             }
         }

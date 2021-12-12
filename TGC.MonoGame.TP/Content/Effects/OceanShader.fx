@@ -251,6 +251,7 @@ float2 GetTrails(VertexShaderOutput input)
 {
     float2 trail = float2(0, 0);
     
+    /*
     for (int i = 0; i < 100; i++)
     {
         float distanceFromWorld = distance(TrailPositions[i].xyz, input.WorldPosition.xyz);
@@ -259,6 +260,7 @@ float2 GetTrails(VertexShaderOutput input)
         trail.x += (1 - smoothstep(0, maxSize, distanceFromWorld));
         trail.y += (1 - smoothstep(0, maxSize + 10, distanceFromWorld)) * (saturate(Time - TrailLifeTimes[i] - 1));
     }
+    */
     
     return trail;
 }
