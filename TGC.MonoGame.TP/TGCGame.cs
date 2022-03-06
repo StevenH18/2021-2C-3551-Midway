@@ -317,7 +317,6 @@ namespace TGC.MonoGame.TP
                     EffectSystem.Update(gameTime, ActiveCamera);
                     WeaponSystem.Update(gameTime);
 
-                    Hud.Update(gameTime);
 
                     break;
             }
@@ -327,11 +326,17 @@ namespace TGC.MonoGame.TP
             PreviousCamera.Update(gameTime, ShipsSystem.Ships[0], this);
 
             Gizmos.UpdateViewProjection(ActiveCamera.View, ActiveCamera.Projection);
-
+            
+            Hud.Update(gameTime);
 
             if(Inputs.isJustPressed(Keys.C))
             {
                 DrawGizmos = !DrawGizmos;
+            }
+
+            if (Inputs.isJustPressed(Keys.F1))
+            {
+                Hud.ShowHud = !Hud.ShowHud;
             }
 
             if (Menu.Restart())

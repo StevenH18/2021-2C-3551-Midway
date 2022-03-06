@@ -22,8 +22,8 @@ namespace TGC.MonoGame.TP.Ships
 
         public ShipPlayer(ContentManager content, GraphicsDevice graphics, Gizmos gizmos) : base(content, graphics, gizmos)
         {
-            Health = 300;
-            MaxHealth = 300;
+            Health = 400;
+            MaxHealth = 400;
         }
 
         public override void Load()

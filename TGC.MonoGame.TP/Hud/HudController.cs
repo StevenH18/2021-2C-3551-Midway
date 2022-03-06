@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using TGC.MonoGame.TP.Cameras;
@@ -40,6 +41,8 @@ namespace TGC.MonoGame.TP.Hud
         private int HealthSize = 250;
         private int HealthPadding = 30;
 
+        public bool ShowHud = true;
+
         public HudController(GraphicsDevice graphics, ContentManager content)
         {
             Graphics = graphics;
@@ -63,11 +66,11 @@ namespace TGC.MonoGame.TP.Hud
         }
         public void Update(GameTime gameTime)
         {
-            
+
         }
         public void Draw(GameTime gameTime, Ship[] ships, Camera activeCamera, MapEnvironment environment, bool drawCrosshair)
         {
-            if (ships[0].Health <= 0)
+            if (ships[0].Health <= 0 || !ShowHud)
                 return;
 
             DrawRadar(gameTime, ships, activeCamera.World);
