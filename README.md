@@ -23,12 +23,6 @@ Trabajo práctico del Grupo 1 de la materia electiva [Técnicas de Gráficos por
 
 Más información sobre [.NET Core CLI Tools telemetry](https://aka.ms/dotnet-cli-telemetry) y [Visual Studio Code telemetry](https://code.visualstudio.com/docs/getstarted/telemetry) ya que vienen activas por defecto.
 
-## Integrantes
-
-| Robles, Lautaro Oscar                                                                                | Villarreal, Juan Pablo                                                                                |
-| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| <img src="https://lh3.googleusercontent.com/a-/AOh14Gi4-dT5kOJpFWCWe4N181U8O9re40z68WFM37xX=s288-p-rw-no" height="400"> | <img src="https://drive.google.com/uc?export=view&id=1l-Zasbo56CkIiEdf6rVBI3Ij_SHXtRdw" height="400"> |
-
 ## Capturas
 
 ![screenshot1](https://drive.google.com/uc?export=view&id=1Hz4zn5PpkWKNO1zYmG3c1C4lw5mMyfaj)
